@@ -14,10 +14,16 @@ var level: int = 1
 
 # References
 var player: CharacterBody2D
+var camera: Camera2D
 
 func _ready():
 	player = get_parent().get_parent()  # Player -> WeaponPivot -> Weapon
 	print("Weapon ready: ", name)
+	
+	# Get camera reference
+	if player and player.has_node("Camera2D"):
+		camera = player.get_node("Camera2D")
+		print("✓ Camera found for ", name)
 
 func _process(delta):
 	attack_cooldown -= delta
@@ -52,7 +58,11 @@ func attack(target: CharacterBody2D):
 	if not is_instance_valid(target):
 		return
 	
-	print("Attacking ", target.name, " for ", damage, " damage!")
+	#Calculate damage with crit
+	var final_damage = calculate_damage()
+	var is_crit = check_crit()
+	
+	print("Attacking ", target.name, " for ", final_damage, " damage!", " (Crit: ", is_crit, ")")
 	
 	if is_projectile:
 		# TODO: Spawn projectile later
@@ -62,8 +72,41 @@ func attack(target: CharacterBody2D):
 		if target.has_method("take_damage"):
 			target.take_damage(damage, global_position)
 			
+			# Camera shake on crit
+			if is_crit and camera and camera.has_method("crit_shake"):
+				camera.crit_shake()
+			elif camera and camera.has_method("small_shake"):
+				camera.small_shake()
+			
 			# Visual feedback
 			create_hit_effect(target.global_position)
+
+func calculate_damage() -> float:
+	var base = damage
+	
+	# Get player stats if available
+	if player and "stats" in player:
+		base *= player.stats.attack_damage / 10.0  # Scale with player attack
+	
+	# Random variance ±10%
+	base *= randf_range(0.9, 1.1)
+	
+	# Check for crit
+	if check_crit():
+		var crit_mult = 2.0
+		if player and "stats" in player:
+			crit_mult = player.stats.crit_multiplier
+		base *= crit_mult
+	
+	return base
+
+func check_crit() -> bool:
+	var crit_chance = 0.05  # 5% base
+	
+	if player and "stats" in player:
+		crit_chance = player.stats.crit_chance
+	
+	return randf() < crit_chance
 
 func create_hit_effect(position: Vector2):
 	# TODO: Add particle effect later

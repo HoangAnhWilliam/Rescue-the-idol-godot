@@ -23,6 +23,9 @@ var current_state: State = State.IDLE
 @onready var collision = $CollisionShape2D if has_node("CollisionShape2D") else null
 @onready var hitbox = $HitboxArea if has_node("HitboxArea") else null
 
+#Preload damage number scene
+var damage_number_scene = preload("res://scenes/effects/damage_number.tscn")
+
 func _ready():
 	print("Enemy ready: ", name)
 	
@@ -105,10 +108,13 @@ func perform_attack(delta):  # ← THÊM delta parameter
 			print(name, " attacked player!")
 			attack_timer = attack_cooldown
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 	
 	print(name, " took ", amount, " damage. HP: ", current_hp, "/", max_hp)
+	
+	# Spawn damage number
+	spawn_damage_number(amount, is_crit)
 	
 	# Visual feedback
 	if sprite:
@@ -124,6 +130,21 @@ func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
 	
 	if current_hp <= 0:
 		die()
+
+func spawn_damage_number(damage: float, is_crit: bool = false):
+	if not damage_number_scene:
+		print("ERROR: Damage number scene not loaded!")
+		return
+	
+	var damage_num = damage_number_scene.instantiate()
+	damage_num.global_position = global_position + Vector2(0, -20)
+	
+	# Add to scene root để không bị ảnh hưởng khi enemy die
+	get_tree().root.add_child(damage_num)
+	
+	# Setup damage number
+	if damage_num.has_method("setup"):
+		damage_num.setup(damage, is_crit)
 
 func die():
 	current_state = State.DEAD

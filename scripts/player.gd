@@ -50,6 +50,13 @@ func _ready():
 	xp_to_next_level = get_xp_for_next_level()
 	apply_permanent_upgrades()
 	
+		# Setup camera shake
+	if camera and not camera.get_script():
+		var shake_script = load("res://scripts/camera_shake.gd")
+		if shake_script:
+			camera.set_script(shake_script)
+			print("✓ Camera shake enabled")
+	
 	if weapon_pivot and weapon_pivot.get_child_count() > 0:
 		current_weapon = weapon_pivot.get_child(0)
 		print("Player equipped weapon: ", current_weapon.name)
@@ -150,6 +157,10 @@ func take_damage(amount: float):
 	current_hp -= amount
 	hp_changed.emit(current_hp, stats.max_hp)
 	
+	# Camera shake when hit
+	if camera and camera.has_method("small_shake"):
+		camera.small_shake()
+	
 	# Visual feedback
 	sprite.modulate = Color.RED
 	await get_tree().create_timer(0.1).timeout
@@ -162,6 +173,11 @@ func die():
 	player_died.emit()
 	set_physics_process(false)
 	sprite.modulate = Color(0.5, 0.5, 0.5)
+	
+	# Camera shake on death
+	if camera and camera.has_method("large_shake"):
+		camera.large_shake()
+	
 	# Show game over screen
 
 func add_xp(amount: float):
@@ -184,6 +200,10 @@ func add_xp(amount: float):
 		print("⭐ LEVEL UP! Now level ", level)
 		level_up.emit(level)
 		show_level_up_menu()
+		
+		# Camera shake on level up
+		if camera and camera.has_method("medium_shake"):
+			camera.medium_shake()
 		
 		# Small heal on level up
 		current_hp = min(current_hp + 20, stats.max_hp)
