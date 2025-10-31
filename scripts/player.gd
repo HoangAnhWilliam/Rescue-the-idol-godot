@@ -36,6 +36,9 @@ var miku_buffs := {
 	"move_speed": 1.0
 }
 
+# Preload particle scene
+var levelup_particle_scene = preload("res://scenes/effects/levelup_particle.tscn")
+
 # Signals
 signal hp_changed(current, maximum)
 signal mana_changed(current, maximum)
@@ -201,6 +204,9 @@ func add_xp(amount: float):
 		level_up.emit(level)
 		show_level_up_menu()
 		
+		# Spawn level up particles
+		spawn_levelup_particle()
+		
 		# Camera shake on level up
 		if camera and camera.has_method("medium_shake"):
 			camera.medium_shake()
@@ -208,6 +214,23 @@ func add_xp(amount: float):
 		# Small heal on level up
 		current_hp = min(current_hp + 20, stats.max_hp)
 		hp_changed.emit(current_hp, stats.max_hp)
+		
+		# Show menu
+		show_level_up_menu()
+
+func spawn_levelup_particle():
+	if not levelup_particle_scene:
+		print("WARNING: Level up particle scene not loaded!")
+		return
+	
+	var particle = levelup_particle_scene.instantiate()
+	particle.global_position = global_position
+	
+	# Add to scene root
+	get_tree().root.add_child(particle)
+	
+	print("✨ Level up particle spawned!")
+
 
 func get_xp_for_next_level() -> float:
 	return 100.0 * pow(level, 1.5)

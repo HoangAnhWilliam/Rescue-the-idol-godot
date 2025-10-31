@@ -25,6 +25,8 @@ var current_state: State = State.IDLE
 
 #Preload damage number scene
 var damage_number_scene = preload("res://scenes/effects/damage_number.tscn")
+var hit_particle_scene = preload("res://scenes/effects/hit_particle.tscn")
+var death_particle_scene = preload("res://scenes/effects/death_particle.tscn")
 
 func _ready():
 	print("Enemy ready: ", name)
@@ -116,6 +118,9 @@ func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: 
 	# Spawn damage number
 	spawn_damage_number(amount, is_crit)
 	
+	# Spawn hit particles
+	spawn_hit_particle(is_crit)
+	
 	# Visual feedback
 	if sprite:
 		sprite.modulate = Color.RED
@@ -146,11 +151,44 @@ func spawn_damage_number(damage: float, is_crit: bool = false):
 	if damage_num.has_method("setup"):
 		damage_num.setup(damage, is_crit)
 
+func spawn_hit_particle(is_crit: bool = false):
+	if not hit_particle_scene:
+		print("WARNING: Hit particle scene not loaded!")
+		return
+	
+	var particle = hit_particle_scene.instantiate()
+	particle.global_position = global_position
+	
+	# Add to scene root
+	get_tree().root.add_child(particle)
+	
+	# Set color based on crit
+	if particle.has_method("set_color_from_damage"):
+		particle.set_color_from_damage(is_crit)
+
+func spawn_death_particle():
+	if not death_particle_scene:
+		print("WARNING: Death particle scene not loaded!")
+		return
+	
+	var particle = death_particle_scene.instantiate()
+	particle.global_position = global_position
+	
+	# Add to scene root
+	get_tree().root.add_child(particle)
+	
+	# Set color based on enemy type
+	if particle.has_method("set_color_for_enemy"):
+		particle.set_color_for_enemy(name)
+
 func die():
 	current_state = State.DEAD
 	set_physics_process(false)
 	
 	print(name, " died!")
+	
+	# Spawn death particle effect
+	spawn_death_particle()
 	
 	# Drop XP
 	if player and player.has_method("add_xp"):
