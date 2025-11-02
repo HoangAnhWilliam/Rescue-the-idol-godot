@@ -138,11 +138,11 @@ func shoot_buff_arrow():
 	arrow.direction = direction
 
 	# Set as buff arrow
-	if arrow.has("arrow_type"):
+	if "arrow_type" in arrow:
 		arrow.arrow_type = buff_type
 
 	# Set speed slower
-	if arrow.has("speed"):
+	if "speed" in arrow:
 		arrow.speed = 150.0  # Slower so player can see it coming
 
 	# Add to scene

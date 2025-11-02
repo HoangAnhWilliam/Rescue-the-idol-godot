@@ -134,11 +134,11 @@ func shoot_arrow():
 	arrow.direction = direction
 
 	# Set damage
-	if arrow.has("damage"):
+	if "damage" in arrow:
 		arrow.damage = arrow_damage
 
 	# Set type to damage arrow
-	if arrow.has("arrow_type"):
+	if "arrow_type" in arrow:
 		arrow.arrow_type = 0  # ArrowType.DAMAGE
 
 	# Add to scene
