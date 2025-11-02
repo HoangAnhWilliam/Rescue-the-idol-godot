@@ -9,6 +9,8 @@ class_name Enemy
 @export var detection_range: float = 400.0
 @export var attack_range: float = 50.0
 @export var attack_cooldown: float = 1.0  # ← THÊM
+@export var gold_drop_min: int = 10
+@export var gold_drop_max: int = 50
 
 var current_hp: float
 var attack_timer: float = 0.0  # ← THÊM
@@ -61,7 +63,11 @@ func search_for_player():
 	if not player:
 		player = get_tree().get_first_node_in_group("player")
 		return
-	
+
+	# Don't detect invisible player
+	if "is_invisible" in player and player.is_invisible:
+		return
+
 	var distance = global_position.distance_to(player.global_position)
 	if distance < detection_range:
 		current_state = State.CHASE
@@ -71,22 +77,28 @@ func chase_player(delta):
 	if not player:
 		current_state = State.IDLE
 		return
-	
+
+	# Stop chasing if player becomes invisible
+	if "is_invisible" in player and player.is_invisible:
+		current_state = State.IDLE
+		velocity = Vector2.ZERO
+		return
+
 	var distance = global_position.distance_to(player.global_position)
-	
+
 	if distance > detection_range * 1.5:
 		current_state = State.IDLE
 		return
-	
+
 	if distance < attack_range:
 		current_state = State.ATTACK
 		return
-	
+
 	# Move towards player
 	var direction = (player.global_position - global_position).normalized()
 	velocity = direction * move_speed
 	move_and_slide()
-	
+
 	# Update sprite direction
 	update_sprite()
 
@@ -207,11 +219,10 @@ func die():
 	attempt_drop_items()
 
 func attempt_drop_items():
-	# Gold drop (10% base, affected by lucky)
-	var gold_chance = 0.1 * get_player_lucky()
-	if randf() < gold_chance:
-		spawn_gold(randi_range(5, 15))
-	
+	# Gold drop (100% chance now, random amount)
+	var gold_amount = randi_range(gold_drop_min, gold_drop_max)
+	spawn_gold(gold_amount)
+
 	# Rare drop (1% base, affected by lucky)
 	var rare_chance = 0.01 * get_player_lucky()
 	if randf() < rare_chance:
@@ -230,8 +241,11 @@ func get_player_lucky() -> float:
 	return 1.0
 
 func spawn_gold(amount: int):
-	# TODO: Instantiate gold pickup later
-	print("Would drop ", amount, " gold")
+	# Give gold directly to player (can change to pickup item later)
+	if player and player.has_method("add_gold"):
+		player.add_gold(amount)
+	else:
+		print("Would drop ", amount, " gold")
 
 func spawn_rare_item():
 	# TODO: Instantiate rare item pickup later

@@ -2,8 +2,9 @@ extends Node2D  # ← ĐỔI từ Node thành Node2D
 class_name EnemySpawner
 
 # Enemy scenes
-@export var zombie_scene: PackedScene 
-@export var skeleton_scene: PackedScene
+@export var zombie_scene: PackedScene
+@export var skeleton_bad_scene: PackedScene
+@export var skeleton_buff_scene: PackedScene
 @export var anime_ghost_scene: PackedScene
 @export var elite_monster_scene: PackedScene
 @export var mini_boss_scene: PackedScene
@@ -44,7 +45,18 @@ func _ready():
 			print("✓ Zombie scene loaded!")
 		else:
 			print("ERROR: Cannot load zombie scene!")
-	
+
+	# Load skeleton scenes
+	if not skeleton_bad_scene:
+		skeleton_bad_scene = load("res://scenes/enemies/skeleton_bad.tscn")
+		if skeleton_bad_scene:
+			print("✓ Bad Skeleton scene loaded!")
+
+	if not skeleton_buff_scene:
+		skeleton_buff_scene = load("res://scenes/enemies/skeleton_buff.tscn")
+		if skeleton_buff_scene:
+			print("✓ Buff Skeleton scene loaded!")
+
 	print("========================")
 
 func _process(delta):
@@ -103,48 +115,22 @@ func spawn_enemy():
 		apply_difficulty_scaling(enemy)
 
 func get_enemy_type_for_time() -> PackedScene:
-	# Chỉ dùng zombie trong giai đoạn đầu
-	# Các enemy khác sẽ implement sau
-	
-	# 0-10 minutes: Only zombies (vì chưa có skeleton, ghost)
-	if game_time < 600:
-		return zombie_scene
-	
-	# Sau này sẽ uncomment khi có đủ enemy types
-	"""
 	var roll = randf()
-	
-	# 0-10 minutes: Basic enemies
-	if game_time < 600:
-		if roll < 0.7:
-			return zombie_scene
-		else:
-			return skeleton_scene if skeleton_scene else zombie_scene
-	
-	# 10-20 minutes: Add Anime Ghosts
-	elif game_time < 1200:
-		if roll < 0.5:
-			return zombie_scene
-		elif roll < 0.8:
-			return skeleton_scene if skeleton_scene else zombie_scene
-		else:
-			return anime_ghost_scene if anime_ghost_scene else zombie_scene
-	
-	# 20+ minutes: Add Elite Monsters and Mini-Bosses
+
+	# Spawn rates:
+	# - Zombie: 68%
+	# - Bad Skeleton: 30%
+	# - Buff Skeleton: 2% (very rare!)
+
+	if roll < 0.02:
+		# 2% - Buff Skeleton (very rare, good skeleton)
+		return skeleton_buff_scene if skeleton_buff_scene else zombie_scene
+	elif roll < 0.32:
+		# 30% - Bad Skeleton
+		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
 	else:
-		if roll < 0.4:
-			return zombie_scene
-		elif roll < 0.7:
-			return skeleton_scene if skeleton_scene else zombie_scene
-		elif roll < 0.85:
-			return anime_ghost_scene if anime_ghost_scene else zombie_scene
-		elif roll < 0.95:
-			return elite_monster_scene if elite_monster_scene else zombie_scene
-		else:
-			return mini_boss_scene if mini_boss_scene else zombie_scene
-	"""
-	
-	return zombie_scene  # Fallback
+		# 68% - Zombie
+		return zombie_scene
 
 func apply_difficulty_scaling(enemy):
 	# Check if enemy is valid
