@@ -19,6 +19,15 @@ var level: int = 1
 var total_kills: int = 0
 var xp_to_next_level: float = 100.0  # Để UI hiển thị
 
+# Gold system
+var gold: int = 0
+
+# Buff system
+var buff_speed_multiplier: float = 1.0
+var buff_damage_multiplier: float = 1.0
+var is_invisible: bool = false
+var buff_manager: BuffManager = null
+
 # Movement
 var input_vector := Vector2.ZERO
 var last_direction := Vector2.RIGHT
@@ -45,31 +54,38 @@ signal mana_changed(current, maximum)
 signal level_up(new_level)
 signal player_died
 signal xp_gained(amount)
-signal stat_changed 
+signal stat_changed
+signal gold_changed(current_gold) 
 
 func _ready():
 	current_hp = stats.max_hp
 	current_mana = stats.max_mana
 	xp_to_next_level = get_xp_for_next_level()
 	apply_permanent_upgrades()
-	
-		# Setup camera shake
+
+	# Setup camera shake
 	if camera and not camera.get_script():
 		var shake_script = load("res://scripts/camera_shake.gd")
 		if shake_script:
 			camera.set_script(shake_script)
 			print("✓ Camera shake enabled")
-	
+
+	# Initialize BuffManager
+	buff_manager = BuffManager.new()
+	buff_manager.name = "BuffManager"
+	add_child(buff_manager)
+	print("✓ BuffManager initialized")
+
 	if weapon_pivot and weapon_pivot.get_child_count() > 0:
 		current_weapon = weapon_pivot.get_child(0)
 		print("Player equipped weapon: ", current_weapon.name)
-		
+
 	# Get upgrade menu reference - THÊM ↓
 	await get_tree().process_frame
 	upgrade_menu = get_tree().get_first_node_in_group("upgrade_menu")
 	if not upgrade_menu:
 		print("WARNING: No upgrade menu found!")
-	
+
 	get_tree().paused = false
 
 func _physics_process(delta):
@@ -99,10 +115,10 @@ func handle_input():
 	#	use_special_skill()
 
 func apply_movement(delta):
-	var speed = stats.move_speed * miku_buffs["move_speed"]
+	var speed = stats.move_speed * miku_buffs["move_speed"] * buff_speed_multiplier
 	velocity = input_vector * speed
 	move_and_slide()
-	
+
 	if input_vector != Vector2.ZERO:
 		last_direction = input_vector
 
@@ -291,18 +307,46 @@ func equip_weapon(weapon: Weapon):
 
 func calculate_damage(base_damage: float) -> float:
 	var damage = base_damage
-	
+
+	# Apply damage buff multiplier
+	damage *= buff_damage_multiplier
+
 	# Crit check
 	var crit_chance = stats.crit_chance + miku_buffs["crit_chance"]
 	if randf() < crit_chance:
 		damage *= stats.crit_multiplier
 		show_crit_text(damage)
-	
+
 	# Random variance
 	damage *= randf_range(0.9, 1.1)
-	
+
 	return damage
 
 func show_crit_text(damage: float):
 	# Spawn floating damage text with "CRIT!" indicator
 	pass
+
+# === GOLD SYSTEM ===
+func add_gold(amount: int):
+	gold += amount
+	gold_changed.emit(gold)
+	print("💰 +", amount, " gold! Total: ", gold)
+
+func remove_gold(amount: int) -> bool:
+	if gold >= amount:
+		gold -= amount
+		gold_changed.emit(gold)
+		print("💰 -", amount, " gold! Remaining: ", gold)
+		return true
+	else:
+		print("❌ Not enough gold! Need ", amount, " but have ", gold)
+		return false
+
+func has_gold(amount: int) -> bool:
+	return gold >= amount
+
+# === HEALING SYSTEM ===
+func heal(amount: float):
+	current_hp = min(current_hp + amount, stats.max_hp)
+	hp_changed.emit(current_hp, stats.max_hp)
+	print("💚 Healed ", amount, " HP")
