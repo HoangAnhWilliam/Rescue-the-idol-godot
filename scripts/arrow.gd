@@ -24,7 +24,7 @@ enum ArrowType {
 @export var arrow_type: ArrowType = ArrowType.DAMAGE
 
 # Visual
-@onready var sprite: Node2D = null
+@onready var sprite = null
 
 # Buff type mapping
 var buff_type_map = {
