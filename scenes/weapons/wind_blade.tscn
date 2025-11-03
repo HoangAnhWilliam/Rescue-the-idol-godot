@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbkrcbknrl3qb"]
+
+[ext_resource type="Script" uid="uid://dtgflipigj8cx" path="res://scripts/wind_blade.gd" id="1_ije4l"]
+
+[node name="WindBlade" type="Node2D"]
+script = ExtResource("1_ije4l")

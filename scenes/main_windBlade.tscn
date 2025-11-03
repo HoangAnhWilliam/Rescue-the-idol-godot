@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://cyf5hdr626p2r"]
+
+[ext_resource type="PackedScene" uid="uid://5hwa1y6p6e8y" path="res://scenes/player/player_windBlade.tscn" id="1_3t554"]
+[ext_resource type="Script" uid="uid://blovmg3iws7j8" path="res://scripts/enemy_spawner.gd" id="2_6p40j"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3_6p40j"]
+[ext_resource type="PackedScene" uid="uid://cekjlfyi6xt4g" path="res://scenes/ui/upgrade_menu.tscn" id="3_bfoe7"]
+
+[node name="Main" type="Node2D" groups=["upgrade_menu"]]
+
+[node name="Player" parent="." groups=["player"] instance=ExtResource("1_3t554")]
+
+[node name="EnemySpawner" type="Node2D" parent="."]
+script = ExtResource("2_6p40j")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="UI" instance=ExtResource("3_6p40j")]
+
+[node name="UpgradeMenu" parent="." instance=ExtResource("3_bfoe7")]
+visible = false
