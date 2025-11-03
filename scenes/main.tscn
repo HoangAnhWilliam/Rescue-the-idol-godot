@@ -17,4 +17,3 @@ script = ExtResource("2_sugp2")
 [node name="HUD" parent="UI" instance=ExtResource("4_hud")]
 
 [node name="UpgradeMenu" parent="." groups=["upgrade_menu"] instance=ExtResource("3_sugp2")]
-visible = false

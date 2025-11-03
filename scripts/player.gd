@@ -98,8 +98,18 @@ func _physics_process(delta):
 	update_sprite_direction()
 
 func handle_input():
+	# DEBUG: Press PageUp to manually test upgrade menu
+	if Input.is_action_just_pressed("ui_page_up"):
+		print("")
+		print("🔧 ========== DEBUG TRIGGER ==========")
+		print("🔧 Manually triggering upgrade menu")
+		show_level_up_menu()
+		print("🔧 ====================================")
+		print("")
+		return
+
 	input_vector = Vector2.ZERO
-	
+
 	# Keyboard/Controller
 	if Input.is_action_pressed("move_right"):
 		input_vector.x += 1
@@ -109,9 +119,9 @@ func handle_input():
 		input_vector.y += 1
 	if Input.is_action_pressed("move_up"):
 		input_vector.y -= 1
-	
+
 	input_vector = input_vector.normalized()
-	
+
 	# Special skill
 	#if Input.is_action_just_pressed("special_skill"):
 	#	use_special_skill()
