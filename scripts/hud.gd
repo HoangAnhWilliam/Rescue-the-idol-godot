@@ -5,6 +5,7 @@ extends Control
 @onready var mana_bar = $StatsContainer/ManaContainer/ManaBar
 @onready var xp_bar = $StatsContainer/XPContainer/XPBar
 @onready var level_label = $StatsContainer/XPContainer/LevelLabel
+@onready var gold_label = $InfoContainer/GoldLabel
 @onready var kill_label = $InfoContainer/KillLabel
 @onready var time_label = $InfoContainer/TimeLabel
 
@@ -51,6 +52,12 @@ func _ready():
 	else:
 		print("❌ Player missing level_up signal!")
 
+	if player.has_signal("gold_changed"):
+		player.gold_changed.connect(_on_gold_changed)
+		print("✅ Connected gold_changed signal")
+	else:
+		print("❌ Player missing gold_changed signal!")
+
 	# Initialize bars
 	if "current_hp" in player and "stats" in player:
 		update_hp(player.current_hp, player.stats.max_hp)
@@ -68,6 +75,10 @@ func _ready():
 		update_level(player.level)
 		print("✅ Initialized Level: ", player.level)
 
+	if "gold" in player:
+		update_gold(player.gold)
+		print("✅ Initialized Gold: ", player.gold)
+
 	print("=========================")
 
 func _process(delta):
@@ -80,6 +91,10 @@ func _process(delta):
 	# Update kill count
 	if player and "total_kills" in player:
 		kill_label.text = "Kills: %d" % player.total_kills
+
+	# Update gold (in case it changes without signal)
+	if player and "gold" in player:
+		gold_label.text = "Gold: %d" % player.gold
 
 # Signal handlers
 func _on_hp_changed(current: float, maximum: float):
@@ -101,6 +116,10 @@ func _on_level_up(new_level: int):
 	if player:
 		update_xp(player.current_xp, player.xp_to_next_level)
 
+func _on_gold_changed(current_gold: int):
+	print("💰 Gold changed: ", current_gold)
+	update_gold(current_gold)
+
 # Update functions
 func update_hp(current: float, maximum: float):
 	if hp_bar:
@@ -120,3 +139,7 @@ func update_xp(current: float, maximum: float):
 func update_level(level: int):
 	if level_label:
 		level_label.text = "LV %d - XP:" % level
+
+func update_gold(gold: int):
+	if gold_label:
+		gold_label.text = "Gold: %d" % gold
