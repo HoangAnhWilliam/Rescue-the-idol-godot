@@ -1,0 +1,108 @@
+[gd_scene load_steps=5 format=3 uid="uid://hud_scene_01"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
+bg_color = Color(1, 0, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mana"]
+bg_color = Color(0, 0.8509804, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp"]
+bg_color = Color(0.015686275, 0.22352941, 0.08235294, 1)
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="StatsContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(250, 100)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 260.0
+offset_bottom = 110.0
+
+[node name="HPContainer" type="HBoxContainer" parent="StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="StatsContainer/HPContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "HP:"
+
+[node name="HPBar" type="ProgressBar" parent="StatsContainer/HPContainer"]
+custom_minimum_size = Vector2(180, 20)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp")
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="ManaContainer" type="HBoxContainer" parent="StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="StatsContainer/ManaContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "MANA:"
+
+[node name="ManaBar" type="ProgressBar" parent="StatsContainer/ManaContainer"]
+custom_minimum_size = Vector2(180, 20)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_mana")
+max_value = 50.0
+value = 50.0
+show_percentage = false
+
+[node name="XPContainer" type="HBoxContainer" parent="StatsContainer"]
+layout_mode = 2
+
+[node name="LevelLabel" type="Label" parent="StatsContainer/XPContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "LV 1 - XP:"
+
+[node name="XPBar" type="ProgressBar" parent="StatsContainer/XPContainer"]
+custom_minimum_size = Vector2(180, 20)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_xp")
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="InfoContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(200, 80)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -212.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 92.0
+grow_horizontal = 0
+
+[node name="GoldLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Gold: 0"
+horizontal_alignment = 2
+
+[node name="KillLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Kills: 0"
+horizontal_alignment = 2
+
+[node name="TimeLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Time: 00:00"
+horizontal_alignment = 2
