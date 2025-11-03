@@ -6,7 +6,7 @@ extends CanvasLayer
 @onready var button2 = $Background/MenuPanel/Layout/UpgradeButton2
 @onready var button3 = $Background/MenuPanel/Layout/UpgradeButton3
 
-# Upgrade types
+# Upgrade types - EXPANDED!
 enum UpgradeType {
 	WEAPON_LEVEL,
 	MAX_HP,
@@ -14,44 +14,61 @@ enum UpgradeType {
 	MAX_MANA,
 	MOVE_SPEED,
 	HP_REGEN,
-	CRIT_CHANCE
+	CRIT_CHANCE,
+	CRIT_DAMAGE,
+	DAMAGE_BOOST,
+	PICKUP_RANGE,
+	COOLDOWN_REDUCTION,
+	LIFESTEAL
 }
 
 # Current upgrades shown
 var current_upgrades: Array[UpgradeType] = []
-var player: Player
+var player: CharacterBody2D
 
 signal upgrade_chosen(type: UpgradeType)
 
 func _ready():
+	print("=== UPGRADE MENU INITIALIZATION ===")
+
 	# Hide by default
 	hide()
-	
+
 	# Connect button signals
 	button1.pressed.connect(_on_button1_pressed)
 	button2.pressed.connect(_on_button2_pressed)
 	button3.pressed.connect(_on_button3_pressed)
-	
-	print("UpgradeMenu ready!")
 
-func show_menu(player_ref: Player, level: int):
+	print("✅ UpgradeMenu ready!")
+	print("===================================")
+
+func show_menu(player_ref: CharacterBody2D, level: int):
+	print("🎯 Showing upgrade menu for level ", level)
+
 	player = player_ref
-	
+
 	# Update level text
 	level_label.text = "Level %d" % level
-	
+
 	# Generate 3 random upgrades
 	current_upgrades = generate_random_upgrades(3)
-	
+
 	# Update button texts
 	button1.text = get_upgrade_text(current_upgrades[0])
 	button2.text = get_upgrade_text(current_upgrades[1])
 	button3.text = get_upgrade_text(current_upgrades[2])
-	
+
+	print("📋 Options:")
+	print("  1. ", button1.text)
+	print("  2. ", button2.text)
+	print("  3. ", button3.text)
+
 	# Show menu
 	show()
-	
-	print("Showing upgrade menu for level ", level)
+
+	# PAUSE GAME
+	get_tree().paused = true
+	print("⏸️ Game PAUSED")
 
 func generate_random_upgrades(count: int) -> Array[UpgradeType]:
 	var available = [
@@ -61,24 +78,29 @@ func generate_random_upgrades(count: int) -> Array[UpgradeType]:
 		UpgradeType.MAX_MANA,
 		UpgradeType.MOVE_SPEED,
 		UpgradeType.HP_REGEN,
-		UpgradeType.CRIT_CHANCE
+		UpgradeType.CRIT_CHANCE,
+		UpgradeType.CRIT_DAMAGE,
+		UpgradeType.DAMAGE_BOOST,
+		UpgradeType.PICKUP_RANGE,
+		UpgradeType.COOLDOWN_REDUCTION,
+		UpgradeType.LIFESTEAL
 	]
-	
-	# Shuffle and take first 3
+
+	# Shuffle and take first N
 	available.shuffle()
-	
+
 	var result: Array[UpgradeType] = []
 	for i in range(count):
 		result.append(available[i])
-	
+
 	return result
 
 func get_upgrade_text(type: UpgradeType) -> String:
 	match type:
 		UpgradeType.WEAPON_LEVEL:
-			return "⚔ Weapon Level +1"
+			return "⚔️ Weapon Level +1"
 		UpgradeType.MAX_HP:
-			return "❤ Max HP +20"
+			return "❤️ Max HP +20"
 		UpgradeType.ATTACK_SPEED:
 			return "⚡ Attack Speed +10%"
 		UpgradeType.MAX_MANA:
@@ -89,63 +111,116 @@ func get_upgrade_text(type: UpgradeType) -> String:
 			return "💚 HP Regen +50%"
 		UpgradeType.CRIT_CHANCE:
 			return "💥 Crit Chance +5%"
-	
+		UpgradeType.CRIT_DAMAGE:
+			return "💢 Crit Damage +20%"
+		UpgradeType.DAMAGE_BOOST:
+			return "🗡️ Base Damage +15%"
+		UpgradeType.PICKUP_RANGE:
+			return "🧲 Pickup Range +50%"
+		UpgradeType.COOLDOWN_REDUCTION:
+			return "⏱️ Cooldown -10%"
+		UpgradeType.LIFESTEAL:
+			return "🩸 Lifesteal +5%"
+
 	return "Unknown"
 
 func apply_upgrade(type: UpgradeType):
 	if not player:
-		print("ERROR: No player reference!")
+		print("❌ ERROR: No player reference!")
 		return
-	
-	print("Applying upgrade: ", UpgradeType.keys()[type])
-	
+
+	print("✨ Applying upgrade: ", UpgradeType.keys()[type])
+
 	match type:
 		UpgradeType.WEAPON_LEVEL:
-			if player.current_weapon and player.current_weapon.has_method("upgrade"):
-				player.current_weapon.upgrade()
-				print("Weapon upgraded!")
-		
+			if "current_weapon" in player and player.current_weapon:
+				if player.current_weapon.has_method("upgrade"):
+					player.current_weapon.upgrade()
+					print("✅ Weapon upgraded!")
+				else:
+					print("⚠️ Weapon has no upgrade method")
+
 		UpgradeType.MAX_HP:
-			player.stats.max_hp += 20
-			player.current_hp += 20
-			player.hp_changed.emit(player.current_hp, player.stats.max_hp)
-			print("Max HP increased to ", player.stats.max_hp)
-		
+			if "stats" in player:
+				player.stats.max_hp += 20
+				if "current_hp" in player:
+					player.current_hp += 20
+				if player.has_signal("hp_changed"):
+					player.hp_changed.emit(player.current_hp, player.stats.max_hp)
+				print("✅ Max HP increased to ", player.stats.max_hp)
+
 		UpgradeType.ATTACK_SPEED:
-			player.stats.attack_speed *= 1.1
-			print("Attack speed increased to ", player.stats.attack_speed)
-		
+			if "stats" in player:
+				player.stats.attack_speed *= 1.1
+				print("✅ Attack speed: ", player.stats.attack_speed)
+
 		UpgradeType.MAX_MANA:
-			player.stats.max_mana += 10
-			player.current_mana += 10
-			player.mana_changed.emit(player.current_mana, player.stats.max_mana)
-			print("Max mana increased to ", player.stats.max_mana)
-		
+			if "stats" in player:
+				player.stats.max_mana += 10
+				if "current_mana" in player:
+					player.current_mana += 10
+				if player.has_signal("mana_changed"):
+					player.mana_changed.emit(player.current_mana, player.stats.max_mana)
+				print("✅ Max mana: ", player.stats.max_mana)
+
 		UpgradeType.MOVE_SPEED:
-			player.stats.move_speed *= 1.1
-			print("Move speed increased to ", player.stats.move_speed)
-		
+			if "stats" in player:
+				player.stats.move_speed *= 1.1
+				print("✅ Move speed: ", player.stats.move_speed)
+
 		UpgradeType.HP_REGEN:
-			player.stats.hp_regen_per_second *= 1.5
-			print("HP regen increased to ", player.stats.hp_regen_per_second)
-		
+			if "stats" in player:
+				player.stats.hp_regen_per_second *= 1.5
+				print("✅ HP regen: ", player.stats.hp_regen_per_second)
+
 		UpgradeType.CRIT_CHANCE:
-			player.stats.crit_chance += 0.05
-			print("Crit chance increased to ", player.stats.crit_chance * 100, "%")
-	
+			if "stats" in player:
+				player.stats.crit_chance += 0.05
+				print("✅ Crit chance: ", player.stats.crit_chance * 100, "%")
+
+		UpgradeType.CRIT_DAMAGE:
+			if "stats" in player:
+				player.stats.crit_multiplier += 0.2
+				print("✅ Crit multiplier: x", player.stats.crit_multiplier)
+
+		UpgradeType.DAMAGE_BOOST:
+			if "stats" in player:
+				player.stats.base_damage *= 1.15
+				print("✅ Base damage: ", player.stats.base_damage)
+
+		UpgradeType.PICKUP_RANGE:
+			if "stats" in player:
+				player.stats.pickup_range *= 1.5
+				print("✅ Pickup range: ", player.stats.pickup_range)
+
+		UpgradeType.COOLDOWN_REDUCTION:
+			if "stats" in player:
+				player.stats.cooldown_reduction = min(player.stats.cooldown_reduction + 0.1, 0.5)
+				print("✅ Cooldown reduction: ", player.stats.cooldown_reduction * 100, "%")
+
+		UpgradeType.LIFESTEAL:
+			if "stats" in player:
+				player.stats.lifesteal += 0.05
+				print("✅ Lifesteal: ", player.stats.lifesteal * 100, "%")
+
 	# Emit signal
 	upgrade_chosen.emit(type)
-	
+
 	# Hide menu and resume game
 	hide()
 	get_tree().paused = false
+	print("▶️ Game RESUMED")
+	print("========================")
 
 # Button handlers
 func _on_button1_pressed():
+	print("🔘 Player chose option 1:", get_upgrade_text(current_upgrades[0]))
 	apply_upgrade(current_upgrades[0])
 
 func _on_button2_pressed():
+	print("🔘 Player chose option 2:", get_upgrade_text(current_upgrades[1]))
 	apply_upgrade(current_upgrades[1])
 
 func _on_button3_pressed():
+	print("🔘 Player chose option 3:", get_upgrade_text(current_upgrades[2]))
 	apply_upgrade(current_upgrades[2])

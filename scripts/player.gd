@@ -84,7 +84,9 @@ func _ready():
 	await get_tree().process_frame
 	upgrade_menu = get_tree().get_first_node_in_group("upgrade_menu")
 	if not upgrade_menu:
-		print("WARNING: No upgrade menu found!")
+		print("❌ ERROR: No upgrade menu found in scene!")
+	else:
+		print("✅ Upgrade menu found:", upgrade_menu.name)
 
 	get_tree().paused = false
 
@@ -212,26 +214,29 @@ func add_xp(amount: float):
 	while current_xp >= xp_to_next_level:
 		current_xp -= xp_to_next_level
 		level += 1
-		
+
 		# Recalculate for next level
 		xp_to_next_level = get_xp_for_next_level()
-		
-		print("⭐ LEVEL UP! Now level ", level)
+
+		print("🎉 ========== LEVEL UP! ==========")
+		print("📊 New Level: ", level)
+		print("🎯 Next Level XP Required: ", xp_to_next_level)
+
+		# Emit level up signal
 		level_up.emit(level)
-		show_level_up_menu()
-		
-		# Spawn level up particles
-		spawn_levelup_particle()
-		
-		# Camera shake on level up
-		if camera and camera.has_method("medium_shake"):
-			camera.medium_shake()
-		
+
 		# Small heal on level up
 		current_hp = min(current_hp + 20, stats.max_hp)
 		hp_changed.emit(current_hp, stats.max_hp)
-		
-		# Show menu
+
+		# Spawn level up particles
+		spawn_levelup_particle()
+
+		# Camera shake on level up
+		if camera and camera.has_method("medium_shake"):
+			camera.medium_shake()
+
+		# Show upgrade menu (SINGLE CALL)
 		show_level_up_menu()
 
 func spawn_levelup_particle():
@@ -252,17 +257,22 @@ func get_xp_for_next_level() -> float:
 	return 100.0 * pow(level, 1.5)
 
 func show_level_up_menu():
-	get_tree().paused = true
-	
-	if upgrade_menu and upgrade_menu.has_method("show_menu"):
-		upgrade_menu.show_menu(self, level)
-		print("Showing upgrade menu for level ", level)
-	else:
-		print("ERROR: No upgrade menu available!")
-		# Fallback: auto-upgrade weapon
-		if current_weapon and current_weapon.has_method("upgrade"):
-			current_weapon.upgrade()
+	print("📜 Attempting to show upgrade menu...")
+
+	if not upgrade_menu:
+		print("❌ ERROR: upgrade_menu is null!")
+		print("❌ Cannot show upgrade menu")
 		get_tree().paused = false
+		return
+
+	if not upgrade_menu.has_method("show_menu"):
+		print("❌ ERROR: upgrade_menu has no show_menu method!")
+		get_tree().paused = false
+		return
+
+	print("✅ Calling upgrade_menu.show_menu()")
+	upgrade_menu.show_menu(self, level)
+	print("✅ Upgrade menu should now be visible")
 """
 func use_special_skill():
 	if current_weapon and current_mana >= current_weapon.mana_cost:
