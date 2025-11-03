@@ -36,6 +36,7 @@ var interaction_range: float = 80.0
 # Visual
 @onready var sprite = $ColorRect if has_node("ColorRect") else null
 @onready var collision = $CollisionShape2D if has_node("CollisionShape2D") else null
+@onready var hurtbox = $HurtboxArea if has_node("HurtboxArea") else null
 @onready var purchase_label: Label = null
 
 # Signals
@@ -50,13 +51,19 @@ func _ready():
 	if sprite:
 		sprite.color = Color.GREEN_YELLOW
 
+	# Connect hurtbox for taking damage from enemies
+	if hurtbox:
+		hurtbox.body_entered.connect(_on_hurtbox_entered)
+		hurtbox.area_entered.connect(_on_area_entered)
+		print("✓ Buff Skeleton hurtbox connected")
+
 	# Create purchase indicator label
 	create_purchase_indicator()
 
 	# Find player
 	player = get_tree().get_first_node_in_group("player")
 
-	print("Buff Skeleton spawned at ", global_position)
+	print("💚 Buff Skeleton spawned at ", global_position)
 
 func _physics_process(delta):
 	if current_state == State.PURCHASED:
@@ -209,16 +216,35 @@ func convert_to_ally():
 	queue_free()
 
 func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
-	# Don't die, just flee
-	print("Buff Skeleton was attacked! Fleeing...")
+	# Take actual damage
+	current_hp -= amount
+	print("💔 Buff Skeleton took ", amount, " damage! HP: ", current_hp, "/", max_hp)
+
+	# Flee when attacked
 	current_state = State.FLEE
 
 	# Visual feedback
 	if sprite:
-		sprite.modulate = Color.YELLOW
+		sprite.modulate = Color.RED
 		await get_tree().create_timer(0.2).timeout
 		if sprite:
 			sprite.modulate = Color.WHITE
+
+	# Die if HP reaches 0
+	if current_hp <= 0:
+		die()
+
+func die():
+	print("💀 Buff Skeleton was killed!")
+	can_be_purchased = false
+
+	# Death animation
+	if sprite:
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate:a", 0.0, 0.5)
+		tween.tween_callback(queue_free)
+	else:
+		queue_free()
 
 func flash_red():
 	if sprite:
@@ -244,3 +270,21 @@ func update_sprite():
 			sprite.flip_h = velocity.x > 0
 		elif sprite is ColorRect:
 			sprite.scale.x = -1 if velocity.x > 0 else 1
+
+# Collision callbacks for taking damage
+func _on_hurtbox_entered(body: Node2D):
+	# Get damage from enemies
+	if body.is_in_group("enemies"):
+		# Get damage from enemy
+		var damage = body.damage if "damage" in body else 5.0
+		take_damage(damage, body.global_position)
+		print("⚔️ Buff Skeleton hit by enemy melee!")
+
+func _on_area_entered(area: Area2D):
+	# Get hit by arrows
+	if area.name.contains("Arrow") or area.is_class("Arrow"):
+		# Check if it's a damage arrow (not buff arrow)
+		if "arrow_type" in area and area.arrow_type == 0:  # DAMAGE type
+			var damage = area.damage if "damage" in area else 5.0
+			take_damage(damage, area.global_position)
+			print("🏹 Buff Skeleton hit by arrow!")

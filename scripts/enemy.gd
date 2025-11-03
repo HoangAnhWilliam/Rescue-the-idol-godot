@@ -260,6 +260,13 @@ func _on_hitbox_entered(body):
 			attack_timer = attack_cooldown  # Prevent spam damage
 			print(name, " collided with player!")
 
+	# Also damage buff skeletons if we collide with them
+	elif body.is_in_group("buff_skeletons"):
+		if body.has_method("take_damage") and attack_timer <= 0:
+			body.take_damage(damage, global_position)
+			attack_timer = attack_cooldown
+			print(name, " collided with buff skeleton!")
+
 func update_sprite():
 	if not sprite:
 		return

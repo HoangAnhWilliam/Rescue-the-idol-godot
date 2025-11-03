@@ -111,6 +111,11 @@ func handle_damage_arrow(body: Node2D):
 		body.take_damage(damage)
 		print("Arrow hit player for ", damage, " damage")
 
+	# Damage buff skeletons (they can be hit by bad skeleton arrows)
+	elif body.is_in_group("buff_skeletons") and body.has_method("take_damage"):
+		body.take_damage(damage, global_position)
+		print("Arrow hit buff skeleton for ", damage, " damage")
+
 func handle_buff_arrow(body: Node2D):
 	# Only apply buff to player
 	if not body.is_in_group("player"):
