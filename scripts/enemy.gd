@@ -196,17 +196,22 @@ func spawn_death_particle():
 func die():
 	current_state = State.DEAD
 	set_physics_process(false)
-	
+
 	print(name, " died!")
-	
+
 	# Spawn death particle effect
 	spawn_death_particle()
-	
+
+	# Increment player kill counter
+	if player and "total_kills" in player:
+		player.total_kills += 1
+		print("💀 Kill count: ", player.total_kills)
+
 	# Drop XP
 	if player and player.has_method("add_xp"):
 		player.add_xp(xp_reward)
 		print("Dropped ", xp_reward, " XP")
-	
+
 	# Death animation
 	if sprite:
 		var tween = create_tween()
@@ -214,7 +219,7 @@ func die():
 		tween.tween_callback(queue_free)
 	else:
 		queue_free()
-	
+
 	# Drop items
 	attempt_drop_items()
 
