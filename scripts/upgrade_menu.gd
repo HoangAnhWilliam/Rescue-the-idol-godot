@@ -102,7 +102,6 @@ func show_menu(player_ref: CharacterBody2D, level: int):
 	print("Called show()")
 
 	print("After show() - Is visible: ", visible)
-	print("Modulate: ", modulate)
 
 	# PAUSE GAME
 	get_tree().paused = true
