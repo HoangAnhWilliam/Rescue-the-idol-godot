@@ -30,45 +30,85 @@ signal upgrade_chosen(type: UpgradeType)
 
 func _ready():
 	print("=== UPGRADE MENU INITIALIZATION ===")
+	print("Node path: ", get_path())
+	print("Is visible: ", visible)
+	print("Process mode: ", process_mode)
 
 	# Hide by default
 	hide()
+	print("Called hide() - Is visible: ", visible)
 
 	# Connect button signals
-	button1.pressed.connect(_on_button1_pressed)
-	button2.pressed.connect(_on_button2_pressed)
-	button3.pressed.connect(_on_button3_pressed)
+	if button1:
+		button1.pressed.connect(_on_button1_pressed)
+		print("✅ Button1 connected")
+	else:
+		print("❌ Button1 is null!")
+
+	if button2:
+		button2.pressed.connect(_on_button2_pressed)
+		print("✅ Button2 connected")
+	else:
+		print("❌ Button2 is null!")
+
+	if button3:
+		button3.pressed.connect(_on_button3_pressed)
+		print("✅ Button3 connected")
+	else:
+		print("❌ Button3 is null!")
 
 	print("✅ UpgradeMenu ready!")
 	print("===================================")
 
 func show_menu(player_ref: CharacterBody2D, level: int):
-	print("🎯 Showing upgrade menu for level ", level)
+	print("")
+	print("╔════════════════════════════════════╗")
+	print("║   🎯 SHOWING UPGRADE MENU          ║")
+	print("╚════════════════════════════════════╝")
+	print("Level: ", level)
+	print("Before show() - Is visible: ", visible)
 
 	player = player_ref
 
 	# Update level text
-	level_label.text = "Level %d" % level
+	if level_label:
+		level_label.text = "Level %d" % level
+		print("✅ Updated level label to: ", level_label.text)
+	else:
+		print("❌ level_label is null!")
 
 	# Generate 3 random upgrades
 	current_upgrades = generate_random_upgrades(3)
+	print("✅ Generated upgrades: ", current_upgrades.size())
 
 	# Update button texts
-	button1.text = get_upgrade_text(current_upgrades[0])
-	button2.text = get_upgrade_text(current_upgrades[1])
-	button3.text = get_upgrade_text(current_upgrades[2])
+	if button1 and button2 and button3:
+		button1.text = get_upgrade_text(current_upgrades[0])
+		button2.text = get_upgrade_text(current_upgrades[1])
+		button3.text = get_upgrade_text(current_upgrades[2])
 
-	print("📋 Options:")
-	print("  1. ", button1.text)
-	print("  2. ", button2.text)
-	print("  3. ", button3.text)
+		print("📋 Options:")
+		print("  1. ", button1.text)
+		print("  2. ", button2.text)
+		print("  3. ", button3.text)
+	else:
+		print("❌ One or more buttons are null!")
 
-	# Show menu
+	# FORCE SHOW - Try multiple methods
+	visible = true
+	print("Set visible = true")
+
 	show()
+	print("Called show()")
+
+	print("After show() - Is visible: ", visible)
+	print("Modulate: ", modulate)
 
 	# PAUSE GAME
 	get_tree().paused = true
 	print("⏸️ Game PAUSED")
+	print("╚════════════════════════════════════╝")
+	print("")
 
 func generate_random_upgrades(count: int) -> Array[UpgradeType]:
 	var available = [
