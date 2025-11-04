@@ -16,9 +16,4 @@ script = ExtResource("2_sugp2")
 
 [node name="HUD" parent="UI" instance=ExtResource("3_jyhfs")]
 
-claude/unclear-task-011CUfYnhZ18h3Km16Vhg6BB
 [node name="UpgradeMenu" parent="." groups=["upgrade_menu"] instance=ExtResource("3_sugp2")]
-
-[node name="UpgradeMenu" parent="." instance=ExtResource("3_sugp2")]
-visible = false
-main
