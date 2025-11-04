@@ -110,9 +110,14 @@ func _physics_process(delta):
 
 func handle_input():
 	# DEBUG: Press PageUp to manually test upgrade menu
-	if Input.is_action_just_pressed("ui_page_up"):
+	if Input.is_key_pressed(KEY_PAGEUP):
 		print("")
-		print("🔧 ========== DEBUG TRIGGER ==========")
+		print("🔧 ========== PAGE UP PRESSED ==========")
+		print("🔧 upgrade_menu reference: ", upgrade_menu)
+		print("🔧 upgrade_menu null? ", upgrade_menu == null)
+		if upgrade_menu:
+			print("🔧 upgrade_menu name: ", upgrade_menu.name)
+			print("🔧 upgrade_menu path: ", upgrade_menu.get_path())
 		print("🔧 Manually triggering upgrade menu")
 		show_level_up_menu()
 		print("🔧 ====================================")
