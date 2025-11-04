@@ -82,11 +82,22 @@ func _ready():
 
 	# Get upgrade menu reference - THÊM ↓
 	await get_tree().process_frame
+
+	print("🔍 Searching for upgrade menu in groups...")
+	var nodes_in_group = get_tree().get_nodes_in_group("upgrade_menu")
+	print("🔍 Found ", nodes_in_group.size(), " nodes in 'upgrade_menu' group")
+	for node in nodes_in_group:
+		print("  - Node: ", node.name, " | Path: ", node.get_path())
+
 	upgrade_menu = get_tree().get_first_node_in_group("upgrade_menu")
 	if not upgrade_menu:
 		print("❌ ERROR: No upgrade menu found in scene!")
+		print("❌ Make sure UpgradeMenu is in 'upgrade_menu' group!")
 	else:
 		print("✅ Upgrade menu found:", upgrade_menu.name)
+		print("✅ Path: ", upgrade_menu.get_path())
+		print("✅ Type: ", upgrade_menu.get_class())
+		print("✅ Has show_menu method: ", upgrade_menu.has_method("show_menu"))
 
 	get_tree().paused = false
 

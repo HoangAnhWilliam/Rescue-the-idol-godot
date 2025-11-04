@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cekjlfyi6xt4g" path="res://scenes/ui/upgrade_menu.tscn" id="3_sugp2"]
 
-[node name="Main" type="Node2D" groups=["upgrade_menu"]]
+[node name="Main" type="Node2D"]
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("1_o5qli")]
 
