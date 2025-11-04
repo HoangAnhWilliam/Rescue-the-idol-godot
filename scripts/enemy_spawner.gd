@@ -57,6 +57,10 @@ func _ready():
 		if skeleton_buff_scene:
 			print("✓ Buff Skeleton scene loaded!")
 
+	if not anime_ghost_scene:
+		anime_ghost_scene = load("res://scenes/enemies/anime_ghost.tscn")
+		if anime_ghost_scene:
+			print("✓ Anime ghost scene loaded!")
 	print("========================")
 
 func _process(delta):
@@ -118,18 +122,22 @@ func get_enemy_type_for_time() -> PackedScene:
 	var roll = randf()
 
 	# Spawn rates:
-	# - Zombie: 68%
+	# - Zombie: 53%
+	# - Anime ghost: 15%
 	# - Bad Skeleton: 30%
 	# - Buff Skeleton: 2% (very rare!)
 
 	if roll < 0.02:
 		# 2% - Buff Skeleton (very rare, good skeleton)
 		return skeleton_buff_scene if skeleton_buff_scene else zombie_scene
-	elif roll < 0.32:
-		# 30% - Bad Skeleton
+	elif roll < 0.17:
+		# 15% - Anime ghost
+		return anime_ghost_scene if anime_ghost_scene else zombie_scene
+	elif roll < 0.47:
+		# 47% - Bad Skeleton
 		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
 	else:
-		# 68% - Zombie
+		# 53% - Zombie
 		return zombie_scene
 
 func apply_difficulty_scaling(enemy):
