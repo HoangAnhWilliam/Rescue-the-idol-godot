@@ -29,10 +29,17 @@ var player: CharacterBody2D
 signal upgrade_chosen(type: UpgradeType)
 
 func _ready():
-	print("=== UPGRADE MENU INITIALIZATION ===")
+	print("")
+	print("╔══════════════════════════════════════════╗")
+	print("║  UPGRADE MENU INITIALIZATION STARTED     ║")
+	print("╚══════════════════════════════════════════╝")
+	print("Node name: ", name)
 	print("Node path: ", get_path())
+	print("Node type: ", get_class())
 	print("Is visible: ", visible)
 	print("Process mode: ", process_mode)
+	print("Parent: ", get_parent().name if get_parent() else "None")
+	print("Groups: ", get_groups())
 
 	# Hide by default
 	hide()
@@ -57,8 +64,10 @@ func _ready():
 	else:
 		print("❌ Button3 is null!")
 
-	print("✅ UpgradeMenu ready!")
-	print("===================================")
+	print("")
+	print("✅ UpgradeMenu initialization COMPLETE!")
+	print("╚══════════════════════════════════════════╝")
+	print("")
 
 func show_menu(player_ref: CharacterBody2D, level: int):
 	print("")
