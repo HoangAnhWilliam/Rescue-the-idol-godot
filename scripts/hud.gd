@@ -8,9 +8,12 @@ extends Control
 @onready var gold_label = $InfoContainer/GoldLabel
 @onready var kill_label = $InfoContainer/KillLabel
 @onready var time_label = $InfoContainer/TimeLabel
+@onready var biome_label = $InfoContainer/BiomeLabel
+@onready var coords_label = $InfoContainer/CoordsLabel
 
 var player: CharacterBody2D
 var game_time: float = 0.0
+var biome_generator: BiomeGenerator
 
 func _ready():
 	print("=== HUD INITIALIZATION ===")
@@ -20,6 +23,12 @@ func _ready():
 
 	# Find player
 	player = get_tree().get_first_node_in_group("player")
+
+	# Find biome manager
+	biome_generator = get_tree().get_first_node_in_group("biome_generator")
+	if biome_generator:
+		biome_generator.biome_changed.connect(_on_biome_changed)
+		print("HUD connected to BiomeManager")
 
 	if not player:
 		print("❌ ERROR: HUD cannot find player!")
@@ -96,6 +105,17 @@ func _process(delta):
 	if player and "gold" in player:
 		gold_label.text = "Gold: %d" % player.gold
 
+	# Update coordinates
+	if player:
+		var pos = player.global_position
+		coords_label.text = "Pos: %.0f, %.0f" % [pos.x, pos.y]
+		
+		# Update biome (nếu chưa có signal)
+		if biome_generator:
+			var current_biome = biome_generator.get_current_biome()
+			if current_biome:
+				biome_label.text = "Biome: " + current_biome.name
+				biome_label.modulate = current_biome.color
 # Signal handlers
 func _on_hp_changed(current: float, maximum: float):
 	print("📊 HP changed: ", current, "/", maximum)
@@ -143,3 +163,14 @@ func update_level(level: int):
 func update_gold(gold: int):
 	if gold_label:
 		gold_label.text = "Gold: %d" % gold
+
+# Thêm hàm mới:
+func _on_biome_changed(old_biome, new_biome):
+	if new_biome:
+		biome_label.text = "Biome: " + new_biome.name
+		biome_label.modulate = new_biome.color
+		
+		# Flash effect
+		var tween = create_tween()
+		tween.tween_property(biome_label, "scale", Vector2(1.2, 1.2), 0.2)
+		tween.tween_property(biome_label, "scale", Vector2(1.0, 1.0), 0.2)

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://c5q3gxjbs06r7"]
+[gd_scene load_steps=6 format=3 uid="uid://c5q3gxjbs06r7"]
 
 [ext_resource type="PackedScene" uid="uid://b2ai7uclsnr38" path="res://scenes/player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://blovmg3iws7j8" path="res://scripts/enemy_spawner.gd" id="2_sugp2"]
-[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://dqgv3u1riibqd" path="res://scenes/ui/hud.tscn" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cekjlfyi6xt4g" path="res://scenes/ui/upgrade_menu.tscn" id="3_sugp2"]
+[ext_resource type="Script" uid="uid://pfvp4p5722o0" path="res://scripts/biome_generator.gd" id="5_tbgi4"]
 
 [node name="Main" type="Node2D"]
 
@@ -11,6 +12,9 @@
 
 [node name="EnemySpawner" type="Node2D" parent="."]
 script = ExtResource("2_sugp2")
+
+[node name="BiomeGenerator" type="Node2D" parent="." groups=["biome_generator"]]
+script = ExtResource("5_tbgi4")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
