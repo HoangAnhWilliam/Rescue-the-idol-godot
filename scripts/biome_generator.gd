@@ -33,9 +33,9 @@ class BiomeData:
 # Generation settings
 @export var seed_value: int = 0  # 0 = random seed
 @export var chunk_size: float = 500.0  # Size of each biome chunk
-@export var noise_scale: float = 0.002  # Lower = bigger biomes
-@export var temperature_scale: float = 0.0015
-@export var moisture_scale: float = 0.002
+@export var noise_scale: float = 0.0008  # Lower = bigger biomes (reduced for larger biomes)
+@export var temperature_scale: float = 0.0006  # Reduced for larger temperature zones
+@export var moisture_scale: float = 0.0008  # Reduced for larger moisture zones
 
 # Noise generators
 var temperature_noise: FastNoiseLite
@@ -151,7 +151,7 @@ func initialize_biomes():
 	var volcanic = BiomeData.new(
 		"Volcanic Darklands",
 		BiomeType.VOLCANIC_DARKLANDS,
-		Color(1.0, 0.3, 0.1),
+		Color(1.0, 0.3, 1.0),
 		1.0,   # temperature: extreme heat
 		-0.9   # moisture: very dry
 	)
@@ -186,9 +186,9 @@ func get_biome_at_position(pos: Vector2) -> BiomeData:
 	var moist = moisture_noise.get_noise_2dv(pos)
 	var variation = variation_noise.get_noise_2dv(pos) * 0.3
 	
-	# Starting area protection (spawn always in forest)
+	# Starting area protection (spawn always in forest) - Smaller to allow other biomes to be larger
 	var distance_from_spawn = pos.length()
-	if distance_from_spawn < 800.0:
+	if distance_from_spawn < 600.0:
 		var biome = biome_definitions[BiomeType.STARTING_FOREST]
 		biome_cache[chunk_pos] = biome
 		return biome
