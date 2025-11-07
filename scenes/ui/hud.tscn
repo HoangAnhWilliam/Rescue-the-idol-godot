@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://hud_scene_01"]
+[gd_scene load_steps=5 format=3 uid="uid://dqgv3u1riibqd"]
 
-[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+[ext_resource type="Script" uid="uid://cjul2ft3xn8x5" path="res://scripts/hud.gd" id="1_hud"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
 bg_color = Color(1, 0, 0.2, 1)
@@ -41,7 +41,6 @@ text = "HP:"
 custom_minimum_size = Vector2(180, 20)
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp")
-max_value = 100.0
 value = 100.0
 show_percentage = false
 
@@ -73,8 +72,6 @@ text = "LV 1 - XP:"
 custom_minimum_size = Vector2(180, 20)
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_xp")
-max_value = 100.0
-value = 0.0
 show_percentage = false
 
 [node name="InfoContainer" type="VBoxContainer" parent="."]
@@ -105,4 +102,16 @@ horizontal_alignment = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Time: 00:00"
+horizontal_alignment = 2
+
+[node name="BiomeLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "\"Biome: Starting Forest\""
+horizontal_alignment = 2
+
+[node name="CoordsLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "\"Pos: 0, 0\""
 horizontal_alignment = 2
