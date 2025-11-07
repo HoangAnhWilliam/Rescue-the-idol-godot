@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c5q3gxjbs06r7"]
+[gd_scene load_steps=8 format=3 uid="uid://c5q3gxjbs06r7"]
 
 [ext_resource type="PackedScene" uid="uid://b2ai7uclsnr38" path="res://scenes/player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://6v2uposqi627" path="res://scripts/biome_background.gd" id="1_tefeu"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dqgv3u1riibqd" path="res://scenes/ui/hud.tscn" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cekjlfyi6xt4g" path="res://scenes/ui/upgrade_menu.tscn" id="3_sugp2"]
 [ext_resource type="Script" uid="uid://pfvp4p5722o0" path="res://scripts/biome_generator.gd" id="5_tbgi4"]
+[ext_resource type="Script" uid="uid://c4xuh4mwwgo8q" path="res://scripts/biome_notification.gd" id="6_biome_notif"]
 
 [node name="Main" type="Node2D"]
 
@@ -31,22 +32,24 @@ script = ExtResource("5_tbgi4")
 
 [node name="HUD" parent="UI" instance=ExtResource("3_jyhfs")]
 
-[node name="BiomeNotification" type="Label" parent="UI/HUD"]
-layout_mode = 1
+[node name="BiomeNotification" type="Label" parent="UI"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -182.5
-offset_top = -22.5
-offset_right = 182.5
-offset_bottom = 22.5
+offset_left = -200.0
+offset_top = -30.0
+offset_right = 200.0
+offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 40
 text = "Entered: Starting Forest"
 horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("6_biome_notif")
 
 [node name="UpgradeMenu" parent="." groups=["upgrade_menu"] instance=ExtResource("3_sugp2")]
