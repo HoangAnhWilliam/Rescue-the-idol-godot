@@ -10,10 +10,12 @@ extends Control
 @onready var time_label = $InfoContainer/TimeLabel
 @onready var biome_label = $InfoContainer/BiomeLabel
 @onready var coords_label = $InfoContainer/CoordsLabel
+@onready var effect_label = $InfoContainer/EffectLabel if has_node("InfoContainer/EffectLabel") else null
 
 var player: CharacterBody2D
 var game_time: float = 0.0
 var biome_generator: BiomeGenerator
+var environmental_effects: EnvironmentalEffects
 
 func _ready():
 	print("=== HUD INITIALIZATION ===")
@@ -29,6 +31,13 @@ func _ready():
 	if biome_generator:
 		biome_generator.biome_changed.connect(_on_biome_changed)
 		print("HUD connected to BiomeManager")
+
+	# Find environmental effects
+	environmental_effects = get_tree().get_first_node_in_group("environmental_effects")
+	if environmental_effects:
+		environmental_effects.effect_added.connect(_on_effect_added)
+		environmental_effects.effect_removed.connect(_on_effect_removed)
+		print("HUD connected to EnvironmentalEffects")
 
 	if not player:
 		print("❌ ERROR: HUD cannot find player!")
@@ -169,8 +178,44 @@ func _on_biome_changed(old_biome, new_biome):
 	if new_biome:
 		biome_label.text = "Biome: " + new_biome.name
 		biome_label.modulate = new_biome.color
-		
+
 		# Flash effect
 		var tween = create_tween()
 		tween.tween_property(biome_label, "scale", Vector2(1.2, 1.2), 0.2)
 		tween.tween_property(biome_label, "scale", Vector2(1.0, 1.0), 0.2)
+
+# NEW: Environmental effect handlers
+func _on_effect_added(effect_name: String):
+	print("✨ Effect added to HUD: ", effect_name)
+	update_effect_display()
+
+func _on_effect_removed(effect_name: String):
+	print("✨ Effect removed from HUD: ", effect_name)
+	update_effect_display()
+
+func update_effect_display():
+	if not effect_label or not environmental_effects:
+		return
+
+	var active_effects = environmental_effects.get_active_effects()
+
+	if active_effects.is_empty():
+		effect_label.text = ""
+		effect_label.visible = false
+		return
+
+	# Build effect display string
+	var effect_text = "Effects: "
+	var effect_descriptions = []
+
+	for effect in active_effects:
+		var desc = environmental_effects.get_effect_description(effect)
+		if desc != "":
+			effect_descriptions.append(desc)
+
+	effect_text += " | ".join(effect_descriptions)
+
+	effect_label.text = effect_text
+	effect_label.visible = true
+
+	print("📊 Effect display updated: ", effect_text)

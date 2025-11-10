@@ -115,3 +115,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "\"Pos: 0, 0\""
 horizontal_alignment = 2
+
+[node name="EffectLabel" type="Label" parent="InfoContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 16
+text = ""
+horizontal_alignment = 2
+visible = false
