@@ -16,6 +16,16 @@ var player: CharacterBody2D
 var game_time: float = 0.0
 var biome_generator: BiomeGenerator
 var environmental_effects: EnvironmentalEffects
+var boss_manager: BossManager
+
+# Boss health bar references
+@onready var boss_health_bar = $BossHealthBar if has_node("BossHealthBar") else null
+@onready var boss_name_label = $BossHealthBar/VBoxContainer/BossNameLabel if has_node("BossHealthBar/VBoxContainer/BossNameLabel") else null
+@onready var boss_hp_bar = $BossHealthBar/VBoxContainer/HPBarContainer/BossHPBar if has_node("BossHealthBar/VBoxContainer/HPBarContainer/BossHPBar") else null
+@onready var boss_hp_label = $BossHealthBar/VBoxContainer/HPBarContainer/HPLabel if has_node("BossHealthBar/VBoxContainer/HPBarContainer/HPLabel") else null
+@onready var boss_phase_label = $BossHealthBar/VBoxContainer/PhaseLabel if has_node("BossHealthBar/VBoxContainer/PhaseLabel") else null
+
+var current_boss: Node = null
 
 func _ready():
 	print("=== HUD INITIALIZATION ===")
@@ -38,6 +48,18 @@ func _ready():
 		environmental_effects.effect_added.connect(_on_effect_added)
 		environmental_effects.effect_removed.connect(_on_effect_removed)
 		print("HUD connected to EnvironmentalEffects")
+
+	# Find boss manager
+	boss_manager = get_tree().get_first_node_in_group("boss_manager")
+	if boss_manager:
+		boss_manager.boss_spawned.connect(_on_boss_spawned)
+		boss_manager.boss_defeated.connect(_on_boss_defeated)
+		boss_manager.boss_phase_changed.connect(_on_boss_phase_changed)
+		print("HUD connected to BossManager")
+
+	# Hide boss health bar initially
+	if boss_health_bar:
+		boss_health_bar.visible = false
 
 	if not player:
 		print("❌ ERROR: HUD cannot find player!")
@@ -118,13 +140,17 @@ func _process(delta):
 	if player:
 		var pos = player.global_position
 		coords_label.text = "Pos: %.0f, %.0f" % [pos.x, pos.y]
-		
+
 		# Update biome (nếu chưa có signal)
 		if biome_generator:
 			var current_biome = biome_generator.get_current_biome()
 			if current_biome:
 				biome_label.text = "Biome: " + current_biome.name
 				biome_label.modulate = current_biome.color
+
+	# Update boss health bar
+	if current_boss and is_instance_valid(current_boss):
+		update_boss_health_bar()
 # Signal handlers
 func _on_hp_changed(current: float, maximum: float):
 	print("📊 HP changed: ", current, "/", maximum)
@@ -219,3 +245,64 @@ func update_effect_display():
 	effect_label.visible = true
 
 	print("📊 Effect display updated: ", effect_text)
+
+# ========== BOSS HEALTH BAR FUNCTIONS ==========
+
+func _on_boss_spawned(boss_type: String, boss: Node):
+	print("👹 Boss spawned: ", boss_type)
+	current_boss = boss
+
+	# Show boss health bar
+	if boss_health_bar:
+		boss_health_bar.visible = true
+
+	# Set boss name
+	if boss_name_label:
+		boss_name_label.text = boss_type
+
+	# Initialize boss HP bar
+	if boss_hp_bar and "max_hp" in boss:
+		boss_hp_bar.max_value = boss.max_hp
+		boss_hp_bar.value = boss.current_hp
+
+	# Set initial phase
+	if boss_phase_label and "current_phase" in boss:
+		var phase_num = boss.current_phase + 1
+		boss_phase_label.text = "Phase %d" % phase_num
+
+	print("✅ Boss health bar initialized")
+
+func _on_boss_defeated(boss_type: String):
+	print("💀 Boss defeated: ", boss_type)
+	current_boss = null
+
+	# Hide boss health bar with fade out
+	if boss_health_bar:
+		var tween = create_tween()
+		tween.tween_property(boss_health_bar, "modulate:a", 0.0, 0.5)
+		tween.tween_callback(func(): boss_health_bar.visible = false)
+		tween.tween_callback(func(): boss_health_bar.modulate.a = 1.0)
+
+func _on_boss_phase_changed(boss: Node, phase: int):
+	print("🔥 Boss phase changed to: ", phase)
+
+	# Update phase label
+	if boss_phase_label:
+		boss_phase_label.text = "Phase %d" % phase
+
+		# Flash effect
+		var tween = create_tween()
+		tween.tween_property(boss_phase_label, "scale", Vector2(1.3, 1.3), 0.2)
+		tween.tween_property(boss_phase_label, "scale", Vector2(1.0, 1.0), 0.2)
+
+func update_boss_health_bar():
+	if not current_boss or not boss_health_bar or not boss_health_bar.visible:
+		return
+
+	# Update HP bar
+	if boss_hp_bar and "current_hp" in current_boss and "max_hp" in current_boss:
+		boss_hp_bar.value = current_boss.current_hp
+
+		# Update HP label
+		if boss_hp_label:
+			boss_hp_label.text = "%.0f/%.0f" % [current_boss.current_hp, current_boss.max_hp]
