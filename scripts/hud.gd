@@ -61,6 +61,14 @@ func _ready():
 	if boss_health_bar:
 		boss_health_bar.visible = false
 
+	# Find inventory system (Phase 5.5.8)
+	var inventory = get_tree().get_first_node_in_group("inventory")
+	if inventory:
+		inventory.slot_changed.connect(_on_inventory_slot_changed)
+		print("HUD connected to InventorySystem")
+		# Initial gold update
+		update_gold_display()
+
 	if not player:
 		print("❌ ERROR: HUD cannot find player!")
 		return
@@ -306,3 +314,15 @@ func update_boss_health_bar():
 		# Update HP label
 		if boss_hp_label:
 			boss_hp_label.text = "%.0f/%.0f" % [current_boss.current_hp, current_boss.max_hp]
+
+# ========== INVENTORY GOLD DISPLAY (Phase 5.5.8) ==========
+
+func _on_inventory_slot_changed(slot_index: int):
+	# Update gold display when any inventory slot changes
+	update_gold_display()
+
+func update_gold_display():
+	var inventory = get_tree().get_first_node_in_group("inventory")
+	if inventory and gold_label:
+		var total_gold = inventory.get_total_gold()
+		gold_label.text = "Gold: %d" % total_gold

@@ -215,10 +215,8 @@ func die():
 		player.total_kills += 1
 		print("💀 Kill count: ", player.total_kills)
 
-	# Drop XP
-	if player and player.has_method("add_xp"):
-		player.add_xp(xp_reward)
-		print("Dropped ", xp_reward, " XP")
+	# Drop XP Gem (Phase 5.1: Replace direct add_xp)
+	drop_xp_gem()
 
 	# Death animation
 	if sprite:
@@ -232,14 +230,25 @@ func die():
 	attempt_drop_items()
 
 func attempt_drop_items():
-	# Gold drop (100% chance now, random amount)
-	var gold_amount = randi_range(gold_drop_min, gold_drop_max)
-	spawn_gold(gold_amount)
+	# Phase 5.5.7: Updated drop system with pickups
+	var lucky_multiplier = get_player_lucky()
 
-	# Rare drop (1% base, affected by lucky)
-	var rare_chance = 0.01 * get_player_lucky()
-	if randf() < rare_chance:
-		spawn_rare_item()
+	# Health pickup (15% base chance)
+	if randf() < 0.15 * lucky_multiplier:
+		spawn_health_pickup()
+
+	# Mana pickup (10% base chance)
+	if randf() < 0.10 * lucky_multiplier:
+		spawn_mana_pickup()
+
+	# Gold coins (10% base chance)
+	if randf() < 0.10 * lucky_multiplier:
+		var gold_amount = randi_range(gold_drop_min, gold_drop_max)
+		spawn_gold(gold_amount)
+
+	# Weapon drop (1% base chance - rare!)
+	if randf() < 0.01 * lucky_multiplier:
+		spawn_weapon_drop()
 
 func get_player_lucky() -> float:
 	# Check if player exists and has lucky property
@@ -253,16 +262,48 @@ func get_player_lucky() -> float:
 	# Default
 	return 1.0
 
-func spawn_gold(amount: int):
-	# Give gold directly to player (can change to pickup item later)
-	if player and player.has_method("add_gold"):
-		player.add_gold(amount)
-	else:
-		print("Would drop ", amount, " gold")
+func drop_xp_gem():
+	# Phase 5.1: Spawn XP gem instead of direct add_xp
+	var xp_gem_scene = load("res://scenes/pickups/xp_gem.tscn")
+	if xp_gem_scene:
+		var gem = xp_gem_scene.instantiate()
+		gem.global_position = global_position
+		gem.xp_value = xp_reward
+		get_tree().root.add_child(gem)
 
-func spawn_rare_item():
-	# TODO: Instantiate rare item pickup later
-	print("Would drop rare item")
+func spawn_health_pickup():
+	var scene = load("res://scenes/pickups/health_pickup.tscn")
+	if scene:
+		var pickup = scene.instantiate()
+		pickup.global_position = global_position
+		get_tree().root.add_child(pickup)
+
+func spawn_mana_pickup():
+	var scene = load("res://scenes/pickups/mana_pickup.tscn")
+	if scene:
+		var pickup = scene.instantiate()
+		pickup.global_position = global_position
+		get_tree().root.add_child(pickup)
+
+func spawn_gold(amount: int):
+	# Phase 5.4: Spawn gold coins as pickups
+	var scene = load("res://scenes/pickups/gold_coin.tscn")
+	if scene:
+		var coin = scene.instantiate()
+		coin.gold_value = amount
+		coin.global_position = global_position
+		get_tree().root.add_child(coin)
+
+func spawn_weapon_drop():
+	# Phase 5.5.5: Spawn weapon pickup (rare drop!)
+	var scene = load("res://scenes/pickups/weapon_pickup.tscn")
+	if scene:
+		var weapon = scene.instantiate()
+		weapon.weapon_id = "miku_sword"  # Default for now
+		weapon.weapon_name = "Miku Sword"
+		weapon.global_position = global_position
+		get_tree().root.add_child(weapon)
+		print("💎 Rare weapon drop!")
 
 func _on_hitbox_entered(body):
 	# Check if body is player
