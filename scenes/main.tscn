@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c5q3gxjbs06r7"]
+[gd_scene load_steps=15 format=3 uid="uid://c5q3gxjbs06r7"]
 
 [ext_resource type="PackedScene" uid="uid://b2ai7uclsnr38" path="res://scenes/player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://6v2uposqi627" path="res://scripts/biome_background.gd" id="1_tefeu"]
@@ -11,6 +11,9 @@
 [ext_resource type="Script" path="res://scripts/boss_manager.gd" id="8_boss_manager"]
 [ext_resource type="Script" path="res://scripts/particle_manager.gd" id="9_particle_manager"]
 [ext_resource type="Script" path="res://scripts/camera_shake.gd" id="10_camera_shake"]
+[ext_resource type="Script" path="res://scripts/inventory_system.gd" id="11_inventory"]
+[ext_resource type="Script" path="res://scripts/drop_handler.gd" id="12_drop_handler"]
+[ext_resource type="Script" path="res://scripts/hotbar_ui.gd" id="13_hotbar"]
 
 [node name="Main" type="Node2D"]
 
@@ -44,9 +47,20 @@ script = ExtResource("9_particle_manager")
 [node name="CameraShake" type="Node" parent="."]
 script = ExtResource("10_camera_shake")
 
+[node name="InventorySystem" type="Node" parent="." groups=["inventory"]]
+script = ExtResource("11_inventory")
+
+[node name="DropHandler" type="Node" parent="."]
+script = ExtResource("12_drop_handler")
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HUD" parent="UI" instance=ExtResource("3_jyhfs")]
+
+[node name="HotbarUI" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("13_hotbar")
 
 [node name="BiomeNotification" type="Label" parent="UI"]
 anchors_preset = 8
