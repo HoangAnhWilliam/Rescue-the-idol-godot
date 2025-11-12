@@ -155,32 +155,41 @@ func apply_movement(delta):
 		last_direction = input_vector
 
 func handle_weapon(delta):
-	if not current_weapon:
+	# Multi-weapon system: Handle all equipped weapons
+	if equipped_weapons.is_empty():
 		return
-	
+
 	attack_cooldown -= delta
 	if attack_cooldown <= 0:
 		var attack_rate = stats.attack_speed * miku_buffs["attack_speed"]
 		attack_cooldown = 1.0 / attack_rate
-		
-		var target = find_closest_enemy()
-		if target:
-			current_weapon.attack(target.global_position)
 
-func find_closest_enemy() -> Enemy:
+		# Each weapon attacks independently
+		for weapon in equipped_weapons:
+			if not is_instance_valid(weapon):
+				continue
+
+			var target = find_closest_enemy(weapon)
+			if target:
+				weapon.attack(target.global_position)
+
+func find_closest_enemy(weapon: Node) -> Enemy:
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	if enemies.is_empty():
 		return null
-	
+
 	var closest: Enemy = null
 	var min_distance := INF
-	
+
+	# Get weapon range (default 500 if not available)
+	var weapon_range = weapon.get("range") if "range" in weapon else 500.0
+
 	for enemy in enemies:
 		var distance = global_position.distance_to(enemy.global_position)
-		if distance < min_distance and distance < current_weapon.range:
+		if distance < min_distance and distance < weapon_range:
 			closest = enemy
 			min_distance = distance
-	
+
 	return closest
 
 func regenerate(delta):
@@ -346,11 +355,20 @@ func apply_permanent_upgrades():
 	current_mana = stats.max_mana
 
 func equip_weapon(weapon: Weapon):
-	if current_weapon:
-		current_weapon.queue_free()
-	
-	current_weapon = weapon
+	# DEPRECATED: Use update_equipped_weapons() instead for multi-weapon support
+	# This old method is kept for backwards compatibility but not recommended
+
+	# Clear all existing weapons
+	for w in equipped_weapons:
+		if is_instance_valid(w):
+			w.queue_free()
+	equipped_weapons.clear()
+
+	# Add single weapon
 	weapon_pivot.add_child(weapon)
+	equipped_weapons.append(weapon)
+
+	print("⚠️ equip_weapon() is deprecated - use update_equipped_weapons() instead")
 
 func calculate_damage(base_damage: float) -> float:
 	var damage = base_damage
