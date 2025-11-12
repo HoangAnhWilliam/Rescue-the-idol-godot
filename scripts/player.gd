@@ -33,7 +33,8 @@ var input_vector := Vector2.ZERO
 var last_direction := Vector2.RIGHT
 
 # Combat
-var current_weapon: Weapon = null
+# OLD: var current_weapon: Weapon = null  # ← DEPRECATED: Use equipped_weapons instead
+var equipped_weapons: Array[Node] = []  # ← NEW: Support multiple weapons
 var attack_cooldown: float = 0.0
 
 # Buffs
@@ -76,9 +77,12 @@ func _ready():
 	add_child(buff_manager)
 	print("✓ BuffManager initialized")
 
-	if weapon_pivot and weapon_pivot.get_child_count() > 0:
-		current_weapon = weapon_pivot.get_child(0)
-		print("Player equipped weapon: ", current_weapon.name)
+	# OLD weapon initialization (commented for multi-weapon system)
+	# if weapon_pivot and weapon_pivot.get_child_count() > 0:
+	# 	current_weapon = weapon_pivot.get_child(0)
+	# 	print("Player equipped weapon: ", current_weapon.name)
+
+	# NEW: Multi-weapon system (weapons loaded from inventory via HotbarUI)
 
 	# Get upgrade menu reference - THÊM ↓
 	await get_tree().process_frame
@@ -393,3 +397,69 @@ func heal(amount: float):
 	current_hp = min(current_hp + amount, stats.max_hp)
 	hp_changed.emit(current_hp, stats.max_hp)
 	print("💚 Healed ", amount, " HP")
+
+# === MULTI-WEAPON SYSTEM (Phase 5.5.3) ===
+
+func update_equipped_weapons(weapon_data: Array):
+	"""
+	Update player's equipped weapons from inventory data
+	weapon_data format: [{slot_index, weapon_id, quantity, data}, ...]
+	
+	Behavior:
+	- 1 weapon: Appears at player
+	- 2 weapons: 180° apart
+	- 3 weapons: 120° apart
+	- Up to 9 weapons: All positioned in circle around player
+	"""
+	print("⚔️ Updating equipped weapons: %d weapons" % weapon_data.size())
+	
+	# Clear existing weapons
+	for weapon in equipped_weapons:
+		if is_instance_valid(weapon):
+			weapon.queue_free()
+	equipped_weapons.clear()
+	
+	# Early exit if no weapons
+	if weapon_data.is_empty():
+		print("  → No weapons equipped")
+		return
+	
+	# Spawn weapons from inventory data
+	var weapon_count = weapon_data.size()
+	
+	for i in range(weapon_count):
+		var data = weapon_data[i]
+		var weapon_scene = load_weapon_scene(data.weapon_id)
+		
+		if not weapon_scene:
+			print("  ⚠️ Failed to load weapon: %s" % data.weapon_id)
+			continue
+		
+		var weapon = weapon_scene.instantiate()
+		
+		# Position in circle around player
+		var angle = (TAU / weapon_count) * i
+		var offset = Vector2(cos(angle), sin(angle)) * 40.0
+		weapon.position = offset
+		
+		# Add to weapon pivot
+		if weapon_pivot:
+			weapon_pivot.add_child(weapon)
+			equipped_weapons.append(weapon)
+			print("  → Equipped: %s at angle %.1f°" % [data.weapon_id, rad_to_deg(angle)])
+	
+	print("✅ Total equipped weapons: %d" % equipped_weapons.size())
+
+func load_weapon_scene(weapon_id: String) -> PackedScene:
+	"""
+	Load weapon scene by weapon_id
+	Add new weapons here as they're implemented
+	"""
+	match weapon_id:
+		"miku_sword":
+			return load("res://scenes/weapons/MikuSword.tscn")
+		"bow":
+			return load("res://scenes/weapons/Bow.tscn")
+		_:
+			print("⚠️ Unknown weapon_id: %s" % weapon_id)
+			return load("res://scenes/weapons/MikuSword.tscn")  # Default fallback
