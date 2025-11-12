@@ -215,6 +215,10 @@ func land():
 	if collision:
 		collision.disabled = false
 
+	# ← THÊM: Landing particle effect and camera shake
+	ParticleManager.create_death_explosion(global_position, Color(1.0, 0.3, 0.0), 1.5)
+	CameraShake.shake(15.0, 0.4)
+
 	# Visual: Squash on landing
 	if sprite:
 		sprite.rotation = 0  # Reset rotation
@@ -367,6 +371,10 @@ func die():
 	set_physics_process(false)
 
 	print("💀 Magma Slime defeated!")
+
+	# ← THÊM: Death explosion and camera shake (larger than normal enemies)
+	ParticleManager.create_death_explosion(global_position, Color(1.0, 0.3, 0.0), 2.0)
+	CameraShake.shake(10.0, 0.3)
 
 	# Spawn death particle effect
 	spawn_death_particle()

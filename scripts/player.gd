@@ -203,11 +203,14 @@ func update_sprite_direction():
 func take_damage(amount: float):
 	current_hp -= amount
 	hp_changed.emit(current_hp, stats.max_hp)
-	
-	# Camera shake when hit
+
+	# ← THÊM: Camera shake when hit
+	CameraShake.shake(6.0, 0.2)
+
+	# Camera shake when hit (old method - kept for compatibility)
 	if camera and camera.has_method("small_shake"):
 		camera.small_shake()
-	
+
 	# Visual feedback
 	sprite.modulate = Color.RED
 	await get_tree().create_timer(0.1).timeout
@@ -250,6 +253,10 @@ func add_xp(amount: float):
 
 		# Emit level up signal
 		level_up.emit(level)
+
+		# ← THÊM: Level up particle effect and camera shake
+		ParticleManager.create_level_up_effect(global_position)
+		CameraShake.shake(8.0, 0.3)
 
 		# Small heal on level up
 		current_hp = min(current_hp + 20, stats.max_hp)
