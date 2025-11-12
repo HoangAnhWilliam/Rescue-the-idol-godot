@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://c5q3gxjbs06r7"]
+[gd_scene load_steps=12 format=3 uid="uid://c5q3gxjbs06r7"]
 
 [ext_resource type="PackedScene" uid="uid://b2ai7uclsnr38" path="res://scenes/player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://6v2uposqi627" path="res://scripts/biome_background.gd" id="1_tefeu"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://c4xuh4mwwgo8q" path="res://scripts/biome_notification.gd" id="6_biome_notif"]
 [ext_resource type="Script" uid="uid://env_effects_unique_id" path="res://scripts/environmental_effects.gd" id="7_env_effects"]
 [ext_resource type="Script" path="res://scripts/boss_manager.gd" id="8_boss_manager"]
+[ext_resource type="Script" path="res://scripts/particle_manager.gd" id="9_particle_manager"]
+[ext_resource type="Script" path="res://scripts/camera_shake.gd" id="10_camera_shake"]
 
 [node name="Main" type="Node2D"]
 
@@ -35,6 +37,12 @@ script = ExtResource("7_env_effects")
 
 [node name="BossManager" type="Node" parent="." groups=["boss_manager"]]
 script = ExtResource("8_boss_manager")
+
+[node name="ParticleManager" type="Node" parent="."]
+script = ExtResource("9_particle_manager")
+
+[node name="CameraShake" type="Node" parent="."]
+script = ExtResource("10_camera_shake")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

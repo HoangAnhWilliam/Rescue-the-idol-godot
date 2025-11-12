@@ -223,6 +223,9 @@ func attack_fireball():
 	attack_started.emit("fireball")
 	fireball_timer = FIREBALL_COOLDOWN
 
+	# ← THÊM: Camera shake on fireball attack
+	CameraShake.shake(8.0, 0.2)
+
 	# Spawn fireball projectile
 	spawn_fireball()
 
@@ -339,6 +342,9 @@ func attack_tail_swipe():
 	tail_timer = TAIL_COOLDOWN
 	tail_active = true
 
+	# ← THÊM: Camera shake on tail swipe
+	CameraShake.shake(8.0, 0.2)
+
 	# Visual: Rotate sprite 360°
 	if sprite:
 		var tween = create_tween()
@@ -454,6 +460,10 @@ func transition_to_phase(new_phase: Phase):
 		tween.tween_property(sprite, "scale", Vector2(6.0, 6.0), 0.5)
 		tween.tween_property(sprite, "scale", Vector2(5.0, 5.0), 0.5)
 
+	# ← THÊM: Phase change particle effect and camera shake
+	ParticleManager.create_phase_change_effect(global_position, 300.0)
+	CameraShake.shake(20.0, 0.6)
+
 	# Emit signal
 	phase_changed.emit(new_phase + 1)  # 1-indexed for display
 
@@ -476,6 +486,10 @@ func die():
 	print("╔══════════════════════════════════════╗")
 	print("║  === FIRE DRAGON DEFEATED ===        ║")
 	print("╚══════════════════════════════════════╝")
+
+	# ← THÊM: Massive death explosion and extreme camera shake
+	ParticleManager.create_death_explosion(global_position, Color(1.0, 0.3, 0.0), 5.0)
+	CameraShake.shake(30.0, 1.0)
 
 	# Drop XP
 	if player and player.has_method("add_xp"):

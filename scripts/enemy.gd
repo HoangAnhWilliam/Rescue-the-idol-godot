@@ -124,12 +124,15 @@ func perform_attack(delta):  # ← THÊM delta parameter
 
 func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
-	
+
 	print(name, " took ", amount, " damage. HP: ", current_hp, "/", max_hp)
-	
+
+	# ← THÊM: Particle effect when hit
+	ParticleManager.create_hit_effect(global_position, Color(1.0, 0.3, 0.3))
+
 	# Spawn damage number
 	spawn_damage_number(amount, is_crit)
-	
+
 	# Spawn hit particles
 	spawn_hit_particle(is_crit)
 	
@@ -198,6 +201,11 @@ func die():
 	set_physics_process(false)
 
 	print(name, " died!")
+
+	# ← THÊM: Death explosion and camera shake
+	var enemy_color = sprite.color if sprite else Color.RED
+	ParticleManager.create_death_explosion(global_position, enemy_color, 1.0)
+	CameraShake.shake(5.0, 0.2)
 
 	# Spawn death particle effect
 	spawn_death_particle()
