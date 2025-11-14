@@ -83,6 +83,30 @@ func _ready():
 	# 	print("Player equipped weapon: ", current_weapon.name)
 
 	# NEW: Multi-weapon system (weapons loaded from inventory via HotbarUI)
+	# Give starting weapon (Wooden Sword)
+	await get_tree().process_frame
+
+	var inventory = get_tree().get_first_node_in_group("inventory")
+	if inventory:
+		# Give starting weapon if inventory empty
+		if inventory.get_all_weapons().is_empty():
+			print("🪵 No weapons in inventory - adding starting Wooden Sword")
+			inventory.add_item(
+				inventory.ItemType.WEAPON,
+				"wooden_sword",
+				1,
+				{
+					"weapon_name": "Wooden Sword",
+					"rarity": 0,  # COMMON
+					"damage": 8.0,
+					"attack_speed": 1.0
+				}
+			)
+
+		# Load equipped weapons from inventory
+		update_equipped_weapons(inventory.get_all_weapons())
+	else:
+		print("⚠️ No inventory system found - player has no weapons!")
 
 	# Get upgrade menu reference - THÊM ↓
 	await get_tree().process_frame
@@ -471,13 +495,27 @@ func update_equipped_weapons(weapon_data: Array):
 func load_weapon_scene(weapon_id: String) -> PackedScene:
 	"""
 	Load weapon scene by weapon_id
-	Add new weapons here as they're implemented
+	Phase 6: Complete Weapon System (8 weapons)
 	"""
 	match weapon_id:
+		"wooden_sword":
+			return load("res://scenes/weapons/WoodenSword.tscn")
 		"miku_sword":
 			return load("res://scenes/weapons/MikuSword.tscn")
+		"earthshatter_staff":
+			return load("res://scenes/weapons/EarthshatterStaff.tscn")
+		"acid_gauntlets":
+			return load("res://scenes/weapons/AcidGauntlets.tscn")
+		"enchanting_flute":
+			return load("res://scenes/weapons/EnchantingFlute.tscn")
+		"shadow_daggers":
+			return load("res://scenes/weapons/ShadowDaggers.tscn")
+		"frost_bow":
+			return load("res://scenes/weapons/FrostBow.tscn")
+		"lightning_chain":
+			return load("res://scenes/weapons/LightningChain.tscn")
 		"bow":
-			return load("res://scenes/weapons/Bow.tscn")
+			return load("res://scenes/weapons/Bow.tscn")  # Legacy
 		_:
-			print("⚠️ Unknown weapon_id: %s" % weapon_id)
-			return load("res://scenes/weapons/MikuSword.tscn")  # Default fallback
+			print("⚠️ Unknown weapon_id: %s, using Wooden Sword" % weapon_id)
+			return load("res://scenes/weapons/WoodenSword.tscn")  # Default fallback

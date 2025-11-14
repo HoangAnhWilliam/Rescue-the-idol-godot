@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://enchanting_flute_scene"]
+
+[ext_resource type="Script" path="res://scripts/enchanting_flute.gd" id="1"]
+
+[node name="EnchantingFlute" type="Node2D"]
+script = ExtResource("1")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -4.0
+offset_top = -12.0
+offset_right = 4.0
+offset_bottom = 12.0
+color = Color(1.0, 0.4, 0.8, 1)

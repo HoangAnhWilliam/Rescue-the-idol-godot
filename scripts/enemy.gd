@@ -46,11 +46,26 @@ func _ready():
 func _physics_process(delta):
 	if current_state == State.DEAD:
 		return
-	
+
+	# Phase 6: Check if charmed (Enchanting Flute)
+	if has_meta("charmed") and get_meta("charmed"):
+		var duration = get_meta("charm_duration", 0.0)
+		duration -= delta
+		set_meta("charm_duration", duration)
+
+		if duration > 0:
+			# Attack other enemies instead of player
+			attack_nearest_enemy(delta)
+			return
+		else:
+			# Charm expired naturally (flute handles death)
+			remove_meta("charmed")
+			remove_meta("charm_duration")
+
 	# Update attack timer
 	if attack_timer > 0:
 		attack_timer -= delta
-	
+
 	match current_state:
 		State.IDLE:
 			search_for_player()
@@ -295,15 +310,97 @@ func spawn_gold(amount: int):
 		get_tree().root.add_child(coin)
 
 func spawn_weapon_drop():
-	# Phase 5.5.5: Spawn weapon pickup (rare drop!)
+	# Phase 6: Spawn weapon pickup with rarity system
+	var weapon_id = get_random_weapon_id()
+	var weapon_name = get_weapon_name(weapon_id)
+
 	var scene = load("res://scenes/pickups/weapon_pickup.tscn")
 	if scene:
 		var weapon = scene.instantiate()
-		weapon.weapon_id = "miku_sword"  # Default for now
-		weapon.weapon_name = "Miku Sword"
+		weapon.weapon_id = weapon_id
+		weapon.weapon_name = weapon_name
 		weapon.global_position = global_position
 		get_tree().root.add_child(weapon)
-		print("💎 Rare weapon drop!")
+		print("💎 Weapon drop: ", weapon_name)
+
+func get_random_weapon_id() -> String:
+	"""Phase 6: Random weapon based on rarity"""
+	var roll = randf()
+
+	# Common (40%)
+	if roll < 0.40:
+		return "wooden_sword"
+
+	# Uncommon (40%)
+	elif roll < 0.80:
+		var uncommon = ["earthshatter_staff", "shadow_daggers"]
+		return uncommon[randi() % uncommon.size()]
+
+	# Rare (18%)
+	elif roll < 0.98:
+		var rare = ["acid_gauntlets", "frost_bow", "lightning_chain"]
+		return rare[randi() % rare.size()]
+
+	# Epic (2%)
+	else:
+		return "enchanting_flute"
+
+	# Note: Legendary (Miku Sword) only from Miku rescue, not random drops
+
+func get_weapon_name(weapon_id: String) -> String:
+	"""Phase 6: Get weapon display name"""
+	match weapon_id:
+		"wooden_sword": return "Wooden Sword"
+		"miku_sword": return "Miku Sword"
+		"earthshatter_staff": return "Earthshatter Staff"
+		"acid_gauntlets": return "Acid Storm Gauntlets"
+		"enchanting_flute": return "Enchanting Flute"
+		"shadow_daggers": return "Shadow Daggers"
+		"frost_bow": return "Frost Bow"
+		"lightning_chain": return "Lightning Chain"
+		_: return "Unknown Weapon"
+
+# Phase 6: Charm mechanics - charmed enemies attack other enemies
+func attack_nearest_enemy(delta):
+	"""Called when enemy is charmed - attacks other enemies"""
+	var target_enemy = find_nearest_other_enemy()
+
+	if target_enemy:
+		var distance = global_position.distance_to(target_enemy.global_position)
+
+		if distance > attack_range:
+			# Move toward target
+			var direction = (target_enemy.global_position - global_position).normalized()
+			velocity = direction * move_speed
+			move_and_slide()
+		else:
+			# Attack other enemy
+			if attack_timer <= 0:
+				if target_enemy.has_method("take_damage"):
+					# Charmed enemies deal 50% damage
+					target_enemy.take_damage(damage * 0.5, global_position)
+					attack_timer = attack_cooldown
+					print("💕 Charmed ", name, " attacks ", target_enemy.name)
+	else:
+		# No target, stand still
+		velocity = Vector2.ZERO
+
+func find_nearest_other_enemy() -> CharacterBody2D:
+	"""Find nearest enemy that isn't self"""
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var closest: CharacterBody2D = null
+	var min_dist = INF
+
+	for other in enemies:
+		if other == self or not is_instance_valid(other):
+			continue
+
+		var dist = global_position.distance_to(other.global_position)
+		if dist < min_dist and dist < detection_range:
+			min_dist = dist
+			closest = other
+
+	return closest
 
 func _on_hitbox_entered(body):
 	# Check if body is player
