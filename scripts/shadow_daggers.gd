@@ -5,29 +5,26 @@ class_name ShadowDaggers
 ## Fast melee with multi-hit combo
 ## Highest single-target DPS weapon
 
+# Weapon metadata
+var weapon_id: String = "shadow_daggers"
+var weapon_name: String = "Shadow Daggers"
+var rarity: int = 1  # UNCOMMON
 var hits_per_attack: int = 3
 var crit_chance: float = 0.15
 
 func _ready():
-	# Set weapon properties
-	weapon_id = "shadow_daggers"
-	weapon_name = "Shadow Daggers"
-	rarity = 1  # UNCOMMON
-
+	# Set weapon stats
 	damage = 5.0  # Per hit (5 × 3 = 15 per attack)
 	attack_speed = 2.0  # Very fast (2 attacks/second)
-	range = 120.0  # Short range
+	attack_range = 120.0  # Short range
 	is_projectile = false
 
 	super._ready()
 
 	print("🗡️ Shadow Daggers equipped - Triple strike combo!")
 
-func attack(target_position: Vector2):
-	# Find closest enemy
-	var target = find_closest_enemy()
-
-	if not target:
+func attack(target: CharacterBody2D):
+	if not is_instance_valid(target):
 		return
 
 	# Triple strike combo

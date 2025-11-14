@@ -5,28 +5,25 @@ class_name EnchantingFlute
 ## Charm/control weapon that turns enemies against each other
 ## Charmed enemies attack other enemies then die from heartbreak
 
+# Weapon metadata
+var weapon_id: String = "enchanting_flute"
+var weapon_name: String = "Enchanting Flute"
+var rarity: int = 3  # EPIC
 var charm_duration: float = 4.0
 
 func _ready():
-	# Set weapon properties
-	weapon_id = "enchanting_flute"
-	weapon_name = "Enchanting Flute"
-	rarity = 3  # EPIC
-
+	# Set weapon stats
 	damage = 0.0  # Doesn't deal direct damage
 	attack_speed = 0.4  # 1 hit per 2.5 seconds
-	range = 300.0
+	attack_range = 300.0
 	is_projectile = false
 
 	super._ready()
 
 	print("🎵 Enchanting Flute equipped - Charm enemies with music!")
 
-func attack(target_position: Vector2):
-	# Find closest enemy
-	var target = find_closest_enemy()
-
-	if not target:
+func attack(target: CharacterBody2D):
+	if not is_instance_valid(target):
 		return
 
 	# Charm the enemy

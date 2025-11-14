@@ -5,28 +5,25 @@ class_name MikuSword
 ## Obtained from rescuing Miku (70% chance)
 ## Special: 15% critical hit chance for 2x damage
 
+# Weapon metadata
+var weapon_id: String = "miku_sword"
+var weapon_name: String = "Miku Sword"
+var rarity: int = 4  # LEGENDARY
 var crit_chance: float = 0.15
 
 func _ready():
-	# Set weapon properties
-	weapon_id = "miku_sword"
-	weapon_name = "Miku Sword"
-	rarity = 4  # LEGENDARY
-
+	# Set weapon stats
 	damage = 15.0
 	attack_speed = 1.2  # Faster than basic
-	range = 160.0
+	attack_range = 160.0
 	is_projectile = false
 
 	super._ready()
 
 	print("🎤 Miku Sword equipped - LEGENDARY weapon with crit chance!")
 
-func attack(target_position: Vector2):
-	# Find closest enemy
-	var target = find_closest_enemy()
-
-	if not target:
+func attack(target: CharacterBody2D):
+	if not is_instance_valid(target):
 		return
 
 	var final_damage = damage
