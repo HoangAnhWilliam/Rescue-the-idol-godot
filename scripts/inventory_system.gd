@@ -196,6 +196,40 @@ func get_total_gold() -> int:
 	print("💰 get_total_gold() -> %d gold from %d slots" % [total, gold_slots])
 	return total
 
+# ========== REMOVE GOLD ==========
+
+func remove_gold(amount: int) -> bool:
+	"""Remove specified amount of gold from inventory"""
+	if amount <= 0:
+		return false
+
+	var total_gold = get_total_gold()
+	if total_gold < amount:
+		print("⚠️ Not enough gold! Need ", amount, ", have ", total_gold)
+		return false
+
+	var remaining_to_remove = amount
+
+	# Remove gold from slots (start from last)
+	for i in range(MAX_SLOTS - 1, -1, -1):
+		if remaining_to_remove <= 0:
+			break
+
+		var slot = slots[i]
+		if slot.item_type == ItemType.GOLD:
+			var amount_to_remove = min(remaining_to_remove, slot.quantity)
+			slot.quantity -= amount_to_remove
+			remaining_to_remove -= amount_to_remove
+
+			if slot.quantity <= 0:
+				slot.clear()
+
+			slot_changed.emit(i)
+			print("💰 Removed ", amount_to_remove, " gold from slot ", i)
+
+	print("💰 Successfully removed ", amount, " gold")
+	return true
+
 # ========== HAS ITEM ==========
 
 func has_item(type: ItemType, item_id: String, amount: int) -> bool:
