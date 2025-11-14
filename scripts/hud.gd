@@ -140,9 +140,8 @@ func _process(delta):
 	if player and "total_kills" in player:
 		kill_label.text = "Kills: %d" % player.total_kills
 
-	# Update gold (in case it changes without signal)
-	if player and "gold" in player:
-		gold_label.text = "Gold: %d" % player.gold
+	# NOTE: Gold display now handled by inventory system (update_gold_display)
+	# Removed old player.gold code that was overwriting inventory gold
 
 	# Update coordinates
 	if player:
@@ -319,10 +318,19 @@ func update_boss_health_bar():
 
 func _on_inventory_slot_changed(slot_index: int):
 	# Update gold display when any inventory slot changes
+	print("💰 Inventory slot %d changed, updating gold display" % slot_index)
 	update_gold_display()
 
 func update_gold_display():
 	var inventory = get_tree().get_first_node_in_group("inventory")
-	if inventory and gold_label:
-		var total_gold = inventory.get_total_gold()
-		gold_label.text = "Gold: %d" % total_gold
+	if not inventory:
+		print("⚠️ HUD: Cannot find inventory system!")
+		return
+
+	if not gold_label:
+		print("⚠️ HUD: gold_label not found!")
+		return
+
+	var total_gold = inventory.get_total_gold()
+	gold_label.text = "Gold: %d" % total_gold
+	print("💰 HUD gold display updated: %d gold" % total_gold)

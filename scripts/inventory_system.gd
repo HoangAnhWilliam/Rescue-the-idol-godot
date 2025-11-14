@@ -184,11 +184,16 @@ func get_all_weapons() -> Array[Dictionary]:
 
 func get_total_gold() -> int:
 	var total = 0
+	var gold_slots = 0
 
-	for slot in slots:
+	for i in range(slots.size()):
+		var slot = slots[i]
 		if slot.item_type == ItemType.GOLD:
+			gold_slots += 1
 			total += slot.quantity
+			print("💰 Slot %d has %d gold" % [i, slot.quantity])
 
+	print("💰 get_total_gold() -> %d gold from %d slots" % [total, gold_slots])
 	return total
 
 # ========== HAS ITEM ==========
