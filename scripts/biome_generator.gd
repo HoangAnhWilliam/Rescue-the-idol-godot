@@ -53,6 +53,10 @@ var cache_radius: int = 5  # Cache chunks around player
 # References
 var player: CharacterBody2D
 
+# ATM spawning
+var atm_scene: PackedScene = preload("res://scenes/atm/weapon_atm.tscn")
+var spawned_atms: Array[Node2D] = []
+
 # Signals
 signal biome_changed(old_biome: BiomeData, new_biome: BiomeData)
 signal entered_boss_zone(biome_type: BiomeType)
@@ -61,16 +65,19 @@ func _ready():
 	print("=== BiomeGenerator Init ===")
 	initialize_noise()
 	initialize_biomes()
-	
+
 	# Wait for player
 	await get_tree().process_frame
 	player = get_tree().get_first_node_in_group("player")
-	
+
 	if player:
 		print("✓ Player found")
 		current_biome = get_biome_at_position(player.global_position)
 		print("Starting biome: ", current_biome.name)
 		print("Seed: ", seed_value)
+
+		# Spawn ATMs across the world
+		spawn_atms()
 	else:
 		print("ERROR: No player found!")
 
@@ -306,7 +313,7 @@ func get_biome_color() -> Color:
 # Debug: Get biome map visualization
 func get_biome_map_texture(size: int, pixel_size: float) -> ImageTexture:
 	var image = Image.create(size, size, false, Image.FORMAT_RGB8)
-	
+
 	var half_size = size / 2
 	for x in range(size):
 		for y in range(size):
@@ -314,8 +321,79 @@ func get_biome_map_texture(size: int, pixel_size: float) -> ImageTexture:
 				(x - half_size) * pixel_size,
 				(y - half_size) * pixel_size
 			)
-			
+
 			var biome = get_biome_at_position(world_pos)
 			image.set_pixel(x, y, biome.color)
-	
+
 	return ImageTexture.create_from_image(image)
+
+# Phase 7: Spawn Weapon ATMs across the map
+func spawn_atms():
+	print("=== Spawning Weapon ATMs ===")
+
+	# BRONZE ATMs (3-5) - Free with cooldown, spread across all biomes
+	var bronze_count = randi_range(3, 5)
+	for i in range(bronze_count):
+		var angle = randf() * TAU
+		var distance = randf_range(800.0, 2500.0)
+		var pos = Vector2(cos(angle), sin(angle)) * distance
+		spawn_atm(pos, 0)  # Tier 0 = BRONZE
+
+	print("✓ Spawned ", bronze_count, " Bronze ATMs")
+
+	# SILVER ATMs (1-2) - 100 gold, in uncommon/rare biomes
+	var silver_count = randi_range(1, 2)
+	for i in range(silver_count):
+		var pos = find_atm_position_in_biome([BiomeType.DESERT_WASTELAND, BiomeType.FROZEN_TUNDRA])
+		if pos != Vector2.ZERO:
+			spawn_atm(pos, 1)  # Tier 1 = SILVER
+
+	print("✓ Spawned ", silver_count, " Silver ATMs")
+
+	# GOLD ATM (1) - 500 gold, in rare biome
+	var gold_pos = find_atm_position_in_biome([BiomeType.VOLCANIC_DARKLANDS, BiomeType.FROZEN_TUNDRA])
+	if gold_pos != Vector2.ZERO:
+		spawn_atm(gold_pos, 2)  # Tier 2 = GOLD
+		print("✓ Spawned 1 Gold ATM")
+
+	# DIVINE ATM (0-1) - 2000 gold, in very rare biome (30% chance)
+	if randf() < 0.3:
+		var divine_pos = find_atm_position_in_biome([BiomeType.BLOOD_TEMPLE, BiomeType.VOLCANIC_DARKLANDS])
+		if divine_pos != Vector2.ZERO:
+			spawn_atm(divine_pos, 3)  # Tier 3 = DIVINE
+			print("✓ Spawned 1 Divine ATM")
+
+	print("=== Total ATMs spawned: ", spawned_atms.size(), " ===")
+
+func spawn_atm(pos: Vector2, tier: int):
+	var atm = atm_scene.instantiate()
+	atm.global_position = pos
+	atm.tier = tier
+
+	# Set cost based on tier
+	match tier:
+		0: atm.cost = 0     # BRONZE - Free
+		1: atm.cost = 100   # SILVER - 100 gold
+		2: atm.cost = 500   # GOLD - 500 gold
+		3: atm.cost = 2000  # DIVINE - 2000 gold
+
+	get_parent().add_child(atm)
+	spawned_atms.append(atm)
+
+	print("  ATM spawned at ", pos, " (Tier: ", tier, ", Cost: ", atm.cost, ")")
+
+func find_atm_position_in_biome(target_biomes: Array) -> Vector2:
+	# Try to find a position in one of the target biomes
+	for attempt in range(20):
+		var angle = randf() * TAU
+		var distance = randf_range(1500.0, 4000.0)
+		var pos = Vector2(cos(angle), sin(angle)) * distance
+
+		var biome = get_biome_at_position(pos)
+		if biome.type in target_biomes:
+			return pos
+
+	# Fallback: return any distant position
+	var angle = randf() * TAU
+	var distance = randf_range(2000.0, 3500.0)
+	return Vector2(cos(angle), sin(angle)) * distance
