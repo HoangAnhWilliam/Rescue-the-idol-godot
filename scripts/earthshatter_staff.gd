@@ -5,22 +5,23 @@ class_name EarthshatterStaff
 ## AoE ground slam weapon
 ## Hits ALL enemies in radius with stun effect
 
-func _ready():
-	# Set weapon properties
-	weapon_id = "earthshatter_staff"
-	weapon_name = "Earthshatter Staff"
-	rarity = 1  # UNCOMMON
+# Weapon metadata
+var weapon_id: String = "earthshatter_staff"
+var weapon_name: String = "Earthshatter Staff"
+var rarity: int = 1  # UNCOMMON
 
+func _ready():
+	# Set weapon stats
 	damage = 40.0  # High single-hit damage
 	attack_speed = 0.33  # Slow (1 hit per 3 seconds)
-	range = 150.0  # AoE radius
+	attack_range = 150.0  # AoE radius
 	is_projectile = false
 
 	super._ready()
 
 	print("🌍 Earthshatter Staff equipped - AoE ground slam!")
 
-func attack(target_position: Vector2):
+func attack(target: CharacterBody2D):
 	# Get player position for slam center
 	var player = get_tree().get_first_node_in_group("player")
 	var hit_position = player.global_position if player else global_position
@@ -35,7 +36,7 @@ func attack(target_position: Vector2):
 
 		var distance = hit_position.distance_to(enemy.global_position)
 
-		if distance <= range:
+		if distance <= attack_range:
 			# Deal damage
 			if enemy.has_method("take_damage"):
 				enemy.take_damage(damage, hit_position)

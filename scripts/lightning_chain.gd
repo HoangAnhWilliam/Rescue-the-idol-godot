@@ -5,29 +5,27 @@ class_name LightningChain
 ## Chain lightning that jumps between enemies
 ## Hits initial target then jumps to nearby enemies
 
+# Weapon metadata
+var weapon_id: String = "lightning_chain"
+var weapon_name: String = "Lightning Chain"
+var rarity: int = 2  # RARE
+
 var chain_jumps: int = 4  # Hits initial + 4 jumps = 5 total
 var chain_range: float = 120.0
 
 func _ready():
-	# Set weapon properties
-	weapon_id = "lightning_chain"
-	weapon_name = "Lightning Chain"
-	rarity = 2  # RARE
-
+	# Set weapon stats
 	damage = 12.0  # Per enemy (12 × 5 = 60 total if all hit)
 	attack_speed = 0.7
-	range = 350.0
+	attack_range = 350.0
 	is_projectile = false
 
 	super._ready()
 
 	print("⚡ Lightning Chain equipped - Chain lightning attacks!")
 
-func attack(target_position: Vector2):
-	# Find closest enemy
-	var target = find_closest_enemy()
-
-	if not target:
+func attack(target: CharacterBody2D):
+	if not is_instance_valid(target):
 		return
 
 	# Start chain lightning

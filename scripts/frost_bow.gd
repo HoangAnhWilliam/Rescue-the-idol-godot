@@ -5,31 +5,30 @@ class_name FrostBow
 ## Long-range piercing projectile with slow effect
 ## Arrow pierces up to 3 enemies and slows them
 
-var projectile_speed: float = 400.0
+# Weapon metadata
+var weapon_id: String = "frost_bow"
+var weapon_name: String = "Frost Bow"
+var rarity: int = 2  # RARE
+
+var arrow_speed: float = 400.0
 var piercing_count: int = 3
 var slow_duration: float = 2.0
 var slow_amount: float = 0.3  # 30% slow
 
 func _ready():
-	# Set weapon properties
-	weapon_id = "frost_bow"
-	weapon_name = "Frost Bow"
-	rarity = 2  # RARE
-
+	# Set weapon stats
 	damage = 18.0
 	attack_speed = 0.9
-	range = 450.0  # Very long
+	attack_range = 450.0  # Very long
 	is_projectile = true
+	projectile_speed = 400.0
 
 	super._ready()
 
 	print("🏹 Frost Bow equipped - Piercing ice arrows!")
 
-func attack(target_position: Vector2):
-	# Find closest enemy
-	var target = find_closest_enemy()
-
-	if not target:
+func attack(target: CharacterBody2D):
+	if not is_instance_valid(target):
 		return
 
 	# Spawn ice arrow
