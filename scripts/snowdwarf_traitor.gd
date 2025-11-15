@@ -183,6 +183,11 @@ func betray_player():
 	traitor_state = TraitorState.FIGHTING
 	move_speed = combat_speed
 
+func handle_trading(delta):
+	# Wait in trading state, player can press E to trade
+	# Movement is stopped, just idle
+	velocity = Vector2.ZERO
+
 func handle_betrayed(delta):
 	# Just transition state, actual attack already fired
 	pass
