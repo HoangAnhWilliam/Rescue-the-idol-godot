@@ -240,24 +240,26 @@ func format_time(seconds: float) -> String:
 
 func open_spin_wheel(player: CharacterBody2D):
 	"""Open spin wheel UI"""
-	print("🎰 Opening spin wheel for ", get_tier_name(), " ATM")
+	print("🎰 === ATM Opening Spin Wheel ===")
+	print("ATM Tier: ", get_tier_name())
+	print("Player: ", player)
 
 	# Get spin wheel UI
 	var spin_wheel = get_tree().get_first_node_in_group("spin_wheel_ui")
 
 	if not spin_wheel:
-		# Try to create it
-		var spin_wheel_scene = load("res://scenes/ui/spin_wheel_ui.tscn")
-		if spin_wheel_scene:
-			spin_wheel = spin_wheel_scene.instantiate()
-			get_tree().root.add_child(spin_wheel)
-		else:
-			print("❌ Could not load spin wheel UI!")
-			return
+		print("❌ ERROR: SpinWheelUI not found in scene tree!")
+		print("Make sure SpinWheelUI is added to main.tscn with group 'spin_wheel_ui'")
+		return
+
+	print("✅ Found SpinWheelUI: ", spin_wheel)
 
 	# Open with tier
 	if spin_wheel.has_method("open"):
+		print("Calling spin_wheel.open(", tier, ", player)")
 		spin_wheel.open(tier, player)
+	else:
+		print("❌ ERROR: SpinWheelUI doesn't have open() method!")
 
 func show_error_message(player: CharacterBody2D, message: String = ""):
 	"""Show error message to player"""
