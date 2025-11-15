@@ -171,7 +171,7 @@ func fireball_barrage():
 	if has_node("/root/CameraShake"):
 		get_node("/root/CameraShake").shake(0.4, 0.3)
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback

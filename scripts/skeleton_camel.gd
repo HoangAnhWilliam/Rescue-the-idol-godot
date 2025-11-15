@@ -214,7 +214,7 @@ func spit_attack():
 	spit_timer = spit_cooldown
 	print("Skeleton Camel spit attack!")
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback
