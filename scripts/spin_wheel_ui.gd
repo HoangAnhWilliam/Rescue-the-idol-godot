@@ -2,12 +2,13 @@ extends CanvasLayer
 class_name SpinWheelUI
 
 ## Spin Wheel UI - Phase 7 Gacha System
-## Rotating wheel animation for weapon rolls
+## Rotating wheel animation for weapon rolls with gold validation
 
 # Wheel state
 var is_spinning: bool = false
-var spin_complete: bool = false  # NEW: Track if spin finished
+var spin_complete: bool = false
 var current_tier: int = 0
+var current_cost: int = 0  # Gold cost for this spin
 var target_weapon_index: int = 0
 var weapons: Array = []
 var current_player: CharacterBody2D = null
@@ -26,6 +27,10 @@ var slot_angles = []
 # Rarity names for display
 const RARITY_NAMES = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
 
+# ATM tier costs
+const TIER_COSTS = [0, 5000, 20000, 50000]  # Bronze=0, Silver=5k, Gold=20k, Divine=50k
+const TIER_NAMES = ["BRONZE ATM", "SILVER ATM", "GOLD ATM", "DIVINE ATM"]
+
 # UI references
 @onready var panel = $Panel
 @onready var wheel_container = $Panel/WheelContainer
@@ -36,6 +41,9 @@ const RARITY_NAMES = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
 @onready var spin_button = $Panel/SpinButton
 
 func _ready():
+	# CRITICAL: Set process mode to work when paused
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Hide initially
 	visible = false
 	add_to_group("spin_wheel_ui")
@@ -64,7 +72,8 @@ func _ready():
 	else:
 		print("❌ ERROR: Spin button not found!")
 
-	print("🎰 Spin Wheel UI ready")
+	print("🎰 Process mode set to ALWAYS (works when paused)")
+	print("========================")
 
 func open(tier: int, player: CharacterBody2D):
 	"""Open spin wheel for ATM tier"""
@@ -74,6 +83,7 @@ func open(tier: int, player: CharacterBody2D):
 
 	current_tier = tier
 	current_player = player
+	current_cost = TIER_COSTS[tier] if tier < TIER_COSTS.size() else 0
 
 	# Reset state
 	is_spinning = false
@@ -87,15 +97,17 @@ func open(tier: int, player: CharacterBody2D):
 	# Pre-determine result
 	target_weapon_index = randi() % SLOT_COUNT
 
-	print("🎰 Opening spin wheel - Tier: ", tier, " Target: ", weapons[target_weapon_index])
+	print("🎰 Opening spin wheel - Tier: ", tier, " (", TIER_NAMES[tier], ")")
+	print("   Cost: ", current_cost, " gold")
+	print("   Target: ", weapons[target_weapon_index])
+	print("   Weapon pool: ", weapons)
 
 	# Setup UI
 	setup_wheel()
 
 	# Update tier label
 	if tier_label:
-		var tier_names = ["BRONZE ATM", "SILVER ATM", "GOLD ATM", "DIVINE ATM"]
-		tier_label.text = tier_names[tier]
+		tier_label.text = TIER_NAMES[tier]
 
 	# Setup buttons
 	if spin_button:
@@ -109,16 +121,25 @@ func open(tier: int, player: CharacterBody2D):
 		close_button.visible = true
 		close_button.disabled = false
 
-	# Update status
+	# Update status with cost
 	if status_label:
-		status_label.text = "Press SPIN to start!"
-		status_label.modulate = Color(1, 1, 1)
+		if current_cost > 0:
+			var player_gold = get_player_gold()
+			if player_gold >= current_cost:
+				status_label.text = "Cost: " + str(current_cost) + " Gold - Press SPIN!"
+				status_label.modulate = Color(1, 1, 1)
+			else:
+				status_label.text = "Not enough gold! Need: " + str(current_cost) + " (Have: " + str(player_gold) + ")"
+				status_label.modulate = Color(1, 0.3, 0.3)
+		else:
+			status_label.text = "FREE SPIN! Press SPIN to start!"
+			status_label.modulate = Color(0.2, 1.0, 0.2)
 
 	# Show UI
 	visible = true
 	get_tree().paused = true  # Pause game during gacha
 
-	print("🎰 Spin Wheel opened! Waiting for player to press SPIN...")
+	print("✅ Spin wheel opened successfully!")
 
 func setup_wheel():
 	"""Create weapon slots in wheel"""
@@ -196,20 +217,53 @@ func _on_spin_button_pressed():
 		start_spin()
 
 func start_spin():
-	"""Start spinning animation"""
+	"""Start spinning animation with gold validation"""
 	if is_spinning:
 		print("⚠️ Already spinning!")
 		return
 
+	# GOLD VALIDATION
+	var player_gold = get_player_gold()
+
+	print("💰 Gold check - Cost: ", current_cost, ", Player has: ", player_gold)
+
+	if current_cost > 0:
+		if player_gold < current_cost:
+			# Not enough gold!
+			print("❌ Not enough gold! Need ", current_cost, " but player has ", player_gold)
+
+			if status_label:
+				status_label.text = "NOT ENOUGH GOLD! Need: " + str(current_cost) + " (Have: " + str(player_gold) + ")"
+				status_label.modulate = Color(1, 0.2, 0.2)
+
+			# Flash the status label
+			flash_status_label()
+			return
+
+		# Deduct gold
+		if not spend_player_gold(current_cost):
+			print("❌ Failed to spend gold!")
+			return
+
+		print("✅ Spent ", current_cost, " gold")
+	else:
+		print("✅ Free spin, no gold needed")
+
+	# Start spin animation
 	is_spinning = true
 	spin_complete = false
 	spin_timer = 0.0
 	spin_rotation = 0.0
 	spin_speed = 20.0  # Start fast (20 rad/s)
 
-	# Hide spin button during spin
+	# Update buttons
 	if spin_button:
-		spin_button.visible = false
+		spin_button.text = "SPINNING..."
+		spin_button.disabled = true
+		spin_button.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+
+	if close_button:
+		close_button.visible = false  # Hide close during spin
 
 	# Update status
 	if status_label:
@@ -218,25 +272,59 @@ func start_spin():
 
 	print("🎰 Spin started! Target slot: ", target_weapon_index, " (", weapons[target_weapon_index], ")")
 
+func get_player_gold() -> int:
+	"""Get player's current gold amount"""
+	if not current_player:
+		print("⚠️ No player reference!")
+		return 0
+
+	if current_player.has_method("get_total_gold"):
+		return current_player.get_total_gold()
+
+	print("⚠️ Player doesn't have get_total_gold() method!")
+	return 0
+
+func spend_player_gold(amount: int) -> bool:
+	"""Spend player's gold"""
+	if not current_player:
+		print("⚠️ No player reference!")
+		return false
+
+	if current_player.has_method("spend_gold"):
+		return current_player.spend_gold(amount)
+
+	print("⚠️ Player doesn't have spend_gold() method!")
+	return false
+
+func flash_status_label():
+	"""Flash status label red for error feedback"""
+	if not status_label:
+		return
+
+	var original_modulate = status_label.modulate
+
+	# Flash sequence
+	for i in range(3):
+		status_label.modulate = Color(1, 0, 0)
+		await get_tree().create_timer(0.1).timeout
+		status_label.modulate = original_modulate
+		await get_tree().create_timer(0.1).timeout
+
 func _process(delta):
 	if not is_spinning or not visible:
 		return
 
 	spin_timer += delta
 
-	# Decelerate over time
+	# Decelerate over time (ease-out cubic)
 	var progress = spin_timer / spin_duration
-	var decel_curve = 1.0 - pow(progress, 2.0)  # Quadratic deceleration
-	spin_speed = 20.0 * decel_curve
+	var decel_curve = 1.0 - pow(1.0 - progress, 3.0)  # Ease-out cubic
 
-	# Calculate target rotation to land on target slot
-	if progress > 0.7:
-		# Near end, interpolate to exact target
-		var target_angle = calculate_target_rotation()
-		spin_rotation = lerp(spin_rotation, target_angle, delta * 5.0)
-	else:
-		# Normal spin
-		spin_rotation += spin_speed * delta
+	# Calculate target rotation (5 full rotations = 1800° + alignment)
+	var target_angle = calculate_target_rotation()
+
+	# Interpolate to target
+	spin_rotation = lerp(0.0, target_angle, decel_curve)
 
 	# Apply rotation to wheel
 	if wheel_container:
@@ -247,15 +335,15 @@ func _process(delta):
 		end_spin()
 
 func calculate_target_rotation() -> float:
-	"""Calculate final rotation to land on target"""
+	"""Calculate final rotation to land on target (5 full rotations + alignment)"""
 	# Target slot should be at top (arrow position)
 	var target_slot_angle = slot_angles[target_weapon_index]
 
 	# Arrow points down (180°), so rotate to align
 	var target_rotation = -target_slot_angle + PI
 
-	# Add multiple full rotations for visual effect
-	target_rotation += TAU * 5  # 5 full rotations
+	# Add 5 full rotations (1800° = 5 * 360° = 5 * TAU)
+	target_rotation += TAU * 5
 
 	return target_rotation
 
@@ -268,7 +356,8 @@ func end_spin():
 	var rarity = WeaponPoolManager.get_weapon_rarity(result_weapon)
 	var weapon_name = WeaponPoolManager.get_weapon_display_name(result_weapon)
 
-	print("🎰 Spin ended! Result: ", weapon_name, " (", RARITY_NAMES[rarity], ")")
+	print("🎰 Spin complete! Selected weapon: ", weapon_name)
+	print("   Rarity: ", RARITY_NAMES[rarity])
 
 	# Update status with rarity
 	if status_label:
@@ -281,16 +370,18 @@ func end_spin():
 	# Add weapon to inventory
 	add_weapon_to_player(result_weapon)
 
-	# Show spin button as "Close"
+	# Show buttons
 	if spin_button:
-		spin_button.text = "Close"
+		spin_button.text = "CLOSE"
 		spin_button.visible = true
+		spin_button.disabled = false
 		# Gray color for close
 		spin_button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 
-	# Optional: Auto-close after delay (commented out so player can read result)
-	# await get_tree().create_timer(3.0).timeout
-	# close()
+	if close_button:
+		close_button.visible = true  # Show close button again
+
+	print("✅ Spin finished successfully!")
 
 func create_result_effects(rarity: int):
 	"""Create visual effects for result"""
@@ -349,14 +440,12 @@ func add_weapon_to_player(weapon_id: String):
 func _on_close_button_pressed():
 	"""Close button pressed - always works"""
 	print("🎰 === CLOSE BUTTON PRESSED ===")
-	print("Current visible state: ", visible)
-	print("Game paused: ", get_tree().paused)
 	close()
 
 func close():
 	"""Close spin wheel UI"""
-	print("🎰 === CLOSING SPIN WHEEL ===")
-	print("Before - visible: ", visible, ", paused: ", get_tree().paused)
+	print("🎰 Closing spin wheel...")
+	print("   Before - visible: ", visible, ", paused: ", get_tree().paused)
 
 	visible = false
 	get_tree().paused = false
@@ -366,6 +455,7 @@ func close():
 	spin_complete = false
 	spin_timer = 0.0
 	spin_rotation = 0.0
+	current_cost = 0
 	weapons.clear()
 	current_player = null
 
@@ -373,5 +463,5 @@ func close():
 	if wheel_container:
 		wheel_container.rotation = 0.0
 
-	print("After - visible: ", visible, ", paused: ", get_tree().paused)
-	print("🎰 Spin wheel closed")
+	print("   After - visible: ", visible, ", paused: ", get_tree().paused)
+	print("✅ Spin wheel closed")
