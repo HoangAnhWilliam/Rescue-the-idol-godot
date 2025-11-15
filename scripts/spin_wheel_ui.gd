@@ -27,13 +27,13 @@ var slot_angles = []
 const RARITY_NAMES = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
 
 # UI references
-@onready var panel = $Panel if has_node("Panel") else null
-@onready var wheel_container = $Panel/WheelContainer if has_node("Panel/WheelContainer") else null
-@onready var arrow = $Panel/Arrow if has_node("Panel/Arrow") else null
-@onready var tier_label = $Panel/TierLabel if has_node("Panel/TierLabel") else null
-@onready var status_label = $Panel/StatusLabel if has_node("Panel/StatusLabel") else null
-@onready var close_button = $Panel/CloseButton if has_node("Panel/CloseButton") else null
-@onready var spin_button = $Panel/SpinButton if has_node("Panel/SpinButton") else null
+@onready var panel = $Panel
+@onready var wheel_container = $Panel/WheelContainer
+@onready var arrow = $Panel/Arrow
+@onready var tier_label = $Panel/TierLabel
+@onready var status_label = $Panel/StatusLabel
+@onready var close_button = $Panel/CloseButton
+@onready var spin_button = $Panel/SpinButton
 
 func _ready():
 	# Hide initially
@@ -44,18 +44,25 @@ func _ready():
 	for i in range(SLOT_COUNT):
 		slot_angles.append((TAU / SLOT_COUNT) * i)
 
+	# Debug: Check if buttons exist
+	print("🎰 === Spin Wheel UI Initialization ===")
+	print("Panel exists: ", panel != null)
+	print("Wheel container exists: ", wheel_container != null)
+	print("Close button exists: ", close_button != null)
+	print("Spin button exists: ", spin_button != null)
+
 	# Connect buttons
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)
 		print("✅ Close button connected")
 	else:
-		print("⚠️ Close button not found!")
+		print("❌ ERROR: Close button not found!")
 
 	if spin_button:
 		spin_button.pressed.connect(_on_spin_button_pressed)
 		print("✅ Spin button connected")
 	else:
-		print("⚠️ Spin button not found!")
+		print("❌ ERROR: Spin button not found!")
 
 	print("🎰 Spin Wheel UI ready")
 
@@ -175,11 +182,17 @@ func create_weapon_slot(weapon_id: String, index: int) -> Control:
 
 func _on_spin_button_pressed():
 	"""Spin button pressed"""
+	print("🎰 === SPIN BUTTON PRESSED ===")
+	print("Is spinning: ", is_spinning)
+	print("Spin complete: ", spin_complete)
+
 	if spin_complete:
 		# After spin finished, button acts as Close
+		print("Spin already complete, closing...")
 		close()
 	else:
 		# Start spin
+		print("Starting spin...")
 		start_spin()
 
 func start_spin():
@@ -335,11 +348,16 @@ func add_weapon_to_player(weapon_id: String):
 
 func _on_close_button_pressed():
 	"""Close button pressed - always works"""
-	print("🎰 Close button pressed")
+	print("🎰 === CLOSE BUTTON PRESSED ===")
+	print("Current visible state: ", visible)
+	print("Game paused: ", get_tree().paused)
 	close()
 
 func close():
 	"""Close spin wheel UI"""
+	print("🎰 === CLOSING SPIN WHEEL ===")
+	print("Before - visible: ", visible, ", paused: ", get_tree().paused)
+
 	visible = false
 	get_tree().paused = false
 
@@ -355,4 +373,5 @@ func close():
 	if wheel_container:
 		wheel_container.rotation = 0.0
 
+	print("After - visible: ", visible, ", paused: ", get_tree().paused)
 	print("🎰 Spin wheel closed")
