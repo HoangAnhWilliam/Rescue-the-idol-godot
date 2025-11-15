@@ -113,7 +113,7 @@ func detach():
 	current_state = State.CHASE
 	print("Vampire Bat detached")
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback

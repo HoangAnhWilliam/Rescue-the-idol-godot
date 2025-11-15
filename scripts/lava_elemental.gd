@@ -203,7 +203,7 @@ func shoot_lava_spit_at_target(target: Node2D):
 	spit_timer = spit_cooldown
 	print("Lava Elemental spit lava!")
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback

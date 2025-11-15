@@ -231,7 +231,7 @@ func ice_blast_attack():
 	if has_node("/root/CameraShake"):
 		get_node("/root/CameraShake").shake(0.3, 0.3)
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# If attacked during approach/trading, immediately betray

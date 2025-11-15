@@ -197,7 +197,7 @@ func on_charmed(weapon_name: String):
 		if current_hp <= 0:
 			die()
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback

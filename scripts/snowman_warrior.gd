@@ -150,7 +150,7 @@ func handle_dash(delta):
 			is_dashing = false
 			dash_timer = dash_cooldown
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback

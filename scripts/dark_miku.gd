@@ -325,7 +325,7 @@ func shoot_dark_blast():
 
 	print("Dark Miku used Dark Blast!")
 
-func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO):
+func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
 
 	# Visual feedback
