@@ -1,14 +1,24 @@
 extends Node2D
 class_name EnemySpawner
 
-# Enemy scenes
+# Enemy scenes - Original
 @export var zombie_scene: PackedScene
 @export var skeleton_bad_scene: PackedScene
 @export var skeleton_buff_scene: PackedScene
 @export var anime_ghost_scene: PackedScene
 @export var elite_monster_scene: PackedScene
 @export var mini_boss_scene: PackedScene
-@export var magma_slime_scene: PackedScene  # NEW: Magma Slime for Volcanic Darklands
+@export var magma_slime_scene: PackedScene  # Magma Slime for Volcanic Darklands
+
+# NEW: 8 Biome-Specific Enemies
+@export var vampire_bat_scene: PackedScene  # Desert Wasteland
+@export var skeleton_camel_scene: PackedScene  # Desert Wasteland
+@export var desert_nomad_scene: PackedScene  # Desert Wasteland
+@export var ice_golem_scene: PackedScene  # Frozen Tundra
+@export var snowman_warrior_scene: PackedScene  # Frozen Tundra
+@export var snowdwarf_traitor_scene: PackedScene  # Frozen Tundra
+@export var lava_elemental_scene: PackedScene  # Volcanic Darklands
+@export var dark_miku_scene: PackedScene  # Blood Temple
 
 # Spawn settings
 @export var base_spawn_interval: float = 2.0
@@ -79,6 +89,47 @@ func _ready():
 			print("✓ Magma Slime scene loaded!")
 		else:
 			print("⚠️ WARNING: Magma Slime scene not found!")
+
+	# NEW: Load 8 Biome-Specific Enemies
+	if not vampire_bat_scene:
+		vampire_bat_scene = load("res://scenes/enemies/vampire_bat.tscn")
+		if vampire_bat_scene:
+			print("✓ Vampire Bat scene loaded!")
+
+	if not skeleton_camel_scene:
+		skeleton_camel_scene = load("res://scenes/enemies/skeleton_camel.tscn")
+		if skeleton_camel_scene:
+			print("✓ Skeleton Camel scene loaded!")
+
+	if not desert_nomad_scene:
+		desert_nomad_scene = load("res://scenes/enemies/desert_nomad.tscn")
+		if desert_nomad_scene:
+			print("✓ Desert Nomad scene loaded!")
+
+	if not ice_golem_scene:
+		ice_golem_scene = load("res://scenes/enemies/ice_golem.tscn")
+		if ice_golem_scene:
+			print("✓ Ice Golem scene loaded!")
+
+	if not snowman_warrior_scene:
+		snowman_warrior_scene = load("res://scenes/enemies/snowman_warrior.tscn")
+		if snowman_warrior_scene:
+			print("✓ Snowman Warrior scene loaded!")
+
+	if not snowdwarf_traitor_scene:
+		snowdwarf_traitor_scene = load("res://scenes/enemies/snowdwarf_traitor.tscn")
+		if snowdwarf_traitor_scene:
+			print("✓ Snowdwarf Traitor scene loaded!")
+
+	if not lava_elemental_scene:
+		lava_elemental_scene = load("res://scenes/enemies/lava_elemental.tscn")
+		if lava_elemental_scene:
+			print("✓ Lava Elemental scene loaded!")
+
+	if not dark_miku_scene:
+		dark_miku_scene = load("res://scenes/enemies/dark_miku.tscn")
+		if dark_miku_scene:
+			print("✓ Dark Miku scene loaded!")
 
 	print("========================")
 
@@ -180,71 +231,124 @@ func get_enemy_type_for_biome() -> PackedScene:
 		_:
 			return get_default_enemy_type()
 
-# Forest enemies (easier)
+# Forest enemies (SAFE ZONE - easier, basic enemies only)
 func get_forest_enemy() -> PackedScene:
-	var roll = randf()
+	# Starting Forest is SAFE ZONE - only Zombie spawns
+	# This is intentional to give players a safe area to learn the game
+	return zombie_scene
 
-	if roll < 0.02:  # 2% - Buff Skeleton
-		return skeleton_buff_scene if skeleton_buff_scene else zombie_scene
-	elif roll < 0.17:  # 15% - Anime Ghost
-		return anime_ghost_scene if anime_ghost_scene else zombie_scene
-	elif roll < 0.47:  # 30% - Bad Skeleton
-		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
-	else:  # 53% - Zombie
-		return zombie_scene
-
-# Desert enemies (more skeletons, less zombies)
+# Desert enemies - NEW: Time-based progression
 func get_desert_enemy() -> PackedScene:
+	var minutes = int(game_time / 60.0)
 	var roll = randf()
 
-	if roll < 0.15:  # 15% - Anime Ghost
-		return anime_ghost_scene if anime_ghost_scene else zombie_scene
-	elif roll < 0.65:  # 50% - Bad Skeleton (more common in desert!)
-		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
-	else:  # 35% - Zombie
-		return zombie_scene
+	# Time-based progression:
+	# 0-10 min: Basic enemies (Vampire Bat, Zombie)
+	# 10-20 min: Add medium enemies (Skeleton Camel)
+	# 20+ min: Add hard enemies (Desert Nomad)
 
-# Tundra enemies (more ghosts, slow zombies)
+	if minutes >= 20:  # HARD MODE (20+ min)
+		if roll < 0.10 and desert_nomad_scene:  # 10% - Desert Nomad (hard)
+			return desert_nomad_scene
+		elif roll < 0.40 and skeleton_camel_scene:  # 30% - Skeleton Camel
+			return skeleton_camel_scene
+		elif roll < 1.00 and vampire_bat_scene:  # 60% - Vampire Bat
+			return vampire_bat_scene
+		else:  # Fallback
+			return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
+
+	elif minutes >= 10:  # MEDIUM MODE (10-20 min)
+		if roll < 0.30 and skeleton_camel_scene:  # 30% - Skeleton Camel
+			return skeleton_camel_scene
+		elif roll < 0.90 and vampire_bat_scene:  # 60% - Vampire Bat
+			return vampire_bat_scene
+		else:  # 10% - Zombie
+			return zombie_scene
+
+	else:  # EASY MODE (0-10 min)
+		if roll < 0.70 and vampire_bat_scene:  # 70% - Vampire Bat (basic)
+			return vampire_bat_scene
+		else:  # 30% - Zombie
+			return zombie_scene
+
+# Tundra enemies - NEW: Time-based progression
 func get_tundra_enemy() -> PackedScene:
+	var minutes = int(game_time / 60.0)
 	var roll = randf()
 
-	if roll < 0.01:  # 1% - Buff Skeleton (rarer)
-		return skeleton_buff_scene if skeleton_buff_scene else zombie_scene
-	elif roll < 0.31:  # 30% - Anime Ghost (more common!)
-		return anime_ghost_scene if anime_ghost_scene else zombie_scene
-	elif roll < 0.61:  # 30% - Bad Skeleton
-		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
-	else:  # 39% - Zombie
-		return zombie_scene
+	# Time-based progression:
+	# 0-10 min: Basic enemies (Snowman Warrior, Zombie)
+	# 10-20 min: Add medium enemies (Ice Golem)
+	# 20+ min: Add hard enemies (Snowdwarf Traitor)
 
-# Volcanic enemies (MAGMA SLIME + tough enemies)
+	if minutes >= 20:  # HARD MODE (20+ min)
+		if roll < 0.20 and snowdwarf_traitor_scene:  # 20% - Snowdwarf Traitor (hard)
+			return snowdwarf_traitor_scene
+		elif roll < 0.50 and ice_golem_scene:  # 30% - Ice Golem
+			return ice_golem_scene
+		elif roll < 1.00 and snowman_warrior_scene:  # 50% - Snowman Warrior
+			return snowman_warrior_scene
+		else:  # Fallback
+			return zombie_scene
+
+	elif minutes >= 10:  # MEDIUM MODE (10-20 min)
+		if roll < 0.30 and ice_golem_scene:  # 30% - Ice Golem
+			return ice_golem_scene
+		elif roll < 0.80 and snowman_warrior_scene:  # 50% - Snowman Warrior
+			return snowman_warrior_scene
+		else:  # 20% - Zombie
+			return zombie_scene
+
+	else:  # EASY MODE (0-10 min)
+		if roll < 0.60 and snowman_warrior_scene:  # 60% - Snowman Warrior (basic)
+			return snowman_warrior_scene
+		else:  # 40% - Zombie
+			return zombie_scene
+
+# Volcanic enemies - NEW: Lava Elemental + time-based
 func get_volcanic_enemy() -> PackedScene:
+	var minutes = int(game_time / 60.0)
 	var roll = randf()
 
-	# 30% chance for Magma Slime (mini-boss!)
-	if roll < 0.30 and magma_slime_scene:
-		print("🔥 SPAWNING MAGMA SLIME!")
-		return magma_slime_scene
-	elif roll < 0.50:  # 20% - Anime Ghost
-		return anime_ghost_scene if anime_ghost_scene else zombie_scene
-	elif roll < 0.75:  # 25% - Bad Skeleton
-		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
-	else:  # 25% - Zombie
-		return zombie_scene
+	# Time-based progression:
+	# 0-10 min: Lava Elemental
+	# 10-20 min: Add Lava Elemental
+	# 20+ min: Mix of both
 
-# Blood Temple enemies (hardest, all enemy types)
-func get_temple_enemy() -> PackedScene:
-	var roll = randf()
-
-	if roll < 0.15:  # 15% - Magma Slime (if available)
-		if magma_slime_scene:
+	if minutes >= 10:  # MEDIUM/HARD MODE (10+ min)
+		if roll < 0.70 and lava_elemental_scene:  # 70% - Lava Elemental
+			return lava_elemental_scene
+		elif roll < 1.00 and magma_slime_scene:  # 30% - Magma Slime
+			print("🔥 SPAWNING MAGMA SLIME!")
 			return magma_slime_scene
+		else:  # Fallback
+			return zombie_scene
 
-	if roll < 0.35:  # 20% - Anime Ghost
-		return anime_ghost_scene if anime_ghost_scene else zombie_scene
-	elif roll < 0.70:  # 35% - Bad Skeleton
-		return skeleton_bad_scene if skeleton_bad_scene else zombie_scene
-	else:  # 30% - Zombie
+	else:  # EASY MODE (0-10 min)
+		if roll < 0.80 and lava_elemental_scene:  # 80% - Lava Elemental
+			return lava_elemental_scene
+		else:  # 20% - Magma Slime
+			return magma_slime_scene if magma_slime_scene else zombie_scene
+
+# Blood Temple enemies - NEW: Dark Miku + time-based
+func get_temple_enemy() -> PackedScene:
+	var minutes = int(game_time / 60.0)
+	var roll = randf()
+
+	# Time-based progression:
+	# 0-10 min: Zombie
+	# 10-20 min: Zombie
+	# 20+ min: Dark Miku (mini-boss!)
+
+	if minutes >= 20:  # HARD MODE (20+ min)
+		if roll < 0.40 and dark_miku_scene:  # 40% - Dark Miku (mini-boss!)
+			print("💀 SPAWNING DARK MIKU!")
+			return dark_miku_scene
+		else:  # 60% - Zombie
+			return zombie_scene
+
+	else:  # EASY/MEDIUM MODE (0-20 min)
+		# Only zombies until player is ready
 		return zombie_scene
 
 # Fallback default enemy spawning
