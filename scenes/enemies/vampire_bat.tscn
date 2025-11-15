@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://vampire_bat_unique_id"]
+
+[ext_resource type="Script" path="res://scripts/vampire_bat.gd" id="1_vampire_bat"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bat"]
+size = Vector2(24, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(24, 16)
+
+[node name="VampireBat" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_vampire_bat")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -12.0
+offset_top = -8.0
+offset_right = 12.0
+offset_bottom = 8.0
+color = Color(0.3, 0.1, 0.4, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_bat")
+
+[node name="HitboxArea" type="Area2D" parent="CollisionShape2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionShape2D/HitboxArea"]
+shape = SubResource("RectangleShape2D_hitbox")

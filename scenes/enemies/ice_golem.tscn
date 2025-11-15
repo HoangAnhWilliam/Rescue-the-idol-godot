@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://ice_golem_unique_id"]
+
+[ext_resource type="Script" path="res://scripts/ice_golem.gd" id="1_ice_golem"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_golem"]
+size = Vector2(56, 56)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(56, 56)
+
+[node name="IceGolem" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_ice_golem")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+color = Color(0.7, 0.9, 1.0, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_golem")
+
+[node name="HitboxArea" type="Area2D" parent="CollisionShape2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionShape2D/HitboxArea"]
+shape = SubResource("RectangleShape2D_hitbox")
