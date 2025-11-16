@@ -28,7 +28,7 @@ var shoot_interval: float = 5.0  # Shoot every 5 seconds
 var arrow_scene = preload("res://scenes/projectiles/arrow.tscn")
 
 # Purchase
-const PURCHASE_COST: int = 1000000
+const PURCHASE_COST: int = 500
 var can_be_purchased: bool = true
 var player_nearby: bool = false
 var interaction_range: float = 80.0
