@@ -255,7 +255,7 @@ func flash_red():
 
 func create_purchase_indicator():
 	purchase_label = Label.new()
-	purchase_label.text = "[E] Buy: 1M 💰"
+	purchase_label.text = "[E] Buy: 500 💰"
 	purchase_label.position = Vector2(-40, -50)
 	purchase_label.add_theme_color_override("font_color", Color.YELLOW)
 	purchase_label.visible = false
