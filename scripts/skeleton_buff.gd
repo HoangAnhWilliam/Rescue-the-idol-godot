@@ -180,14 +180,40 @@ func check_player_proximity():
 
 func attempt_purchase():
 	if not can_be_purchased or not player:
+		print("❌ Cannot purchase: can_be_purchased=", can_be_purchased, " player=", player != null)
 		return
+
+	print("🔍 Attempting purchase...")
+	print("  Player has has_gold method: ", player.has_method("has_gold"))
+	print("  Player has remove_gold method: ", player.has_method("remove_gold"))
 
 	# Check if player has enough gold
 	if not player.has_method("has_gold") or not player.has_method("remove_gold"):
 		print("ERROR: Player doesn't have gold methods!")
-		return
 
-	if not player.has_gold(PURCHASE_COST):
+		# Try alternative method names
+		if player.has_method("get_total_gold") and player.has_method("spend_gold"):
+			print("✓ Found alternative methods: get_total_gold and spend_gold")
+			var player_gold = player.get_total_gold()
+			print("  Player has ", player_gold, " gold, needs ", PURCHASE_COST)
+
+			if player_gold >= PURCHASE_COST:
+				if player.spend_gold(PURCHASE_COST):
+					print("✅ Purchased Buff Skeleton for ", PURCHASE_COST, " gold!")
+					convert_to_ally()
+					return
+			else:
+				print("❌ Not enough gold! Need ", PURCHASE_COST)
+				flash_red()
+				return
+		else:
+			print("❌ No gold methods found at all!")
+			return
+
+	var player_gold = player.has_gold(PURCHASE_COST)
+	print("  Player has enough gold: ", player_gold)
+
+	if not player_gold:
 		print("❌ Not enough gold! Need ", PURCHASE_COST)
 		flash_red()
 		return
@@ -196,24 +222,53 @@ func attempt_purchase():
 	if player.remove_gold(PURCHASE_COST):
 		print("✅ Purchased Buff Skeleton for ", PURCHASE_COST, " gold!")
 		convert_to_ally()
+	else:
+		print("❌ Failed to remove gold!")
 
 func convert_to_ally():
+	print("🔄 Starting conversion to ally...")
 	can_be_purchased = false
 	current_state = State.PURCHASED
 
 	# Emit signal
 	purchased.emit(self)
+	print("  ✓ Emitted purchased signal")
+
+	# Hide purchase label
+	if purchase_label:
+		purchase_label.visible = false
+		print("  ✓ Hidden purchase label")
 
 	# Spawn ally skeleton
+	print("  🔍 Loading skeleton_ally.tscn...")
 	var ally_scene = load("res://scenes/enemies/skeleton_ally.tscn")
 	if ally_scene:
+		print("  ✓ Scene loaded successfully!")
 		var ally = ally_scene.instantiate()
+		print("  ✓ Ally instantiated!")
 		ally.global_position = global_position
-		get_parent().add_child(ally)
-		print("✨ Converted to Ally Skeleton!")
+		print("  ✓ Position set to: ", global_position)
 
-	# Remove self
+		var parent = get_parent()
+		if parent:
+			parent.add_child(ally)
+			print("  ✓ Ally added to parent: ", parent.name)
+			print("✨ Converted to Ally Skeleton successfully!")
+		else:
+			print("  ❌ ERROR: No parent found!")
+	else:
+		print("  ❌ ERROR: Failed to load skeleton_ally.tscn!")
+
+	# Visual effect before removal
+	if sprite:
+		sprite.modulate = Color.YELLOW
+		print("  ✓ Changed color to yellow")
+
+	# Remove self after short delay
+	print("  🗑️ Removing Buff Skeleton...")
+	await get_tree().create_timer(0.2).timeout
 	queue_free()
+	print("  ✓ Buff Skeleton removed")
 
 func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	# Take actual damage
