@@ -208,11 +208,19 @@ func attempt_purchase():
 	print("🔍 Attempting purchase...")
 
 	# IMPORTANT: Gold is managed by InventorySystem, NOT player!
-	var inventory = get_tree().get_first_node_in_group("inventory_system")
+	# InventorySystem is in group "inventory" (not "inventory_system"!)
+	var inventory = get_tree().get_first_node_in_group("inventory")
 
 	if not inventory:
 		print("❌ ERROR: InventorySystem not found!")
-		return
+		print("  Trying to find it by class name...")
+		# Fallback: try to find by singleton
+		if InventorySystem.instance:
+			inventory = InventorySystem.instance
+			print("  ✓ Found InventorySystem via singleton!")
+		else:
+			print("  ❌ Still not found! Cannot purchase.")
+			return
 
 	print("  ✓ Found InventorySystem")
 
