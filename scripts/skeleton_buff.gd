@@ -32,6 +32,7 @@ const PURCHASE_COST: int = 500
 var can_be_purchased: bool = true
 var player_nearby: bool = false
 var interaction_range: float = 80.0
+var debug_cooldown: float = 0.0  # Prevent debug spam
 
 # Visual
 @onready var sprite = $ColorRect if has_node("ColorRect") else null
@@ -72,6 +73,7 @@ func _physics_process(delta):
 	# Update timers
 	shoot_timer -= delta
 	wander_timer -= delta
+	debug_cooldown -= delta
 
 	# Check player proximity
 	check_player_proximity()
@@ -168,15 +170,35 @@ func check_player_proximity():
 		return
 
 	var distance = global_position.distance_to(player.global_position)
+	var was_nearby = player_nearby
 	player_nearby = distance <= interaction_range
+
+	# Debug: Show distance when player is close (with cooldown to prevent spam)
+	if distance < interaction_range * 1.5 and debug_cooldown <= 0:
+		print("📏 Distance to player: ", snapped(distance, 0.1), " / ", interaction_range, " | Nearby: ", player_nearby)
+		debug_cooldown = 1.0  # Print every 1 second
 
 	# Show/hide purchase indicator
 	if purchase_label:
 		purchase_label.visible = player_nearby
 
-	# Handle purchase input
-	if player_nearby and Input.is_action_just_pressed("interact"):  # E key
-		attempt_purchase()
+		# Debug when label visibility changes
+		if player_nearby and not was_nearby:
+			print("✅ Player entered purchase range! Label shown. Press E to buy!")
+		elif not player_nearby and was_nearby:
+			print("❌ Player left purchase range")
+
+func _unhandled_input(event):
+	# Handle E key press for purchase
+	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
+		if player_nearby and can_be_purchased:
+			print("⌨️ E key pressed! Player nearby: ", player_nearby, " Can purchase: ", can_be_purchased)
+			attempt_purchase()
+			get_viewport().set_input_as_handled()
+		elif not player_nearby:
+			print("⌨️ E pressed but player not nearby (distance > ", interaction_range, ")")
+		elif not can_be_purchased:
+			print("⌨️ E pressed but cannot purchase (already purchased)")
 
 func attempt_purchase():
 	if not can_be_purchased or not player:
