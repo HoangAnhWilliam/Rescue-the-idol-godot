@@ -209,6 +209,12 @@ func attempt_purchase():
 	print("  Player has has_gold method: ", player.has_method("has_gold"))
 	print("  Player has remove_gold method: ", player.has_method("remove_gold"))
 
+	# DEBUG: Print actual gold value
+	if "gold" in player:
+		print("  💰 Player's actual gold: ", player.gold, " (type: ", typeof(player.gold), ")")
+	else:
+		print("  ⚠️ Player doesn't have 'gold' variable!")
+
 	# Check if player has enough gold
 	if not player.has_method("has_gold") or not player.has_method("remove_gold"):
 		print("ERROR: Player doesn't have gold methods!")
@@ -232,10 +238,16 @@ func attempt_purchase():
 			print("❌ No gold methods found at all!")
 			return
 
-	var player_gold = player.has_gold(PURCHASE_COST)
-	print("  Player has enough gold: ", player_gold)
+	var player_has_enough = player.has_gold(PURCHASE_COST)
+	print("  🔍 Calling player.has_gold(", PURCHASE_COST, ") returned: ", player_has_enough)
 
-	if not player_gold:
+	# Double check with direct comparison
+	if "gold" in player:
+		var direct_check = player.gold >= PURCHASE_COST
+		print("  🔍 Direct comparison (player.gold >= ", PURCHASE_COST, "): ", direct_check)
+		print("  🔍 Math: ", player.gold, " >= ", PURCHASE_COST, " = ", direct_check)
+
+	if not player_has_enough:
 		print("❌ Not enough gold! Need ", PURCHASE_COST)
 		flash_red()
 		return
