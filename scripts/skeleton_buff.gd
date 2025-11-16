@@ -206,58 +206,32 @@ func attempt_purchase():
 		return
 
 	print("🔍 Attempting purchase...")
-	print("  Player has has_gold method: ", player.has_method("has_gold"))
-	print("  Player has remove_gold method: ", player.has_method("remove_gold"))
 
-	# DEBUG: Print actual gold value
-	if "gold" in player:
-		print("  💰 Player's actual gold: ", player.gold, " (type: ", typeof(player.gold), ")")
-	else:
-		print("  ⚠️ Player doesn't have 'gold' variable!")
+	# IMPORTANT: Gold is managed by InventorySystem, NOT player!
+	var inventory = get_tree().get_first_node_in_group("inventory_system")
 
-	# Check if player has enough gold
-	if not player.has_method("has_gold") or not player.has_method("remove_gold"):
-		print("ERROR: Player doesn't have gold methods!")
+	if not inventory:
+		print("❌ ERROR: InventorySystem not found!")
+		return
 
-		# Try alternative method names
-		if player.has_method("get_total_gold") and player.has_method("spend_gold"):
-			print("✓ Found alternative methods: get_total_gold and spend_gold")
-			var player_gold = player.get_total_gold()
-			print("  Player has ", player_gold, " gold, needs ", PURCHASE_COST)
+	print("  ✓ Found InventorySystem")
 
-			if player_gold >= PURCHASE_COST:
-				if player.spend_gold(PURCHASE_COST):
-					print("✅ Purchased Buff Skeleton for ", PURCHASE_COST, " gold!")
-					convert_to_ally()
-					return
-			else:
-				print("❌ Not enough gold! Need ", PURCHASE_COST)
-				flash_red()
-				return
-		else:
-			print("❌ No gold methods found at all!")
-			return
+	# Check gold using inventory system
+	var total_gold = inventory.get_total_gold()
+	print("  💰 Player's actual gold (from inventory): ", total_gold)
 
-	var player_has_enough = player.has_gold(PURCHASE_COST)
-	print("  🔍 Calling player.has_gold(", PURCHASE_COST, ") returned: ", player_has_enough)
-
-	# Double check with direct comparison
-	if "gold" in player:
-		var direct_check = player.gold >= PURCHASE_COST
-		print("  🔍 Direct comparison (player.gold >= ", PURCHASE_COST, "): ", direct_check)
-		print("  🔍 Math: ", player.gold, " >= ", PURCHASE_COST, " = ", direct_check)
-
-	if not player_has_enough:
-		print("❌ Not enough gold! Need ", PURCHASE_COST)
+	if total_gold < PURCHASE_COST:
+		print("❌ Not enough gold! Need ", PURCHASE_COST, " but have ", total_gold)
 		flash_red()
 		return
 
-	# Deduct gold
-	if player.remove_gold(PURCHASE_COST):
+	# Deduct gold from inventory
+	if inventory.remove_gold(PURCHASE_COST):
 		print("✅ Purchased Buff Skeleton for ", PURCHASE_COST, " gold!")
+		print("  💰 Remaining gold: ", inventory.get_total_gold())
 		convert_to_ally()
 	else:
-		print("❌ Failed to remove gold!")
+		print("❌ Failed to remove gold from inventory!")
 
 func convert_to_ally():
 	print("🔄 Starting conversion to ally...")
