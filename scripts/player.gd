@@ -46,6 +46,10 @@ var miku_buffs := {
 	"move_speed": 1.0
 }
 
+# Special items (for quest system)
+var special_items: Dictionary = {}
+var has_miku_seal_key: bool = false
+
 # Preload particle scene
 var levelup_particle_scene = preload("res://scenes/effects/levelup_particle.tscn")
 
@@ -137,6 +141,11 @@ func _physics_process(delta):
 	update_sprite_direction()
 
 func handle_input():
+	# Check if input is disabled (for cutscenes)
+	if input_disabled:
+		input_vector = Vector2.ZERO
+		return
+
 	# DEBUG: Press PageUp to manually test upgrade menu
 	if Input.is_key_pressed(KEY_PAGEUP):
 		print("")
@@ -374,9 +383,65 @@ func apply_permanent_upgrades():
 	stats.max_hp = 100 + (save_data.player.permanent_hp_upgrades * 50)
 	stats.lucky = 1.0 + (save_data.player.permanent_luck_upgrades * 0.3)
 	stats.max_mana = 50 + ((save_data.player.total_kills / 100000) * 25)
-	
+
 	current_hp = stats.max_hp
 	current_mana = stats.max_mana
+
+
+# === SPECIAL ITEMS SYSTEM (for Miku Quest) ===
+
+func has_item(item_name: String) -> bool:
+	"""Check if player has a special item"""
+	if item_name == "Miku's Seal Key":
+		return has_miku_seal_key
+	return special_items.get(item_name, false)
+
+
+func add_special_item(item_name: String) -> void:
+	"""Add a special item to player's inventory"""
+	special_items[item_name] = true
+
+	if item_name == "Miku's Seal Key":
+		has_miku_seal_key = true
+		print("✓ Player obtained: Miku's Seal Key")
+
+
+func add_item(item_name: String) -> void:
+	"""Fallback method for adding items"""
+	add_special_item(item_name)
+
+
+func apply_permanent_miku_buffs() -> void:
+	"""Apply permanent buffs from Permanent Miku pet"""
+	# +10% luck (better drops)
+	if stats.has("lucky"):
+		stats.lucky *= 1.1
+
+	# +0.2 HP/s regen
+	if stats.has("hp_regen_per_second"):
+		stats.hp_regen_per_second += 0.2
+
+	print("✓ Permanent Miku buffs applied: +10% luck, +0.2 HP/s regen")
+
+
+# === INPUT CONTROL (for cutscenes) ===
+
+var input_disabled: bool = false
+
+func disable_input() -> void:
+	"""Disable player input (for cutscenes)"""
+	input_disabled = true
+	velocity = Vector2.ZERO
+
+
+func enable_input() -> void:
+	"""Re-enable player input"""
+	input_disabled = false
+
+
+func get_hp_percent() -> float:
+	"""Get current HP as percentage"""
+	return current_hp / stats.max_hp
 
 func equip_weapon(weapon: Weapon):
 	# DEPRECATED: Use update_equipped_weapons() instead for multi-weapon support
@@ -393,6 +458,21 @@ func equip_weapon(weapon: Weapon):
 	equipped_weapons.append(weapon)
 
 	print("⚠️ equip_weapon() is deprecated - use update_equipped_weapons() instead")
+
+
+func get_equipped_weapons() -> Array:
+	"""Get list of currently equipped weapon names (for Dark Miku mirroring)"""
+	var weapon_names: Array = []
+
+	for weapon in equipped_weapons:
+		if is_instance_valid(weapon):
+			if weapon.has("weapon_name"):
+				weapon_names.append(weapon.weapon_name)
+			elif weapon.has("name"):
+				weapon_names.append(weapon.name)
+
+	return weapon_names
+
 
 func calculate_damage(base_damage: float) -> float:
 	var damage = base_damage

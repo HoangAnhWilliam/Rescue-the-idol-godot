@@ -30,17 +30,19 @@ var blood_web_scene: PackedScene
 var tether_line: Line2D = null
 
 func _ready():
-	# Override base stats - Mini-boss tier
-	max_hp = 120.0
+	# Override base stats - Mini-boss tier (COMPLETE QUEST VERSION)
+	max_hp = 300.0  # Full mini-boss HP
 	current_hp = max_hp
 	damage = 15.0  # Base weapon damage
 	move_speed = 65.0
-	xp_reward = 60.0
+	xp_reward = 200.0  # Higher XP reward
 	detection_range = 500.0
 	attack_range = 100.0  # Varies by weapon
 	attack_cooldown = 1.2
 
 	add_to_group("enemies")
+	add_to_group("dark_miku")  # Special group for quest tracking
+
 	if hitbox:
 		hitbox.body_entered.connect(_on_hitbox_entered)
 
@@ -53,6 +55,10 @@ func _ready():
 	tether_line.default_color = Color.RED
 	tether_line.visible = false
 	add_child(tether_line)
+
+	# Chat messages (boss introduction)
+	ChatBox.send_chat_message("System", "⚠️ Dark Miku has appeared!", "System", get_tree())
+	ChatBox.send_chat_message("Dark Miku", "Have you come to kill me?", "DarkMiku", get_tree())
 
 	print("Dark Miku spawned at ", global_position)
 
@@ -349,6 +355,9 @@ func die():
 	despair_aura_active = false
 	set_physics_process(false)
 
+	# Chat messages (death dialogue)
+	ChatBox.send_chat_message("Dark Miku", "No... I have been defeated...", "DarkMiku", get_tree())
+
 	# Drop XP
 	if player and player.has_method("add_xp"):
 		player.add_xp(xp_reward)
@@ -361,9 +370,7 @@ func die():
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 0.0, 0.5)
-		tween.tween_callback(queue_free)
-	else:
-		queue_free()
+		await tween.finished
 
 	# Death effect
 	if has_node("/root/ParticleManager"):
@@ -373,4 +380,32 @@ func die():
 	if has_node("/root/CameraShake"):
 		get_node("/root/CameraShake").shake(0.8, 0.5)
 
-	print("Dark Miku defeated!")
+	# ★ DROP MIKU'S SEAL KEY ★
+	drop_seal_key()
+
+	# Chat notification about key
+	ChatBox.send_chat_message("System", "You obtained Miku's Seal Key!", "System", get_tree())
+
+	print("Dark Miku defeated! Key dropped.")
+
+	queue_free()
+
+
+# ============ KEY DROP ============
+
+func drop_seal_key() -> void:
+	"""Add Miku's Seal Key to player inventory"""
+
+	if not player:
+		return
+
+	# Try different methods to add the key
+	if player.has_method("add_special_item"):
+		player.add_special_item("Miku's Seal Key")
+	elif player.has_method("add_item"):
+		player.add_item("Miku's Seal Key")
+	elif player.has_method("set"):
+		# Fallback: Set a property
+		player.set("has_miku_seal_key", true)
+
+	print("✓ Miku's Seal Key added to player inventory")
