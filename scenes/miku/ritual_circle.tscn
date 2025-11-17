@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3 uid="uid://bh7m9xp2ql5wk"]
+
+[ext_resource type="Script" path="res://scripts/ritual_circle.gd" id="1_ritual"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ritual"]
+radius = 80.0
+
+[node name="RitualCircle" type="Node2D"]
+script = ExtResource("1_ritual")
+
+[node name="CircleSprite" type="Polygon2D" parent="."]
+color = Color(0.5, 0.2, 0.6, 0.7)
+
+[node name="SkullMarkers" type="Node2D" parent="."]
+
+[node name="Particles" type="CPUParticles2D" parent="."]
+amount = 30
+lifetime = 2.0
+direction = Vector2(0, -1)
+gravity = Vector2(0, -50)
+initial_velocity_min = 30.0
+initial_velocity_max = 60.0
+color = Color(0, 0.85, 1, 0.8)
+scale_amount_min = 4.0
+scale_amount_max = 8.0
+
+[node name="InteractionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_ritual")
+
+[node name="InteractionPrompt" type="Label" parent="."]
+offset_left = -100.0
+offset_top = -120.0
+offset_right = 100.0
+offset_bottom = -100.0
+text = "Press E to perform ritual"
+horizontal_alignment = 1
