@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dqgv3u1riibqd"]
+[gd_scene load_steps=8 format=3 uid="uid://dqgv3u1riibqd"]
 
 [ext_resource type="Script" uid="uid://cjul2ft3xn8x5" path="res://scripts/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://cj8v0xh5qn8mk" path="res://scenes/ui/chat_box.tscn" id="2_chat_box"]
+[ext_resource type="PackedScene" uid="uid://bqm3k5h8tn9vl" path="res://scenes/ui/miku_fragment_bar.tscn" id="3_fragment_bar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
 bg_color = Color(1, 0, 0.2, 1)
@@ -171,3 +173,29 @@ theme_override_colors/font_color = Color(1, 0.9, 0, 1)
 theme_override_font_sizes/font_size = 18
 text = "Phase 1"
 horizontal_alignment = 1
+
+[node name="ChatBox" parent="." instance=ExtResource("2_chat_box")]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 210.0
+grow_horizontal = 0
+
+[node name="MikuFragmentBar" parent="." instance=ExtResource("3_fragment_bar")]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 0
