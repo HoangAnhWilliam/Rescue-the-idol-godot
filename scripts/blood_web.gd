@@ -138,11 +138,15 @@ func apply_tether_slow() -> void:
 	# Check if player is moving away from caster
 	if caster and is_instance_valid(caster):
 		var to_player := (tether_target.global_position - caster.global_position).normalized()
-		var player_velocity := tether_target.velocity if tether_target.get("velocity") != null else Vector2.ZERO
+
+		# Explicit type annotation to fix type inference
+		var player_velocity: Vector2 = Vector2.ZERO
+		if tether_target.get("velocity") != null:
+			player_velocity = tether_target.velocity
 
 		if player_velocity.length() > 0:
-			var velocity_dir := player_velocity.normalized()
-			var dot := velocity_dir.dot(to_player)
+			var velocity_dir: Vector2 = player_velocity.normalized()
+			var dot: float = velocity_dir.dot(to_player)
 
 			# If moving away (dot > 0), apply slow
 			if dot > 0:
