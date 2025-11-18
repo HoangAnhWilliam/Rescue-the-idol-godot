@@ -1,14 +1,19 @@
 extends PanelContainer
 class_name ChatBox
 
-## Roblox-style chat box for boss dialogue, system messages, and player chat
-## Displays color-coded messages with sender names
+## Toggleable chat box for boss dialogue, system messages, and player chat
+## Press ENTER to show/hide. Boss messages show as floating popups
 
 @onready var scroll_container: ScrollContainer = $VBoxContainer/ScrollContainer
 @onready var message_log: VBoxContainer = $VBoxContainer/ScrollContainer/MessageLog
 @onready var chat_input: LineEdit = $VBoxContainer/ChatInput
 
 const MAX_MESSAGES: int = 50
+
+# Toggle state
+var is_chat_open: bool = false
+var original_position: Vector2
+var hidden_offset: Vector2 = Vector2(350, 0)  # Slide off-screen to the right
 
 # Color coding by sender type
 var sender_colors := {
@@ -30,10 +35,73 @@ func _ready() -> void:
 		chat_input.placeholder_text = "Type here..."
 		chat_input.text_submitted.connect(_on_chat_submitted)
 
-	# Welcome message
-	add_message("System", "Game started! Press ENTER to chat.", "System")
+	# Store original position
+	original_position = position
 
-	print("=== Chat Box Initialized ===")
+	# Start hidden (off-screen to the right)
+	position = original_position + hidden_offset
+	modulate.a = 0.0
+	is_chat_open = false
+
+	# Welcome message (will be added but not shown until opened)
+	add_message("System", "Press ENTER to open chat", "System")
+
+	print("=== Chat Box Initialized (Toggle Mode) ===")
+
+
+func toggle_chat() -> void:
+	"""Toggle chat visibility with slide animation"""
+
+	if is_chat_open:
+		close_chat()
+	else:
+		open_chat()
+
+
+func open_chat() -> void:
+	"""Open chat with slide-in animation"""
+
+	if is_chat_open:
+		return
+
+	is_chat_open = true
+
+	# Slide in from right
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+
+	tween.tween_property(self, "position", original_position, 0.3)
+	tween.tween_property(self, "modulate:a", 1.0, 0.2)
+
+	await tween.finished
+
+	# Focus input
+	if chat_input:
+		chat_input.grab_focus()
+
+
+func close_chat() -> void:
+	"""Close chat with slide-out animation"""
+
+	if not is_chat_open:
+		return
+
+	# Release focus first
+	if chat_input and chat_input.has_focus():
+		chat_input.release_focus()
+
+	is_chat_open = false
+
+	# Slide out to right
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_IN)
+	tween.set_trans(Tween.TRANS_QUAD)
+
+	tween.tween_property(self, "position", original_position + hidden_offset, 0.25)
+	tween.tween_property(self, "modulate:a", 0.0, 0.2)
 
 
 func add_message(sender: String, text: String, sender_type: String = "System") -> void:
@@ -79,6 +147,8 @@ func _on_chat_submitted(text: String) -> void:
 	"""Handle chat input submission"""
 
 	if text.strip_edges().is_empty():
+		# Empty submit = close chat
+		close_chat()
 		return
 
 	# Check if command (starts with /)
@@ -91,7 +161,9 @@ func _on_chat_submitted(text: String) -> void:
 	# Clear input
 	if chat_input:
 		chat_input.text = ""
-		chat_input.release_focus()
+
+	# Close chat after sending message
+	close_chat()
 
 
 func process_command(text: String) -> void:
@@ -127,20 +199,24 @@ func clear_chat() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	"""Handle input for chat focus"""
+	"""Handle input for chat toggle"""
 
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_ENTER:
-				# Focus chat input
-				if chat_input and not chat_input.has_focus():
+				# Toggle chat open/close
+				if not is_chat_open:
+					open_chat()
+					get_viewport().set_input_as_handled()
+				elif chat_input and not chat_input.has_focus():
+					# If chat open but not focused, focus it
 					chat_input.grab_focus()
 					get_viewport().set_input_as_handled()
 
 			KEY_ESCAPE:
-				# Unfocus chat input
-				if chat_input and chat_input.has_focus():
-					chat_input.release_focus()
+				# Close chat
+				if is_chat_open:
+					close_chat()
 					get_viewport().set_input_as_handled()
 
 
@@ -151,3 +227,52 @@ static func send_chat_message(sender: String, text: String, sender_type: String,
 	var chat_box := tree.get_first_node_in_group("chat_box") as ChatBox
 	if chat_box:
 		chat_box.add_message(sender, text, sender_type)
+
+		# Show boss dialogue as floating popup
+		if sender_type in ["DarkMiku", "DespairMiku", "FireDragon", "VampireLord"]:
+			chat_box.show_floating_message(sender, text, sender_type)
+
+
+func show_floating_message(sender: String, text: String, sender_type: String) -> void:
+	"""Show important message as floating popup (for boss dialogue)"""
+
+	# Create floating label
+	var popup := Label.new()
+	popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	popup.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	popup.add_theme_font_size_override("font_size", 24)
+
+	# Get color
+	var color: Color = sender_colors.get(sender_type, Color.WHITE)
+	popup.add_theme_color_override("font_color", color)
+
+	# Format text
+	popup.text = "[%s]: %s" % [sender, text]
+
+	# Add outline for better visibility
+	popup.add_theme_color_override("font_outline_color", Color.BLACK)
+	popup.add_theme_constant_override("outline_size", 2)
+
+	# Position at center-top
+	popup.z_index = 1000
+	popup.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	popup.offset_top = 150
+	popup.custom_minimum_size = Vector2(600, 60)
+
+	# Add to scene
+	get_tree().root.add_child(popup)
+
+	# Fade in
+	popup.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(popup, "modulate:a", 1.0, 0.3)
+
+	# Wait
+	await get_tree().create_timer(3.5).timeout
+
+	# Fade out
+	tween = create_tween()
+	tween.tween_property(popup, "modulate:a", 0.0, 0.5)
+	await tween.finished
+
+	popup.queue_free()
