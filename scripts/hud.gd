@@ -25,6 +25,11 @@ var boss_manager: BossManager
 @onready var boss_hp_label = $BossHealthBar/VBoxContainer/HPBarContainer/HPLabel if has_node("BossHealthBar/VBoxContainer/HPBarContainer/HPLabel") else null
 @onready var boss_phase_label = $BossHealthBar/VBoxContainer/PhaseLabel if has_node("BossHealthBar/VBoxContainer/PhaseLabel") else null
 
+# Miku Quest UI
+@onready var chat_box = $ChatBox if has_node("ChatBox") else null
+@onready var chat_indicator = $ChatIndicator if has_node("ChatIndicator") else null
+@onready var miku_fragment_bar = $MikuFragmentBar if has_node("MikuFragmentBar") else null
+
 var current_boss: Node = null
 
 func _ready():
@@ -158,6 +163,12 @@ func _process(delta):
 	# Update boss health bar
 	if current_boss and is_instance_valid(current_boss):
 		update_boss_health_bar()
+
+	# Update chat indicator visibility
+	if chat_box and chat_indicator:
+		# Hide indicator when chat is open
+		chat_indicator.visible = not chat_box.is_chat_open
+
 # Signal handlers
 func _on_hp_changed(current: float, maximum: float):
 	print("📊 HP changed: ", current, "/", maximum)
