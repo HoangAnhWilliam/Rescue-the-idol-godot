@@ -46,6 +46,12 @@ var miku_buffs := {
 	"move_speed": 1.0
 }
 
+# Cheat system properties (for CheatCommands)
+var god_mode: bool = false
+var one_shot_kill: bool = false
+var invincible_hp: bool = false
+var invincible_mana: bool = false
+
 # Special items (for quest system)
 var special_items: Dictionary = {}
 var has_miku_seal_key: bool = false
@@ -247,6 +253,11 @@ func update_sprite_direction():
 			sprite.scale.x = -1 if input_vector.x > 0 else 1
 
 func take_damage(amount: float):
+	# CHEAT: God mode / Invincible HP check
+	if god_mode or invincible_hp:
+		print("💫 Damage blocked by god mode/invincible HP")
+		return
+
 	current_hp -= amount
 	hp_changed.emit(current_hp, stats.max_hp)
 
@@ -261,7 +272,7 @@ func take_damage(amount: float):
 	sprite.modulate = Color.RED
 	await get_tree().create_timer(0.1).timeout
 	sprite.modulate = Color.WHITE
-	
+
 	if current_hp <= 0:
 		die()
 

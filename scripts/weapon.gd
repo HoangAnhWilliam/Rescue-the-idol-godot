@@ -57,13 +57,29 @@ func find_closest_enemy() -> CharacterBody2D:
 func attack(target: CharacterBody2D):
 	if not is_instance_valid(target):
 		return
-	
+
+	# CHEAT: Check if player has one-shot kill enabled
+	if player and player.has("one_shot_kill") and player.one_shot_kill:
+		print("💥 ONE-SHOT KILL: ", target.name)
+		# Instantly kill enemy
+		if target.has_method("die"):
+			target.die()
+		else:
+			target.queue_free()
+
+		# Camera shake for dramatic effect
+		if camera and camera.has_method("crit_shake"):
+			camera.crit_shake()
+
+		create_hit_effect(target.global_position)
+		return
+
 	#Calculate damage with crit
 	var final_damage = calculate_damage()
 	var is_crit = check_crit()
-	
+
 	print("Attacking ", target.name, " for ", final_damage, " damage!", " (Crit: ", is_crit, ")")
-	
+
 	if is_projectile:
 		# TODO: Spawn projectile later
 		pass
@@ -71,13 +87,13 @@ func attack(target: CharacterBody2D):
 		# Melee attack - instant damage
 		if target.has_method("take_damage"):
 			target.take_damage(damage, global_position)
-			
+
 			# Camera shake on crit
 			if is_crit and camera and camera.has_method("crit_shake"):
 				camera.crit_shake()
 			elif camera and camera.has_method("small_shake"):
 				camera.small_shake()
-			
+
 			# Visual feedback
 			create_hit_effect(target.global_position)
 
