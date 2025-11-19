@@ -175,11 +175,12 @@ func process_command(text: String) -> void:
 		return
 
 	# Route all other commands to CheatCommands singleton
-	if CheatCommands:
-		CheatCommands.process_command(text)
+	var cheat_commands = get_node_or_null("/root/CheatCommands")
+	if cheat_commands:
+		cheat_commands.process_command(text)
 	else:
-		add_message("System", "ERROR: CheatCommands system not found", "System")
-		print("❌ ChatBox: CheatCommands singleton not available")
+		add_message("System", "ERROR: CheatCommands not set up. Add to Autoload in Project Settings", "System")
+		print("❌ ChatBox: CheatCommands singleton not available - add to Autoload!")
 
 
 func clear_chat() -> void:
