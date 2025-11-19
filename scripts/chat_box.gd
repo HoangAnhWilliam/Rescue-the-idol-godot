@@ -167,26 +167,19 @@ func _on_chat_submitted(text: String) -> void:
 
 
 func process_command(text: String) -> void:
-	"""Process slash commands"""
+	"""Process slash commands - Routes to CheatCommands system"""
 
-	# Parse command
-	var parts := text.substr(1).split(" ", false)
-	if parts.is_empty():
+	# Special local commands
+	if text.begins_with("/clear"):
+		clear_chat()
 		return
 
-	var command := parts[0].to_lower()
-
-	match command:
-		"help":
-			add_message("System", "Available commands:", "System")
-			add_message("System", "/help - Show this message", "System")
-			add_message("System", "/clear - Clear chat", "System")
-
-		"clear":
-			clear_chat()
-
-		_:
-			add_message("System", "Unknown command: " + command, "System")
+	# Route all other commands to CheatCommands singleton
+	if CheatCommands:
+		CheatCommands.process_command(text)
+	else:
+		add_message("System", "ERROR: CheatCommands system not found", "System")
+		print("❌ ChatBox: CheatCommands singleton not available")
 
 
 func clear_chat() -> void:
