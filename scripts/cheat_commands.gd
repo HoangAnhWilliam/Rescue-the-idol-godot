@@ -1076,56 +1076,134 @@ func cmd_load():
 
 func cmd_help(args: Array):
 	"""Show command help
-	Usage: /help OR /help <command>"""
+	Usage: /help OR /help <command> OR /help <category>"""
 	if args.size() == 0:
-		# Show command list by category
+		# Show compact command list
 		send_response("=== CHEAT COMMANDS ===")
-		send_response("GAME: /pause /continue /suicide")
-		send_response("GOD: /god /ungod")
-		send_response("STATS: /hp /mana /addxp /level /stats /damage")
-		send_response("COMBAT: /kill /killall")
-		send_response("INVENTORY: /clearinv /give")
-		send_response("MOVEMENT: /tp /tprandom")
-		send_response("SPAWN: /summon")
-		send_response("REVIVE: /revive /revivegod")
-		send_response("TIME: /time /speed")
-		send_response("WEAPONS: /weapon")
-		send_response("BIOMES: /biome")
-		send_response("MIKU: /miku")
-		send_response("DEBUG: /debug /info")
-		send_response("SAVE: /save /load")
-		send_response("Type /help <command> for details")
+		send_response("📌 POPULAR:")
+		send_response("  /god - God mode | /stats max - Max stats")
+		send_response("  /give $ 999999 - Get gold | /tp <biome>")
+		send_response("  /kill <enemy> <radius> | /summon")
+		send_response("")
+		send_response("📂 CATEGORIES: (use /help <category>)")
+		send_response("  game | god | stats | combat | inventory")
+		send_response("  movement | spawn | revive | time | info")
+		send_response("")
+		send_response("💡 Examples:")
+		send_response("  /help god - Show god mode commands")
+		send_response("  /help tp - Show teleport help")
 	else:
-		# Show detailed help for specific command
-		var cmd = args[0].to_lower()
-		show_command_help(cmd)
+		# Show detailed help for specific command or category
+		var arg = args[0].to_lower()
+		show_command_help(arg)
 
 
 func show_command_help(cmd: String):
-	"""Show detailed help for a specific command"""
+	"""Show detailed help for a specific command or category"""
 	match cmd:
+		# === CATEGORIES ===
+		"game":
+			send_response("=== GAME CONTROL ===")
+			send_response("/pause - Pause game")
+			send_response("/continue - Resume game")
+			send_response("/suicide - Kill yourself")
+
 		"god":
-			send_response("/god [time|infinite] - Enable god mode")
-			send_response("Examples: /god, /god 10mins, /god infinite")
+			send_response("=== GOD MODE ===")
+			send_response("/god [time] - Enable god mode")
+			send_response("  Examples: /god, /god 5mins, /god infinite")
+			send_response("/ungod - Disable god mode")
+
+		"stats":
+			send_response("=== STATS ===")
+			send_response("/hp <amt> <true/false> - Set HP + invincibility")
+			send_response("/mana <amt> <true/false> - Set Mana")
+			send_response("/addxp <amt> - Add XP")
+			send_response("/addxp to reach lvl <X> - Level up")
+			send_response("/level set <X> - Set level")
+			send_response("/stats reset|max - Reset or max stats")
+			send_response("/damage set <X> - Set damage")
+
+		"combat":
+			send_response("=== COMBAT ===")
+			send_response("/kill <enemy> <radius> - Kill enemies")
+			send_response("  /kill zombie 20 - Kill zombies in radius")
+			send_response("  /kill 50 - Kill all in radius")
+			send_response("/killall - Kill all enemies")
+
+		"inventory":
+			send_response("=== INVENTORY ===")
+			send_response("/clearinv [slot] - Clear inventory")
+			send_response("/give $ <amount> - Give gold")
+			send_response("/give <weapon> <amt> - Give weapon")
+
+		"movement":
+			send_response("=== MOVEMENT ===")
+			send_response("/tp <x> <y> - Teleport to coords")
+			send_response("/tp <biome> - Teleport to biome")
+			send_response("  Biomes: forest, desert, tundra, volcanic, temple")
+			send_response("/tprandom <radius> - Random teleport")
+
+		"spawn":
+			send_response("=== SPAWN ENEMIES ===")
+			send_response("/summon @player <enemy> <count> [time]")
+			send_response("  Enemies: zombie, skeleton, anime_ghost")
+			send_response("  Bosses: fire_dragon, vampire_lord, despair_miku")
+
+		"revive":
+			send_response("=== REVIVE ===")
+			send_response("/revive - Revive with full HP/Mana")
+			send_response("/revivegod [time] - Revive with god mode")
+
+		"time":
+			send_response("=== TIME & SPEED ===")
+			send_response("/time set <sec> - Set game time")
+			send_response("/time add <sec> - Add time")
+			send_response("/speed <X> - Change game speed (0.1-5.0)")
+			send_response("/speed normal - Reset speed")
+
+		"info":
+			send_response("=== INFO & DEBUG ===")
+			send_response("/info player - Show player stats")
+			send_response("/biome info - Show current biome")
+			send_response("/biome list - List all biomes")
+			send_response("/debug fps|hitbox|enemy - Toggle debug")
+			send_response("/save - Save game")
+			send_response("/load - Load game")
+
+		# === SPECIFIC COMMANDS ===
+		"tp", "teleport":
+			send_response("/tp <x> <y> OR /tp <biome> - Teleport")
+			send_response("Examples: /tp 4500 0, /tp blood temple")
 
 		"hp":
-			send_response("/hp <amount> <true/false> - Set HP with optional invincibility")
+			send_response("/hp <amount> <true/false> - Set HP")
+			send_response("  true = invincible, false = normal")
 			send_response("Examples: /hp 1000 true, /hp 500 false")
 
 		"kill":
 			send_response("/kill <enemy> <radius> - Kill enemies")
-			send_response("Examples: /kill zombie 20, /kill 50, /kill anime ghost")
-
-		"tp":
-			send_response("/tp <x> <y> OR /tp <biome> - Teleport player")
-			send_response("Examples: /tp 4500 0, /tp blood temple")
+			send_response("Examples:")
+			send_response("  /kill zombie 20 - Zombies in radius 20")
+			send_response("  /kill 50 - All enemies in radius 50")
+			send_response("  /kill anime ghost - All anime ghosts (no limit)")
 
 		"summon":
-			send_response("/summon @player <enemy> <count> [time] - Summon enemies")
-			send_response("Examples: /summon @player zombie 10, /summon @4500 0 fire_dragon 1")
+			send_response("/summon @player <enemy> <count> [time]")
+			send_response("Examples:")
+			send_response("  /summon @player zombie 10")
+			send_response("  /summon @player zombie 10 30sec")
+			send_response("  /summon @4500 0 fire_dragon 1")
+
+		"give":
+			send_response("/give $ <amount> OR /give <weapon> <amount>")
+			send_response("Examples:")
+			send_response("  /give $ 1000000 - Give gold")
+			send_response("  /give miku_sword 1 - Give weapon")
 
 		_:
-			send_error("No detailed help for: " + cmd)
+			send_error("Unknown command/category: " + cmd)
+			send_response("Try: /help (show all categories)")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
