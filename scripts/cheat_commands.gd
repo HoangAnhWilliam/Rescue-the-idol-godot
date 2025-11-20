@@ -36,10 +36,10 @@ var enemy_scenes := {
 	"magma_slime": "res://scenes/enemies/magma_slime.tscn",
 	"vampire_bat": "res://scenes/enemies/vampire_bat.tscn",
 
-	# Bosses
-	"fire_dragon": "res://scenes/bosses/FireDragon.tscn",
-	"vampire_lord": "res://scenes/bosses/VampireLord.tscn",
-	"despair_miku": "res://scenes/bosses/DespairMiku.tscn",
+	# Bosses (lowercase paths - FIXED)
+	"fire_dragon": "res://scenes/bosses/fire_dragon.tscn",
+	"vampire_lord": "res://scenes/bosses/vampire_lord.tscn",
+	"despair_miku": "res://scenes/bosses/despair_miku.tscn",
 }
 
 # Debug toggles
@@ -1154,8 +1154,9 @@ func show_command_help(cmd: String):
 		"movement":
 			send_response("=== MOVEMENT ===")
 			send_response("/tp <x> <y> - Teleport to coords")
-			send_response("/tp <biome> - Teleport to biome")
+			send_response("/tp <biome> - Teleport to biome area")
 			send_response("  Biomes: forest, desert, tundra, volcanic, temple")
+			send_response("  NOTE: Biomes are procedural, positions are approximate")
 			send_response("/tprandom <radius> - Random teleport")
 
 		"spawn":
@@ -1278,28 +1279,30 @@ func get_biome_at_position(pos: Vector2) -> String:
 		return "Blood Temple"
 
 func get_biome_position(biome_name: String) -> Vector2:
-	"""Get biome center position"""
+	"""Get biome position (uses boss spawn positions where available)
+	NOTE: Biomes are procedurally generated, so these are APPROXIMATE locations
+	that are likely to contain the desired biome type."""
 	var lower = biome_name.to_lower().replace("_", " ")
 
-	# Starting Forest
+	# Starting Forest (spawn area - always forest within 600 units)
 	if "forest" in lower or "starting" in lower:
-		return Vector2(500, 0)
+		return Vector2(0, 0)
 
-	# Desert Wasteland
+	# Desert Wasteland (east - hot/dry biomes tend to generate here)
 	elif "desert" in lower or "wasteland" in lower:
-		return Vector2(1500, 0)
+		return Vector2(2000, 0)
 
-	# Frozen Tundra
+	# Frozen Tundra (north - cold biomes tend to generate here)
 	elif "tundra" in lower or "frozen" in lower:
-		return Vector2(2500, 0)
+		return Vector2(0, -2500)
 
-	# Volcanic Darklands
+	# Volcanic Darklands (south - BOSS SPAWN POSITION)
 	elif "volcanic" in lower or "darkland" in lower:
-		return Vector2(3500, 0)
+		return Vector2(0, 3500)  # From BossManager.BOSS_SPAWN_POSITIONS
 
-	# Blood Temple
+	# Blood Temple (west - BOSS SPAWN POSITION)
 	elif "blood" in lower or "temple" in lower:
-		return Vector2(4500, 0)
+		return Vector2(-3500, 0)  # From BossManager.BOSS_SPAWN_POSITIONS
 
 	else:
 		return Vector2.ZERO
