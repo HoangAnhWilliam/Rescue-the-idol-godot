@@ -200,6 +200,11 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_T:
+				# Only toggle chat if NOT typing in chat input
+				if chat_input and chat_input.has_focus():
+					# Player is typing, don't toggle chat
+					return
+
 				# Toggle chat open/close with T key
 				if not is_chat_open:
 					open_chat()
