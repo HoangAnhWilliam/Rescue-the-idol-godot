@@ -38,6 +38,14 @@ func _ready() -> void:
 		chat_input.placeholder_text = "Type here..."
 		chat_input.text_submitted.connect(_on_chat_submitted)
 
+	# Enable mouse scroll for chat messages
+	if scroll_container:
+		scroll_container.mouse_filter = Control.MOUSE_FILTER_PASS
+		scroll_container.follow_focus = false
+
+	if message_log:
+		message_log.mouse_filter = Control.MOUSE_FILTER_PASS
+
 	# Store original position
 	original_position = position
 

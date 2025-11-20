@@ -17,12 +17,26 @@ var one_shot_kill_active: bool = false
 var invincible_hp: bool = false
 var invincible_mana: bool = false
 
-# Enemy scene mappings
+# Enemy scene mappings (all lowercase keys for easy matching)
 var enemy_scenes := {
+	# Basic enemies
 	"zombie": "res://scenes/enemies/Zombie.tscn",
-	"skeleton": "res://scenes/enemies/Skeleton.tscn",
-	"anime_ghost": "res://scenes/enemies/AnimeGhost.tscn",
-	"dark_miku": "res://scenes/enemies/DarkMiku.tscn",
+	"skeleton_bad": "res://scenes/enemies/skeleton_bad.tscn",
+	"skeleton_buff": "res://scenes/enemies/skeleton_buff.tscn",
+	"anime_ghost": "res://scenes/enemies/anime_ghost.tscn",
+	"dark_miku": "res://scenes/enemies/dark_miku.tscn",
+
+	# Biome-specific enemies
+	"desert_nomad": "res://scenes/enemies/desert_nomad.tscn",
+	"skeleton_camel": "res://scenes/enemies/skeleton_camel.tscn",
+	"ice_golem": "res://scenes/enemies/ice_golem.tscn",
+	"snowdwarf_traitor": "res://scenes/enemies/snowdwarf_traitor.tscn",
+	"snowman_warrior": "res://scenes/enemies/snowman_warrior.tscn",
+	"lava_elemental": "res://scenes/enemies/lava_elemental.tscn",
+	"magma_slime": "res://scenes/enemies/magma_slime.tscn",
+	"vampire_bat": "res://scenes/enemies/vampire_bat.tscn",
+
+	# Bosses
 	"fire_dragon": "res://scenes/bosses/FireDragon.tscn",
 	"vampire_lord": "res://scenes/bosses/VampireLord.tscn",
 	"despair_miku": "res://scenes/bosses/DespairMiku.tscn",
@@ -1147,7 +1161,12 @@ func show_command_help(cmd: String):
 		"spawn":
 			send_response("=== SPAWN ENEMIES ===")
 			send_response("/summon @player <enemy> <count> [time]")
-			send_response("  Enemies: zombie, skeleton, anime_ghost")
+			send_response("  Basic: zombie, skeleton_bad, skeleton_buff")
+			send_response("  anime_ghost, dark_miku")
+			send_response("  Desert: desert_nomad, skeleton_camel")
+			send_response("  Tundra: ice_golem, snowdwarf_traitor, snowman_warrior")
+			send_response("  Volcanic: lava_elemental, magma_slime")
+			send_response("  Temple: vampire_bat")
 			send_response("  Bosses: fire_dragon, vampire_lord, despair_miku")
 
 		"revive":
@@ -1260,18 +1279,28 @@ func get_biome_at_position(pos: Vector2) -> String:
 
 func get_biome_position(biome_name: String) -> Vector2:
 	"""Get biome center position"""
-	var lower = biome_name.to_lower()
+	var lower = biome_name.to_lower().replace("_", " ")
 
+	# Starting Forest
 	if "forest" in lower or "starting" in lower:
 		return Vector2(500, 0)
-	elif "desert" in lower:
+
+	# Desert Wasteland
+	elif "desert" in lower or "wasteland" in lower:
 		return Vector2(1500, 0)
+
+	# Frozen Tundra
 	elif "tundra" in lower or "frozen" in lower:
 		return Vector2(2500, 0)
+
+	# Volcanic Darklands
 	elif "volcanic" in lower or "darkland" in lower:
 		return Vector2(3500, 0)
+
+	# Blood Temple
 	elif "blood" in lower or "temple" in lower:
 		return Vector2(4500, 0)
+
 	else:
 		return Vector2.ZERO
 
