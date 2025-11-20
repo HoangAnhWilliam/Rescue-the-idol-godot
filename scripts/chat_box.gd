@@ -44,7 +44,7 @@ func _ready() -> void:
 	is_chat_open = false
 
 	# Welcome message (will be added but not shown until opened)
-	add_message("System", "Press ENTER to open chat", "System")
+	add_message("System", "Press T to open chat", "System")
 
 	print("=== Chat Box Initialized (Toggle Mode) ===")
 
@@ -147,8 +147,7 @@ func _on_chat_submitted(text: String) -> void:
 	"""Handle chat input submission"""
 
 	if text.strip_edges().is_empty():
-		# Empty submit = close chat
-		close_chat()
+		# Empty submit = just clear input, don't close chat
 		return
 
 	# Check if command (starts with /)
@@ -158,12 +157,12 @@ func _on_chat_submitted(text: String) -> void:
 		# Normal player message
 		add_message("Player", text, "Player")
 
-	# Clear input
+	# Clear input and keep focus
 	if chat_input:
 		chat_input.text = ""
+		chat_input.grab_focus()
 
-	# Close chat after sending message
-	close_chat()
+	# NOTE: Chat stays open after sending message (changed from auto-close)
 
 
 func process_command(text: String) -> void:
@@ -197,18 +196,17 @@ func _input(event: InputEvent) -> void:
 
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
-			KEY_ENTER:
-				# Toggle chat open/close
+			KEY_T:
+				# Toggle chat open/close with T key
 				if not is_chat_open:
 					open_chat()
 					get_viewport().set_input_as_handled()
-				elif chat_input and not chat_input.has_focus():
-					# If chat open but not focused, focus it
-					chat_input.grab_focus()
+				else:
+					close_chat()
 					get_viewport().set_input_as_handled()
 
 			KEY_ESCAPE:
-				# Close chat
+				# Close chat with ESC
 				if is_chat_open:
 					close_chat()
 					get_viewport().set_input_as_handled()
