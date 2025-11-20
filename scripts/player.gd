@@ -154,7 +154,7 @@ func handle_input():
 
 	# CHEAT: Check if chat is open and focused - don't move player
 	var chat_box = get_tree().get_first_node_in_group("chat_box")
-	if chat_box and chat_box.has("is_chat_open") and chat_box.is_chat_open:
+	if chat_box and "is_chat_open" in chat_box and chat_box.is_chat_open:
 		input_vector = Vector2.ZERO
 		return
 
