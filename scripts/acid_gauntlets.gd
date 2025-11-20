@@ -113,11 +113,12 @@ func spawn_rain_particles():
 		if rain_active:
 			spawn_rain_particles()
 
-# Area effect, no specific target needed
-func attack(target_position: Vector2):
-	# Attack handled by _process() timer
+# Override parent attack method to match signature
+func attack(target: CharacterBody2D):
+	# Attack handled by _process() timer, not per-target
+	# This weapon uses area-of-effect instead of single target
 	pass
 
 func find_closest_enemy() -> CharacterBody2D:
-	# Area effect, no specific target
+	# Area effect, no specific target needed
 	return null

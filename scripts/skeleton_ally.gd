@@ -51,11 +51,14 @@ func _ready():
 	# Find player
 	player = get_tree().get_first_node_in_group("player")
 	if not player:
-		print("ERROR: No player found for ally skeleton!")
+		print("❌ ERROR: No player found for ally skeleton!")
 		queue_free()
 		return
 
-	print("✨ Ally Skeleton spawned! Will fight for 10 minutes.")
+	print("✨ Ally Skeleton spawned at ", global_position)
+	print("  🎯 Will follow player and attack enemies for 10 minutes")
+	print("  ⚔️ Damage: ", damage, " | Range: ", shoot_range)
+	print("  🏃 Move Speed: ", move_speed)
 
 func _physics_process(delta):
 	# Update lifetime

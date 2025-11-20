@@ -203,7 +203,18 @@ func clear_chat() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	"""Handle input for chat toggle"""
+	"""Handle input for chat toggle and mouse wheel scroll"""
+
+	# Handle mouse wheel scrolling when chat is open
+	if is_chat_open and event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			if scroll_container:
+				scroll_container.scroll_vertical -= 30
+				get_viewport().set_input_as_handled()
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			if scroll_container:
+				scroll_container.scroll_vertical += 30
+				get_viewport().set_input_as_handled()
 
 	if event is InputEventKey and event.pressed:
 		match event.keycode:

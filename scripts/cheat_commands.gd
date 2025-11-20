@@ -361,6 +361,11 @@ func cmd_addxp(args: Array):
 
 func level_up_to_target(target_level: int):
 	"""Level up player to target level, showing upgrade menus"""
+	var upgrade_menu = get_tree().get_first_node_in_group("upgrade_menu")
+	if not upgrade_menu:
+		send_error("Upgrade menu not found - cannot show level up menus")
+		return
+
 	while player.level < target_level:
 		# Force level up
 		player.level += 1
@@ -370,10 +375,14 @@ func level_up_to_target(target_level: int):
 		# Emit level up signal
 		player.level_up.emit(player.level)
 
-		# Show upgrade menu for each level
+		# Show upgrade menu for this level
 		player.show_level_up_menu()
 
-		# Wait a bit for upgrade menu to process
+		# Wait for player to choose an upgrade before continuing
+		# Menu emits upgrade_chosen signal when player selects
+		await upgrade_menu.upgrade_chosen
+
+		# Small delay before next level
 		await get_tree().create_timer(0.1).timeout
 
 func cmd_level(args: Array):
