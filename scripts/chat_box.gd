@@ -30,6 +30,9 @@ var sender_colors := {
 func _ready() -> void:
 	add_to_group("chat_box")
 
+	# IMPORTANT: ChatBox must work even when game is paused (for /pause and /continue commands)
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Setup chat input
 	if chat_input:
 		chat_input.placeholder_text = "Type here..."
