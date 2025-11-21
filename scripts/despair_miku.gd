@@ -501,8 +501,8 @@ func attack_despair_beam() -> void:
 		beam.add_point(beam_end)
 
 		# Check collision with player (simplified - distance check)
-		var to_player := player.global_position - global_position
-		var distance_to_beam := abs(to_player.cross(direction))
+		var to_player: Vector2 = player.global_position - global_position
+		var distance_to_beam: float = abs(to_player.cross(direction))
 
 		if distance_to_beam < 25 and to_player.length() < 600:
 			player.take_damage(40.0 * get_physics_process_delta_time(), global_position)

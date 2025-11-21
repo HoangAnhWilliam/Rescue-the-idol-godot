@@ -335,9 +335,9 @@ func cmd_addxp(args: Array):
 		send_error("Usage: /addxp <amount> OR /addxp to reach lvl <level>")
 		return
 
-	# Check if format is "to reach lvl X"
+	# Check if format is "to reach lvl X" or "reach to lvl X"
 	var full_text = " ".join(args).to_lower()
-	if "to reach lvl" in full_text or "to reach level" in full_text:
+	if "to reach lvl" in full_text or "to reach level" in full_text or "reach to lvl" in full_text or "reach to level" in full_text:
 		# Extract target level
 		var target_level = 0
 		for arg in args:
@@ -404,6 +404,9 @@ func cmd_level(args: Array):
 	player.level = new_level
 	player.current_xp = 0.0
 	player.xp_to_next_level = player.get_xp_for_next_level()
+
+	# Emit signal to update HUD
+	player.level_up.emit(player.level)
 
 	send_response("Level set to %d" % new_level)
 
@@ -616,8 +619,9 @@ func cmd_give(args: Array):
 	# Check if giving gold
 	if args[0] == "$":
 		var amount = args[1].to_int()
+		var old_gold = player.gold
 		player.add_gold(amount)
-		send_response("Gave %d gold" % amount)
+		send_response("Gave %d gold (Total: %d)" % [amount, player.gold])
 		return
 
 	# Give weapon/item
@@ -717,17 +721,13 @@ func cmd_summon(args: Array):
 		send_error("Player not found")
 		return
 
-	if args.size() < 3:
-		send_error("Usage: /summon @player <enemy> <count> [time] OR /summon @<x> <y> <enemy> <count> [time]")
-		return
-
 	var spawn_pos: Vector2
 	var enemy_name: String
 	var count: int
 	var lifetime: float = -1.0  # -1 means permanent
 
 	# Parse format
-	if args[0].to_lower() == "@player":
+	if args.size() >= 3 and args[0].to_lower() == "@player":
 		# Format: @player <enemy> <count> [time]
 		spawn_pos = player.global_position + Vector2(100, 0)
 		enemy_name = args[1].to_lower()
@@ -735,20 +735,19 @@ func cmd_summon(args: Array):
 
 		if args.size() >= 4:
 			lifetime = parse_time_string(args[3])
-	else:
+	elif args.size() >= 4 and args[0].begins_with("@"):
 		# Format: @<x> <y> <enemy> <count> [time]
-		if args[0].begins_with("@"):
-			var x = args[0].substr(1).to_float()
-			var y = args[1].to_float()
-			spawn_pos = Vector2(x, y)
-			enemy_name = args[2].to_lower()
-			count = args[3].to_int()
+		var x = args[0].substr(1).to_float()
+		var y = args[1].to_float()
+		spawn_pos = Vector2(x, y)
+		enemy_name = args[2].to_lower()
+		count = args[3].to_int()
 
-			if args.size() >= 5:
-				lifetime = parse_time_string(args[4])
-		else:
-			send_error("Invalid format. Use @player or @<x>")
-			return
+		if args.size() >= 5:
+			lifetime = parse_time_string(args[4])
+	else:
+		send_error("Usage: /summon @player <enemy> <count> [time] OR /summon @<x> <y> <enemy> <count> [time]")
+		return
 
 	# Get enemy scene path
 	var scene_path = get_enemy_scene_path(enemy_name)
@@ -1165,7 +1164,8 @@ func show_command_help(cmd: String):
 			send_response("/tp <x> <y> - Teleport to coords")
 			send_response("/tp <biome> - Teleport to biome area")
 			send_response("  Biomes: forest, desert, tundra, volcanic, temple")
-			send_response("  NOTE: Biomes are procedural, positions are approximate")
+			send_response("  ⚠️ Biomes use procedural generation - positions vary by seed")
+			send_response("  TIP: Use /biome info after teleport to check biome")
 			send_response("/tprandom <radius> - Random teleport")
 
 		"spawn":
@@ -1288,30 +1288,32 @@ func get_biome_at_position(pos: Vector2) -> String:
 		return "Blood Temple"
 
 func get_biome_position(biome_name: String) -> Vector2:
-	"""Get biome position (uses boss spawn positions where available)
-	NOTE: Biomes are procedurally generated, so these are APPROXIMATE locations
-	that are likely to contain the desired biome type."""
+	"""Get biome position - tries multiple locations to find the biome
+	NOTE: Biomes are procedurally generated using noise, so positions vary by world seed.
+	These coordinates are from boss spawn positions or likely biome areas."""
 	var lower = biome_name.to_lower().replace("_", " ")
 
 	# Starting Forest (spawn area - always forest within 600 units)
 	if "forest" in lower or "starting" in lower:
 		return Vector2(0, 0)
 
-	# Desert Wasteland (east - hot/dry biomes tend to generate here)
+	# Desert Wasteland (hot+dry) - Try multiple far positions
 	elif "desert" in lower or "wasteland" in lower:
-		return Vector2(2000, 0)
+		# Try southeast - hot dry biomes more common in positive x/y quadrants
+		return Vector2(4000, 2000)
 
-	# Frozen Tundra (north - cold biomes tend to generate here)
+	# Frozen Tundra (very cold) - Try far north/northwest
 	elif "tundra" in lower or "frozen" in lower:
-		return Vector2(0, -2500)
+		# Try north - cold biomes more common in negative y
+		return Vector2(-1000, -4000)
 
-	# Volcanic Darklands (south - BOSS SPAWN POSITION)
+	# Volcanic Darklands (extreme heat + very dry) - BOSS SPAWN POSITION
 	elif "volcanic" in lower or "darkland" in lower:
-		return Vector2(0, 3500)  # From BossManager.BOSS_SPAWN_POSITIONS
+		return Vector2(0, 3500)  # Boss spawn position
 
-	# Blood Temple (west - BOSS SPAWN POSITION)
+	# Blood Temple (cold + wet) - BOSS SPAWN POSITION
 	elif "blood" in lower or "temple" in lower:
-		return Vector2(-3500, 0)  # From BossManager.BOSS_SPAWN_POSITIONS
+		return Vector2(-3500, 0)  # Boss spawn position
 
 	else:
 		return Vector2.ZERO

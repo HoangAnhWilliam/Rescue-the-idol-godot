@@ -258,7 +258,7 @@ func shoot_blood_web():
 	projectile.direction = (player.global_position - global_position).normalized()
 	projectile.speed = 250.0
 	projectile.damage = web_damage
-	projectile.dark_miku = self  # Reference for tether callback
+	projectile.caster = self  # Reference for tether callback
 
 	get_parent().add_child(projectile)
 

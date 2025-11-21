@@ -73,7 +73,7 @@ func react_to_player_state() -> void:
 
 	# Check player HP
 	if player.has_method("get_hp_percent"):
-		var hp_percent := player.get_hp_percent()
+		var hp_percent: float = player.get_hp_percent()
 
 		if hp_percent < 0.3:
 			# Low HP: Worried (red tint)
@@ -83,10 +83,10 @@ func react_to_player_state() -> void:
 			sprite.modulate = Color(1, 1, 1)
 	else:
 		# Fallback: Check current_hp directly
-		if player.get("current_hp") != null and player.get("stats") != null:
+		if "current_hp" in player and "stats" in player:
 			var current_hp: float = player.current_hp
 			var max_hp: float = player.stats.max_hp
-			var hp_percent := current_hp / max_hp
+			var hp_percent: float = current_hp / max_hp
 
 			if hp_percent < 0.3:
 				sprite.modulate = Color(1, 0.6, 0.6)
@@ -125,11 +125,13 @@ func apply_passive_buffs() -> void:
 				stats.hp_regen_per_second += 0.2
 
 		# Set multipliers
-		if player.has("xp_multiplier"):
-			player.xp_multiplier = player.get("xp_multiplier", 1.0) * 1.05  # +5% XP
+		if "xp_multiplier" in player:
+			var current_xp_mult: float = player.xp_multiplier if "xp_multiplier" in player else 1.0
+			player.xp_multiplier = current_xp_mult * 1.05  # +5% XP
 
-		if player.has("gold_multiplier"):
-			player.gold_multiplier = player.get("gold_multiplier", 1.0) * 1.05  # +5% gold
+		if "gold_multiplier" in player:
+			var current_gold_mult: float = player.gold_multiplier if "gold_multiplier" in player else 1.0
+			player.gold_multiplier = current_gold_mult * 1.05  # +5% gold
 
 	print("Permanent buffs applied: +10% luck, +5% XP, +5% gold, +0.2 HP/s regen")
 
