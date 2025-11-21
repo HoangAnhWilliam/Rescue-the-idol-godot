@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://vampire_lord_boss"]
+
+[ext_resource type="Script" path="res://scripts/vampire_lord.gd" id="1_vampire_lord"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vampire"]
+size = Vector2(60, 120)
+
+[node name="VampireLord" type="CharacterBody2D" groups=["bosses", "enemies", "vampire_lord"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_vampire_lord")
+max_hp = 80000.0
+base_damage = 15.0
+base_move_speed = 180.0
+xp_reward = 50000.0
+detection_range = 600.0
+gold_drop_min = 80000
+gold_drop_max = 120000
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_vampire")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -30.0
+offset_top = -60.0
+offset_right = 30.0
+offset_bottom = 60.0
+color = Color(0.8, 0.7, 0.85, 1)
+
+[node name="AttackCooldowns" type="Node" parent="."]
+
+[node name="DamageArea" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea"]
+shape = SubResource("RectangleShape2D_vampire")

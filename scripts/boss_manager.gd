@@ -179,8 +179,51 @@ func spawn_fire_dragon():
 	print("")
 
 func spawn_vampire_lord():
-	# TODO: Implement in future
-	print("⚠️ Vampire Lord not implemented yet!")
+	if not vampire_lord_scene:
+		print("❌ ERROR: Vampire Lord scene not loaded!")
+		return
+
+	var biome_type = BiomeGenerator.BiomeType.BLOOD_TEMPLE
+
+	# Check one more time
+	if boss_spawned_flags[biome_type]:
+		return
+
+	print("")
+	print("╔══════════════════════════════════════╗")
+	print("║   !!! SPAWNING VAMPIRE LORD !!!     ║")
+	print("║     Lord Crimson Nightshade          ║")
+	print("╚══════════════════════════════════════╝")
+
+	# Instantiate boss
+	var boss = vampire_lord_scene.instantiate()
+	var spawn_pos = BOSS_SPAWN_POSITIONS[biome_type]
+	boss.global_position = spawn_pos
+
+	# Add to scene
+	get_tree().root.add_child(boss)
+
+	# Track boss
+	active_bosses[biome_type] = boss
+	boss_spawned_flags[biome_type] = true
+
+	print("=== VAMPIRE LORD BOSS SPAWNED ===")
+	print("Vampire Lord spawned at: ", spawn_pos)
+
+	# Connect to boss signals
+	if boss.has_signal("boss_defeated"):
+		boss.boss_defeated.connect(_on_boss_defeated.bind(biome_type, "Vampire Lord"))
+		print("✓ Connected to boss_defeated signal")
+
+	if boss.has_signal("phase_changed"):
+		boss.phase_changed.connect(_on_boss_phase_changed.bind(boss))
+		print("✓ Connected to phase_changed signal")
+
+	# Emit our signal
+	boss_spawned.emit("Vampire Lord", boss)
+
+	print("════════════════════════════════════════")
+	print("")
 
 func _on_boss_defeated(biome_type: BiomeGenerator.BiomeType, boss_name: String):
 	print("")
