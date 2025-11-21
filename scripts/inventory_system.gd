@@ -313,3 +313,19 @@ func print_inventory():
 		if not slot.is_empty():
 			print("  Slot %d: %s x%d (%s)" % [i, ItemType.keys()[slot.item_type], slot.quantity, slot.item_id])
 	print("=================")
+
+# ========== CHEAT COMMANDS HELPERS ==========
+
+func clear_all_items():
+	"""Clear all inventory slots (for cheat commands)"""
+	for i in range(MAX_SLOTS):
+		slots[i].clear()
+		slot_changed.emit(i)
+	print("📦 Inventory cleared")
+
+func remove_item_at_slot(slot_index: int):
+	"""Remove item at specific slot (for cheat commands)"""
+	if slot_index >= 0 and slot_index < MAX_SLOTS:
+		slots[slot_index].clear()
+		slot_changed.emit(slot_index)
+		print("📦 Cleared slot %d" % slot_index)
