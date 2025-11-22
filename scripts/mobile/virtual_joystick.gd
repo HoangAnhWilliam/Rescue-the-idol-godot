@@ -34,8 +34,9 @@ signal joystick_released
 
 
 func _ready() -> void:
-	# Set minimum size
+	# Set fixed size for joystick
 	custom_minimum_size = Vector2(outer_radius * 2, outer_radius * 2)
+	size = custom_minimum_size
 
 	# Center position is always the center of this control
 	center_position = size / 2
@@ -44,11 +45,15 @@ func _ready() -> void:
 	# Make sure we receive input
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
+	# Force initial draw
+	queue_redraw()
+
 	if debug_enabled:
 		print("=== Virtual Joystick Initialized ===")
+		print("Size: ", size)
+		print("Center: ", center_position)
 		print("Outer Radius: ", outer_radius)
 		print("Inner Radius: ", inner_radius)
-		print("Deadzone: ", deadzone)
 		print("===================================")
 
 
