@@ -31,6 +31,7 @@ var buff_manager: BuffManager = null
 # Movement
 var input_vector := Vector2.ZERO
 var last_direction := Vector2.RIGHT
+var mobile_input_vector := Vector2.ZERO  # Mobile touch input
 
 # Combat
 # OLD: var current_weapon: Weapon = null  # ← DEPRECATED: Use equipped_weapons instead
@@ -186,6 +187,15 @@ func handle_input():
 		input_vector.y -= 1
 
 	input_vector = input_vector.normalized()
+
+	# Mobile touch input (combines with keyboard if both active)
+	if mobile_input_vector.length() > 0.1:
+		# If no keyboard input, use mobile input directly
+		if input_vector.length() < 0.1:
+			input_vector = mobile_input_vector
+		else:
+			# Combine inputs (keyboard takes priority)
+			input_vector = input_vector.normalized()
 
 	# Special skill
 	#if Input.is_action_just_pressed("special_skill"):
@@ -616,3 +626,40 @@ func load_weapon_scene(weapon_id: String) -> PackedScene:
 		_:
 			print("⚠️ Unknown weapon_id: %s, using Wooden Sword" % weapon_id)
 			return load("res://scenes/weapons/WoodenSword.tscn")  # Default fallback
+
+
+# === MOBILE CONTROLS SUPPORT ===
+
+func set_mobile_input(direction: Vector2) -> void:
+	"""Set mobile input direction from virtual joystick"""
+	mobile_input_vector = direction
+
+
+func use_miku_blessing() -> void:
+	"""Activate Miku's Blessing special skill (mobile skill button)"""
+	if miku_active:
+		print("Miku's Blessing already active!")
+		return
+
+	# Apply Miku buffs
+	apply_miku_buffs()
+
+	# Visual feedback
+	if sprite:
+		sprite.modulate = Color(0, 0.85, 1)  # Cyan glow
+		await get_tree().create_timer(0.5).timeout
+		sprite.modulate = Color.WHITE
+
+	# Camera effect
+	CameraShake.shake(5.0, 0.2)
+
+	print("Miku's Blessing activated!")
+	print("  +30% Attack Speed")
+	print("  +20% HP Regen")
+	print("  +10% Crit Chance")
+	print("  +15% Move Speed")
+
+	# Auto-remove after 30 seconds
+	await get_tree().create_timer(30.0).timeout
+	remove_miku_buffs()
+	print("Miku's Blessing expired!")

@@ -3,9 +3,11 @@ class_name HotbarUI
 
 ## Minecraft-Style Hotbar UI
 ## Visual display of 9 inventory slots at bottom center
+## Supports both mouse click and touch input for mobile
 
 const SLOT_SIZE: Vector2 = Vector2(64, 64)
 const SLOT_SPACING: int = 4
+const MOBILE_SLOT_SIZE: Vector2 = Vector2(60, 60)  # Larger touch targets
 
 # References
 var inventory: InventorySystem = null
@@ -16,8 +18,16 @@ var hotbar_container: HBoxContainer = null
 var slots_container: HBoxContainer = null
 var slot_panels: Array[PanelContainer] = []
 
+# Mobile touch support
+var is_mobile: bool = false
+var touch_cooldowns: Array[float] = []  # Prevent double-tap
+const TOUCH_COOLDOWN: float = 0.3  # seconds
+
 func _ready():
 	print("🎮 HotbarUI initializing...")
+
+	# Detect mobile platform
+	is_mobile = _detect_mobile()
 
 	# Find systems
 	inventory = get_tree().get_first_node_in_group("inventory")
@@ -33,6 +43,10 @@ func _ready():
 	# Connect to inventory signals
 	inventory.slot_changed.connect(_on_slot_changed)
 
+	# Initialize touch cooldowns
+	for i in range(9):
+		touch_cooldowns.append(0.0)
+
 	# Create UI
 	create_hotbar_ui()
 
@@ -41,6 +55,20 @@ func _ready():
 		update_slot_ui(i)
 
 	print("✅ HotbarUI ready!")
+	if is_mobile:
+		print("📱 Mobile touch input enabled")
+
+
+func _detect_mobile() -> bool:
+	var os_name = OS.get_name()
+	return os_name == "Android" or os_name == "iOS" or DisplayServer.is_touchscreen_available()
+
+
+func _process(delta: float) -> void:
+	# Update touch cooldowns
+	for i in range(touch_cooldowns.size()):
+		if touch_cooldowns[i] > 0:
+			touch_cooldowns[i] -= delta
 
 func create_hotbar_ui():
 	# Main container
@@ -168,6 +196,12 @@ func update_slot_ui(slot_index: int):
 			qty_label.visible = false
 
 func _on_slot_gui_input(event: InputEvent, slot_index: int):
+	# Handle touch events (mobile)
+	if event is InputEventScreenTouch and event.pressed:
+		_handle_touch_slot(slot_index)
+		return
+
+	# Handle mouse events (PC)
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			# Left click: Use item
@@ -181,6 +215,43 @@ func _on_slot_gui_input(event: InputEvent, slot_index: int):
 				if slot:
 					amount = slot.quantity
 			drop_slot(slot_index, amount)
+
+
+func _handle_touch_slot(slot_index: int) -> void:
+	"""Handle touch input on hotbar slot"""
+	# Check touch cooldown to prevent double-tap
+	if slot_index < touch_cooldowns.size() and touch_cooldowns[slot_index] > 0:
+		return
+
+	# Set cooldown
+	if slot_index < touch_cooldowns.size():
+		touch_cooldowns[slot_index] = TOUCH_COOLDOWN
+
+	# Use the slot item
+	use_slot(slot_index)
+
+	# Visual feedback
+	_show_touch_feedback(slot_index)
+
+
+func _show_touch_feedback(slot_index: int) -> void:
+	"""Show visual feedback when slot is touched"""
+	if slot_index < 0 or slot_index >= slot_panels.size():
+		return
+
+	var panel = slot_panels[slot_index]
+	var bg = panel.get_node_or_null("Background")
+	if not bg:
+		return
+
+	# Flash the background
+	var original_color = bg.color
+	bg.color = Color(1, 1, 1, 0.9)
+
+	# Reset after short delay
+	await get_tree().create_timer(0.1).timeout
+	if is_instance_valid(bg):
+		bg.color = original_color
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
