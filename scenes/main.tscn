@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c5q3gxjbs06r7"]
+[gd_scene load_steps=16 format=3 uid="uid://c5q3gxjbs06r7"]
 
 [ext_resource type="PackedScene" uid="uid://b2ai7uclsnr38" path="res://scenes/player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://6v2uposqi627" path="res://scripts/biome_background.gd" id="1_tefeu"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cekjlfyi6xt4g" path="res://scenes/ui/upgrade_menu.tscn" id="3_sugp2"]
 [ext_resource type="Script" uid="uid://pfvp4p5722o0" path="res://scripts/biome_generator.gd" id="5_tbgi4"]
 [ext_resource type="Script" uid="uid://c4xuh4mwwgo8q" path="res://scripts/biome_notification.gd" id="6_biome_notif"]
+claude/mobile-controls-system-019XgNQcRsrLaQNkLmEdp9Kz
 [ext_resource type="Script" uid="uid://env_effects_unique_id" path="res://scripts/environmental_effects.gd" id="7_env_effects"]
 [ext_resource type="Script" path="res://scripts/boss_manager.gd" id="8_boss_manager"]
 [ext_resource type="Script" path="res://scripts/particle_manager.gd" id="9_particle_manager"]
@@ -16,6 +17,16 @@
 [ext_resource type="Script" path="res://scripts/hotbar_ui.gd" id="13_hotbar"]
 [ext_resource type="PackedScene" uid="uid://spin_wheel_ui_scene" path="res://scenes/ui/spin_wheel_ui.tscn" id="14_spin_wheel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/mobile_controls.tscn" id="15_mobile_controls"]
+
+[ext_resource type="Script" path="res://scripts/environmental_effects.gd" id="7_env_effects"]
+[ext_resource type="Script" uid="uid://biew8woel71yu" path="res://scripts/boss_manager.gd" id="8_boss_manager"]
+[ext_resource type="Script" uid="uid://1jkavr8v564u" path="res://scripts/particle_manager.gd" id="9_particle_manager"]
+[ext_resource type="Script" uid="uid://c7cs4moa1l2n2" path="res://scripts/camera_shake.gd" id="10_camera_shake"]
+[ext_resource type="Script" uid="uid://cdo7yl8b6pros" path="res://scripts/inventory_system.gd" id="11_inventory"]
+[ext_resource type="Script" uid="uid://kb8m3t71dacm" path="res://scripts/drop_handler.gd" id="12_drop_handler"]
+[ext_resource type="Script" uid="uid://der02phocjijg" path="res://scripts/hotbar_ui.gd" id="13_hotbar"]
+[ext_resource type="PackedScene" path="res://scenes/ui/spin_wheel_ui.tscn" id="14_spin_wheel"]
+main
 
 [node name="Main" type="Node2D"]
 
@@ -91,5 +102,3 @@ script = ExtResource("6_biome_notif")
 [node name="UpgradeMenu" parent="." groups=["upgrade_menu"] instance=ExtResource("3_sugp2")]
 
 [node name="SpinWheelUI" parent="." groups=["spin_wheel_ui"] instance=ExtResource("14_spin_wheel")]
-
-[node name="MobileControls" parent="." groups=["mobile_controls"] instance=ExtResource("15_mobile_controls")]
