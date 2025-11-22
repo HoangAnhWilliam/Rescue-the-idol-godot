@@ -1,27 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://mobile_controls_scene"]
+[gd_scene load_steps=3 format=3 uid="uid://mobile_controls_scene"]
 
 [ext_resource type="Script" path="res://scripts/mobile/mobile_controls.gd" id="1_mobile_controls"]
 [ext_resource type="Script" path="res://scripts/mobile/virtual_joystick.gd" id="2_joystick"]
-[ext_resource type="Script" path="res://scripts/mobile/mobile_button.gd" id="3_button"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_transparent"]
-bg_color = Color(0, 0, 0, 0)
 
 [node name="MobileControls" type="CanvasLayer"]
 layer = 100
 script = ExtResource("1_mobile_controls")
 
-[node name="ControlsContainer" type="Control" parent="."]
+[node name="JoystickContainer" type="Control" parent="."]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="LeftSide" type="Control" parent="ControlsContainer"]
-layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -32,15 +19,11 @@ offset_bottom = -50.0
 grow_vertical = 0
 mouse_filter = 2
 
-[node name="VirtualJoystick" type="Control" parent="ControlsContainer/LeftSide"]
+[node name="VirtualJoystick" type="Control" parent="JoystickContainer"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
-offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
@@ -50,63 +33,3 @@ script = ExtResource("2_joystick")
 outer_radius = 70.0
 inner_radius = 30.0
 deadzone = 0.2
-
-[node name="RightSide" type="Control" parent="ControlsContainer"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -180.0
-offset_top = -250.0
-offset_right = -30.0
-offset_bottom = -50.0
-grow_horizontal = 0
-grow_vertical = 0
-mouse_filter = 2
-
-[node name="ButtonsContainer" type="VBoxContainer" parent="ControlsContainer/RightSide"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 2
-
-[node name="TopRow" type="HBoxContainer" parent="ControlsContainer/RightSide/ButtonsContainer"]
-layout_mode = 2
-alignment = 2
-
-[node name="PauseButton" type="Control" parent="ControlsContainer/RightSide/ButtonsContainer/TopRow"]
-custom_minimum_size = Vector2(60, 60)
-layout_mode = 2
-mouse_filter = 0
-script = ExtResource("3_button")
-button_type = 1
-button_size = Vector2(60, 60)
-icon_text = "||"
-normal_color = Color(0.8, 0.8, 0.8, 0.8)
-
-[node name="InteractButton" type="Control" parent="ControlsContainer/RightSide/ButtonsContainer/TopRow"]
-custom_minimum_size = Vector2(70, 70)
-layout_mode = 2
-mouse_filter = 0
-script = ExtResource("3_button")
-button_type = 2
-button_size = Vector2(70, 70)
-icon_text = "E"
-normal_color = Color(1, 0.9, 0.2, 0.8)
-
-[node name="SkillButton" type="Control" parent="ControlsContainer/RightSide/ButtonsContainer"]
-custom_minimum_size = Vector2(80, 80)
-layout_mode = 2
-size_flags_horizontal = 8
-mouse_filter = 0
-script = ExtResource("3_button")
-button_type = 0
-button_size = Vector2(80, 80)
-icon_text = "SKILL"
-cooldown_duration = 60.0
-normal_color = Color(0, 0.85, 1, 0.8)

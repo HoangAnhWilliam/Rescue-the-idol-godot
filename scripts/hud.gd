@@ -66,6 +66,10 @@ func _ready():
 	if boss_health_bar:
 		boss_health_bar.visible = false
 
+	# Setup chat indicator click handler
+	if chat_indicator:
+		chat_indicator.gui_input.connect(_on_chat_indicator_input)
+
 	# Find inventory system (Phase 5.5.8)
 	var inventory = get_tree().get_first_node_in_group("inventory")
 	if inventory:
@@ -345,3 +349,25 @@ func update_gold_display():
 	var total_gold = inventory.get_total_gold()
 	gold_label.text = "Gold: %d" % total_gold
 	print("💰 HUD gold display updated: %d gold" % total_gold)
+
+
+# ========== CHAT INDICATOR TOUCH HANDLER ==========
+
+func _on_chat_indicator_input(event: InputEvent) -> void:
+	"""Handle touch/click on chat indicator to toggle chat"""
+	# Handle touch events (mobile)
+	if event is InputEventScreenTouch and event.pressed:
+		_toggle_chat()
+		return
+
+	# Handle mouse events (PC)
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_toggle_chat()
+
+
+func _toggle_chat() -> void:
+	"""Toggle chat box visibility"""
+	if chat_box and chat_box.has_method("toggle_chat"):
+		chat_box.toggle_chat()
+		print("💬 Chat toggled via indicator tap")
