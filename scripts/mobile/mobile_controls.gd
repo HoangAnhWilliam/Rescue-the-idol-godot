@@ -6,9 +6,9 @@ class_name MobileControls
 
 # References to control components
 @onready var joystick: VirtualJoystick = $ControlsContainer/LeftSide/VirtualJoystick
-@onready var skill_button: MobileButton = $ControlsContainer/RightSide/SkillButton
-@onready var pause_button: MobileButton = $ControlsContainer/RightSide/PauseButton
-@onready var interact_button: MobileButton = $ControlsContainer/RightSide/InteractButton
+@onready var skill_button: MobileButton = $ControlsContainer/RightSide/ButtonsContainer/SkillButton
+@onready var pause_button: MobileButton = $ControlsContainer/RightSide/ButtonsContainer/TopRow/PauseButton
+@onready var interact_button: MobileButton = $ControlsContainer/RightSide/ButtonsContainer/TopRow/InteractButton
 
 # Game references
 var player: CharacterBody2D = null
