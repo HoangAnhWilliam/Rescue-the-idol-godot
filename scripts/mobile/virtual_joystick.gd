@@ -176,7 +176,7 @@ func _update_stick_position(touch_pos: Vector2) -> void:
 	queue_redraw()
 
 	if debug_enabled and output.length() > 0:
-		print("[Joystick] Direction: ", output.round_decimals(2))
+		print("[Joystick] Direction: ", _round_vector(output, 2))
 
 
 func _reset_joystick() -> void:
@@ -213,7 +213,7 @@ func set_debug(enabled: bool) -> void:
 
 
 # Utility function for Vector2
-func round_decimals(v: Vector2, decimals: int) -> Vector2:
+func _round_vector(v: Vector2, decimals: int) -> Vector2:
 	var mult = pow(10, decimals)
 	return Vector2(
 		round(v.x * mult) / mult,
