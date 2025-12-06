@@ -110,6 +110,9 @@ func show_menu(player_ref: CharacterBody2D, level: int):
 	show()
 	print("Called show()")
 
+	# ← AUDIO: Play menu open sound
+	AudioManager.play_sfx("menu_open")
+
 	print("After show() - Is visible: ", visible)
 
 	# PAUSE GAME
@@ -256,19 +259,29 @@ func apply_upgrade(type: UpgradeType):
 
 	# Hide menu and resume game
 	hide()
+
+	# ← AUDIO: Play menu close sound
+	AudioManager.play_sfx("menu_close")
+
 	get_tree().paused = false
 	print("▶️ Game RESUMED")
 	print("========================")
 
 # Button handlers
 func _on_button1_pressed():
+	# ← AUDIO: Play button click sound
+	AudioManager.play_sfx("button_click")
 	print("🔘 Player chose option 1:", get_upgrade_text(current_upgrades[0]))
 	apply_upgrade(current_upgrades[0])
 
 func _on_button2_pressed():
+	# ← AUDIO: Play button click sound
+	AudioManager.play_sfx("button_click")
 	print("🔘 Player chose option 2:", get_upgrade_text(current_upgrades[1]))
 	apply_upgrade(current_upgrades[1])
 
 func _on_button3_pressed():
+	# ← AUDIO: Play button click sound
+	AudioManager.play_sfx("button_click")
 	print("🔘 Player chose option 3:", get_upgrade_text(current_upgrades[2]))
 	apply_upgrade(current_upgrades[2])

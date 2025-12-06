@@ -58,6 +58,10 @@ func attack(target: CharacterBody2D):
 	if not is_instance_valid(target):
 		return
 
+	# ← AUDIO: Play weapon-specific sound based on class name
+	var weapon_class = get_script().resource_path.get_file().get_basename()
+	AudioManager.play_weapon_sound(weapon_class)
+
 	# CHEAT: Check if player has one-shot kill enabled
 	if player and player.has("one_shot_kill") and player.one_shot_kill:
 		print("💥 ONE-SHOT KILL: ", target.name)

@@ -142,6 +142,12 @@ func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: 
 
 	print(name, " took ", amount, " damage. HP: ", current_hp, "/", max_hp)
 
+	# ← AUDIO: Play hit impact sound (or critical hit if crit)
+	if is_crit:
+		AudioManager.play_sfx("critical_hit")
+	else:
+		AudioManager.play_sfx("hit_impact")
+
 	# ← THÊM: Particle effect when hit
 	ParticleManager.create_hit_effect(global_position, Color(1.0, 0.3, 0.3))
 
@@ -216,6 +222,9 @@ func die():
 	set_physics_process(false)
 
 	print(name, " died!")
+
+	# ← AUDIO: Play enemy death sound
+	AudioManager.play_sfx("enemy_death")
 
 	# ← THÊM: Death explosion and camera shake
 	var enemy_color = sprite.color if sprite else Color.RED
