@@ -21,6 +21,13 @@ SaveSystem="*res://scripts/save_system.gd"
 WeaponPoolManager="*res://scripts/weapon_pool_manager.gd"
 CheatCommands="*res://scripts/cheat_commands.gd"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
 [input]
 
 move_up={
@@ -72,11 +79,3 @@ interact={
 
 pointing/emulate_touch_from_mouse=true
 pointing/emulate_mouse_from_touch=false
-
-[display]
-
-window/size/viewport_width=1280
-window/size/viewport_height=720
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
-window/handheld/orientation=0
