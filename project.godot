@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 SaveSystem="*res://scripts/save_system.gd"
 WeaponPoolManager="*res://scripts/weapon_pool_manager.gd"
 CheatCommands="*res://scripts/cheat_commands.gd"
+AudioManager="*res://scripts/audio_manager.gd"
 
 [display]
 

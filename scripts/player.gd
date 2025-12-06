@@ -277,6 +277,9 @@ func take_damage(amount: float):
 	current_hp -= amount
 	hp_changed.emit(current_hp, stats.max_hp)
 
+	# ← AUDIO: Play hurt sound
+	AudioManager.play_sfx("player_hurt")
+
 	# ← THÊM: Camera shake when hit
 	CameraShake.shake(6.0, 0.2)
 
@@ -296,17 +299,23 @@ func die():
 	player_died.emit()
 	set_physics_process(false)
 	sprite.modulate = Color(0.5, 0.5, 0.5)
-	
+
+	# ← AUDIO: Play game over music
+	AudioManager.play_music("game_over", 1.0)
+
 	# Camera shake on death
 	if camera and camera.has_method("large_shake"):
 		camera.large_shake()
-	
+
 	# Show game over screen
 
 func add_xp(amount: float):
 	current_xp += amount
 	xp_gained.emit(amount)  # ← THÊM emit để UI update
-	
+
+	# ← AUDIO: Play XP collect sound
+	AudioManager.play_sfx("xp_collect")
+
 	print("Gained ", amount, " XP! Total: ", current_xp, "/", xp_to_next_level)
 	
 	# Update xp_to_next_level cho lần đầu
@@ -326,6 +335,9 @@ func add_xp(amount: float):
 
 		# Emit level up signal
 		level_up.emit(level)
+
+		# ← AUDIO: Play level up sound
+		AudioManager.play_sfx("level_up")
 
 		# ← THÊM: Level up particle effect and camera shake
 		ParticleManager.create_level_up_effect(global_position)

@@ -76,6 +76,9 @@ func _ready():
 		print("Starting biome: ", current_biome.name)
 		print("Seed: ", seed_value)
 
+		# ← AUDIO: Play starting biome music
+		AudioManager.play_biome_music(current_biome.name)
+
 		# Spawn ATMs across the world
 		spawn_atms()
 	else:
@@ -273,7 +276,10 @@ func update_current_biome():
 			temperature_noise.get_noise_2dv(player.global_position),
 			moisture_noise.get_noise_2dv(player.global_position)
 		])
-		
+
+		# ← AUDIO: Change music to new biome
+		AudioManager.play_biome_music(new_biome.name)
+
 		biome_changed.emit(old_biome, new_biome)
 		check_boss_zone()
 

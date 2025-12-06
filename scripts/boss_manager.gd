@@ -175,6 +175,10 @@ func spawn_fire_dragon():
 	# Emit our signal
 	boss_spawned.emit("Fire Dragon", boss)
 
+	# ← AUDIO: Play boss music and roar
+	AudioManager.play_boss_music("FireDragon")
+	AudioManager.play_sfx("dragon_roar")
+
 	print("════════════════════════════════════════")
 	print("")
 
@@ -222,6 +226,10 @@ func spawn_vampire_lord():
 	# Emit our signal
 	boss_spawned.emit("Vampire Lord", boss)
 
+	# ← AUDIO: Play boss music and laugh
+	AudioManager.play_boss_music("VampireLord")
+	AudioManager.play_sfx("vampire_laugh")
+
 	print("════════════════════════════════════════")
 	print("")
 
@@ -243,11 +251,20 @@ func _on_boss_defeated(biome_type: BiomeGenerator.BiomeType, boss_name: String):
 	# Emit signal
 	boss_defeated.emit(boss_name)
 
+	# ← AUDIO: Play victory fanfare, then return to biome music
+	AudioManager.play_music("victory", 0.5)
+	# Return to biome music after 3 seconds
+	await get_tree().create_timer(3.0).timeout
+	AudioManager.return_to_biome_music()
+
 	print("════════════════════════════════════════")
 	print("")
 
 func _on_boss_phase_changed(phase: int, boss: Node):
 	print("🔥 Boss phase changed to: ", phase)
+
+	# ← AUDIO: Play phase change sound
+	AudioManager.play_sfx("boss_phase_change")
 
 	# Emit signal
 	boss_phase_changed.emit(boss, phase)
