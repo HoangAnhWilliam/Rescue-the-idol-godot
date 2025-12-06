@@ -505,9 +505,9 @@ func get_equipped_weapons() -> Array:
 
 	for weapon in equipped_weapons:
 		if is_instance_valid(weapon):
-			if weapon.has("weapon_name"):
+			if "weapon_name" in weapon:
 				weapon_names.append(weapon.weapon_name)
-			elif weapon.has("name"):
+			elif "name" in weapon:
 				weapon_names.append(weapon.name)
 
 	return weapon_names

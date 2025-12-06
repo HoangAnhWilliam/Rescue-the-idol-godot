@@ -92,9 +92,9 @@ func create_tether(target: Node2D) -> void:
 	if sprite:
 		sprite.hide()
 
-	# Disable collision
+	# Disable collision (deferred to avoid physics query flush error)
 	if collision_shape:
-		collision_shape.disabled = true
+		collision_shape.set_deferred("disabled", true)
 
 	print("Blood Web tether created on player")
 
