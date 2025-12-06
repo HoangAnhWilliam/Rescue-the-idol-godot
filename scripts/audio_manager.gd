@@ -171,8 +171,11 @@ func _ready():
 
 ## Play a music track with optional crossfade
 func play_music(track_name: String, fade_time: float = 2.0):
+	print("🎵 play_music() called: ", track_name, " (fade: ", fade_time, "s)")
+
 	# Skip if already playing
 	if track_name == current_music and current_music_player.playing:
+		print("  ⚠️ Already playing this track, skipping")
 		return
 
 	# Validate track exists
@@ -181,6 +184,7 @@ func play_music(track_name: String, fade_time: float = 2.0):
 		return
 
 	var music_path = music_tracks[track_name]
+	print("  → Music path: ", music_path)
 
 	# Check if file exists before loading
 	if not FileAccess.file_exists(music_path):
@@ -193,7 +197,8 @@ func play_music(track_name: String, fade_time: float = 2.0):
 		push_error("AudioManager: Failed to load music: " + music_path)
 		return
 
-	print("♪ Playing music: ", track_name)
+	print("  ✅ Loaded music stream successfully")
+	print("  ♪ Playing music: ", track_name)
 
 	# If no music playing, just start
 	if not current_music_player.playing:
@@ -404,6 +409,8 @@ func play_biome_music(biome_name: String):
 
 ## Play music for a specific boss
 func play_boss_music(boss_name: String):
+	print("🎵 AudioManager.play_boss_music() called with boss: ", boss_name)
+
 	var boss_map = {
 		"FireDragon": "fire_dragon_boss",
 		"VampireLord": "vampire_lord_boss",
@@ -413,7 +420,9 @@ func play_boss_music(boss_name: String):
 	}
 
 	if boss_name in boss_map:
-		play_music(boss_map[boss_name], 1.0)  # Faster fade for boss entrance
+		var track = boss_map[boss_name]
+		print("  → Mapped to track: ", track)
+		play_music(track, 1.0)  # Faster fade for boss entrance
 	else:
 		push_warning("AudioManager: Unknown boss: " + boss_name)
 
