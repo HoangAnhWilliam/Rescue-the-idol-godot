@@ -37,6 +37,9 @@ func _ready():
 	print("║     BOSS MANAGER INITIALIZATION      ║")
 	print("╚══════════════════════════════════════╝")
 
+	# Add to group for cheat commands
+	add_to_group("boss_manager")
+
 	# Wait for scene tree
 	await get_tree().process_frame
 
