@@ -124,6 +124,7 @@ var sfx_library := {
 var current_music: String = ""
 var is_crossfading: bool = false
 var current_biome_music: String = ""  # Track biome music for boss returns
+var boss_music_active: bool = false  # Prevent biome music from overriding boss music
 
 # ============================================================================
 # INITIALIZATION
@@ -394,6 +395,11 @@ func load_audio_settings():
 
 ## Play music for a specific biome
 func play_biome_music(biome_name: String):
+	# Don't override boss music!
+	if boss_music_active:
+		print("⚠️ Boss music active, not changing to biome music")
+		return
+
 	var track_map = {
 		"Starting Forest": "forest",
 		"Desert Wasteland": "desert",
@@ -424,12 +430,14 @@ func play_boss_music(boss_name: String):
 	if boss_name in boss_map:
 		var track = boss_map[boss_name]
 		print("  → Mapped to track: ", track)
+		boss_music_active = true  # Set flag to prevent biome music override
 		play_music(track, 1.0)  # Faster fade for boss entrance
 	else:
 		push_warning("AudioManager: Unknown boss: " + boss_name)
 
 ## Return to biome music after boss defeat
 func return_to_biome_music():
+	boss_music_active = false  # Clear boss music flag
 	if current_biome_music != "":
 		play_music(current_biome_music, 3.0)  # Slower fade after boss
 	else:
