@@ -676,13 +676,18 @@ func cmd_give(args: Array):
 
 func cmd_tp(args: Array):
 	"""Teleport player
-	Usage: /tp <x> <y> OR /tp <biome_name>"""
+	Usage: /tp <x> <y> OR /tp <biome_name> OR /tp boss <boss_name>"""
 	if not player:
 		send_error("Player not found")
 		return
 
 	if args.size() < 1:
-		send_error("Usage: /tp <x> <y> OR /tp <biome_name>")
+		send_error("Usage: /tp <x> <y> OR /tp <biome_name> OR /tp boss <boss_name>")
+		return
+
+	# Check if "tp boss <name>" command
+	if args[0].to_lower() == "boss" and args.size() >= 2:
+		tp_to_boss(args[1].to_lower())
 		return
 
 	# Check if coordinates (2 numbers)
@@ -698,16 +703,18 @@ func cmd_tp(args: Array):
 		if biome_generator and biome_generator.has_method("force_update_biome"):
 			biome_generator.force_update_biome(player.global_position)
 	else:
-		# Biome name
+		# Biome name - SEARCH for actual biome
 		var biome_name = " ".join(args).to_lower()
-		var pos = get_biome_position(biome_name)
+		var pos = search_for_biome(biome_name)
 
-		if pos == Vector2.ZERO and not ("forest" in biome_name or "starting" in biome_name):
-			send_error("Unknown biome: " + biome_name)
+		if pos == Vector2.ZERO:
+			send_error("Could not find biome: " + biome_name)
+			send_response("[HINT] Try: forest, desert, tundra, volcanic, blood temple")
+			send_response("[HINT] Or use /tp boss <name> for exact boss positions")
 			return
 
 		player.global_position = pos
-		send_response("Teleported to " + biome_name.capitalize())
+		send_response("Teleported to " + biome_name.capitalize() + " at (%.0f, %.0f)" % [pos.x, pos.y])
 
 		# Update biome and music after teleport
 		await get_tree().process_frame
@@ -1758,18 +1765,106 @@ func format_time(seconds: float) -> String:
 		var minutes = int(seconds / 60)
 		return "%d minutes" % minutes
 
-func get_biome_at_position(pos: Vector2) -> String:
-	"""Get biome name at position"""
-	if pos.x < 1000:
-		return "Starting Forest"
-	elif pos.x < 2000:
-		return "Desert Wasteland"
-	elif pos.x < 3000:
-		return "Frozen Tundra"
-	elif pos.x < 4000:
-		return "Volcanic Darklands"
+func search_for_biome(biome_name: String) -> Vector2:
+	"""Search for the nearest biome of the specified type using BiomeGenerator"""
+	var biome_generator = get_tree().get_first_node_in_group("biome_generator")
+	if not biome_generator:
+		send_error("BiomeGenerator not found")
+		return Vector2.ZERO
+
+	var lower = biome_name.to_lower().replace("_", " ")
+	var target_biome_type = -1
+
+	# Map biome names to BiomeType enum
+	if "forest" in lower or "starting" in lower:
+		return Vector2(0, 0)  # Always at spawn
+	elif "desert" in lower or "wasteland" in lower:
+		target_biome_type = 1  # BiomeType.DESERT_WASTELAND
+	elif "tundra" in lower or "frozen" in lower:
+		target_biome_type = 2  # BiomeType.FROZEN_TUNDRA
+	elif "volcanic" in lower or "darkland" in lower:
+		target_biome_type = 3  # BiomeType.VOLCANIC_DARKLANDS
+	elif "blood" in lower or "temple" in lower:
+		target_biome_type = 4  # BiomeType.BLOOD_TEMPLE
 	else:
-		return "Blood Temple"
+		return Vector2.ZERO
+
+	# Start from player position
+	var start_pos = player.global_position if player else Vector2.ZERO
+
+	# Search in expanding circles from player
+	send_response("[Searching for %s...]" % biome_name)
+
+	for radius in [500, 1000, 1500, 2000, 3000, 4000, 5000, 6000]:
+		for angle_deg in range(0, 360, 15):  # Check every 15 degrees
+			var angle = deg_to_rad(angle_deg)
+			var test_pos = start_pos + Vector2(cos(angle), sin(angle)) * radius
+			var biome = biome_generator.get_biome_at_position(test_pos)
+
+			if biome and biome.type == target_biome_type:
+				send_response("[Found at distance: %.0f units]" % radius)
+				return test_pos
+
+	# If not found near player, search from world center
+	send_response("[Expanding search from world center...]")
+	for radius in [1000, 2000, 3000, 4000, 5000, 6000, 7000]:
+		for angle_deg in range(0, 360, 20):
+			var angle = deg_to_rad(angle_deg)
+			var test_pos = Vector2(cos(angle), sin(angle)) * radius
+			var biome = biome_generator.get_biome_at_position(test_pos)
+
+			if biome and biome.type == target_biome_type:
+				send_response("[Found at: (%.0f, %.0f)]" % [test_pos.x, test_pos.y])
+				return test_pos
+
+	return Vector2.ZERO
+
+func tp_to_boss(boss_name: String):
+	"""Teleport to exact boss spawn position"""
+	var pos = Vector2.ZERO
+	var boss_full_name = ""
+
+	match boss_name:
+		"vampire", "vampirelord", "vampire_lord":
+			pos = Vector2(-3500, 0)
+			boss_full_name = "Vampire Lord (Blood Temple Boss)"
+
+		"dragon", "firedragon", "fire_dragon":
+			pos = Vector2(0, 3500)
+			boss_full_name = "Fire Dragon (Volcanic Darklands Boss)"
+
+		_:
+			send_error("Unknown boss: " + boss_name)
+			send_response("Available bosses: vampire, dragon")
+			return
+
+	player.global_position = pos
+	send_response("Teleported to %s at (%.0f, %.0f)" % [boss_full_name, pos.x, pos.y])
+
+	# Update biome
+	await get_tree().process_frame
+	var biome_generator = get_tree().get_first_node_in_group("biome_generator")
+	if biome_generator and biome_generator.has_method("force_update_biome"):
+		biome_generator.force_update_biome(player.global_position)
+
+	# Check what biome we're actually in
+	if biome_generator:
+		var actual_biome = biome_generator.get_biome_at_position(pos)
+		if actual_biome:
+			send_response("[Current biome: %s]" % actual_biome.name)
+			if boss_name.begins_with("vampire") and actual_biome.name != "Blood Temple":
+				send_response("[WARNING: Boss spawn is NOT in Blood Temple biome in this world seed!]")
+			elif boss_name.begins_with("dragon") or boss_name.begins_with("fire") and actual_biome.name != "Volcanic Darklands":
+				send_response("[WARNING: Boss spawn is NOT in Volcanic Darklands biome in this world seed!]")
+
+func get_biome_at_position(pos: Vector2) -> String:
+	"""Get biome name at position (deprecated - use BiomeGenerator instead)"""
+	var biome_generator = get_tree().get_first_node_in_group("biome_generator")
+	if biome_generator:
+		var biome = biome_generator.get_biome_at_position(pos)
+		if biome:
+			return biome.name
+	return "Unknown"
 
 func get_biome_position(biome_name: String) -> Vector2:
 	"""Get biome position - tries multiple locations to find the biome
