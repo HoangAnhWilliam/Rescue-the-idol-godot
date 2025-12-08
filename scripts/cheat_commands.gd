@@ -172,6 +172,9 @@ func process_command(command_text: String) -> void:
 		"shuffle": cmd_shuffle()
 		"skip": cmd_skip()
 
+		# CATEGORY 17: BOSS COMMANDS
+		"boss": cmd_boss(args)
+
 		_:
 			send_error("Unknown command: /" + cmd + ". Type /help for command list")
 
@@ -1607,6 +1610,113 @@ func cmd_skip():
 
 	play_playlist()
 	send_response("[♪] Skipped to next song")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 17: BOSS COMMANDS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+func cmd_boss(args: Array):
+	"""Boss management and debugging commands
+	Usage: /boss list OR /boss reset OR /boss spawn <name>"""
+	if args.size() < 1:
+		send_error("Usage: /boss <list|reset|spawn>")
+		return
+
+	var action = args[0].to_lower()
+
+	match action:
+		"list":
+			list_active_bosses()
+
+		"reset":
+			reset_boss_flags()
+
+		"spawn":
+			if args.size() < 2:
+				send_error("Usage: /boss spawn <fire_dragon|vampire_lord>")
+				return
+
+			var boss_name = args[1].to_lower()
+			force_spawn_boss(boss_name)
+
+		_:
+			send_error("Unknown boss command: " + action)
+
+func list_active_bosses():
+	"""List all active bosses and their positions"""
+	var boss_manager = get_tree().get_first_node_in_group("boss_manager")
+	if not boss_manager:
+		send_error("BossManager not found")
+		return
+
+	send_response("=== ACTIVE BOSSES ===")
+
+	var active_boss = boss_manager.get_active_boss()
+	if active_boss:
+		send_response("Boss: %s" % active_boss.name)
+		send_response("Position: (%.0f, %.0f)" % [active_boss.global_position.x, active_boss.global_position.y])
+		send_response("HP: %.0f / %.0f" % [active_boss.current_hp, active_boss.max_hp])
+
+		if player:
+			var distance = player.global_position.distance_to(active_boss.global_position)
+			send_response("Distance from player: %.0f units" % distance)
+	else:
+		send_response("No active bosses")
+
+	# Show spawn flags
+	send_response("")
+	send_response("=== BOSS SPAWN FLAGS ===")
+	var flags = boss_manager.boss_spawned_flags
+	for biome_type in flags.keys():
+		var biome_name = get_biome_type_name(biome_type)
+		var spawned = flags[biome_type]
+		send_response("%s: %s" % [biome_name, "SPAWNED" if spawned else "NOT SPAWNED"])
+
+func reset_boss_flags():
+	"""Reset all boss spawn flags"""
+	var boss_manager = get_tree().get_first_node_in_group("boss_manager")
+	if not boss_manager:
+		send_error("BossManager not found")
+		return
+
+	boss_manager.reset_boss_flags()
+	send_response("All boss flags reset!")
+	send_response("[HINT] Bosses will respawn when you enter their zones")
+
+func force_spawn_boss(boss_name: String):
+	"""Force spawn a specific boss"""
+	var boss_manager = get_tree().get_first_node_in_group("boss_manager")
+	if not boss_manager:
+		send_error("BossManager not found")
+		return
+
+	# Reset flags first
+	boss_manager.reset_boss_flags()
+
+	# Spawn based on name
+	match boss_name:
+		"fire_dragon", "firedragon", "dragon":
+			boss_manager.spawn_fire_dragon()
+			send_response("Spawned Fire Dragon at (0, 3500)")
+
+		"vampire_lord", "vampirelord", "vampire":
+			boss_manager.spawn_vampire_lord()
+			send_response("Spawned Vampire Lord at (-3500, 0)")
+
+		_:
+			send_error("Unknown boss: " + boss_name)
+			send_response("Available: fire_dragon, vampire_lord")
+
+func get_biome_type_name(biome_type: int) -> String:
+	"""Get biome type name from enum value"""
+	match biome_type:
+		0: return "Starting Forest"
+		1: return "Desert Wasteland"
+		2: return "Frozen Tundra"
+		3: return "Volcanic Darklands"
+		4: return "Blood Temple"
+		_: return "Unknown"
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
