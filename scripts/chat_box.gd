@@ -118,6 +118,11 @@ func close_chat() -> void:
 func add_message(sender: String, text: String, sender_type: String = "System") -> void:
 	"""Add a new message to the chat log with color-coded sender"""
 
+	# Auto-open chat for boss/system messages (not player messages)
+	if sender_type in ["System", "DarkMiku", "DespairMiku", "FireDragon", "VampireLord"] and sender_type != "Player":
+		if not is_chat_open:
+			open_chat()
+
 	# Create rich text label for message
 	var message_label := RichTextLabel.new()
 	message_label.bbcode_enabled = true

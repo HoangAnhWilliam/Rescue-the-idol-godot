@@ -182,6 +182,15 @@ func spawn_fire_dragon():
 	AudioManager.play_boss_music("FireDragon")
 	AudioManager.play_sfx("dragon_roar")
 
+	# 🎭 BOSS ANNOUNCEMENT - Creative dialogue with coordinates
+	ChatBox.send_chat_message("System", "⚠️ A LEGENDARY BOSS HAS AWAKENED!", "System", get_tree())
+	await get_tree().create_timer(0.5).timeout
+	ChatBox.send_chat_message("Fire Dragon", "ROOOOAAAAR! The flames of destruction await you...", "FireDragon", get_tree())
+	await get_tree().create_timer(1.0).timeout
+	ChatBox.send_chat_message("Fire Dragon", "Seek me in the volcanic lands at coordinates (%.0f, %.0f)" % [spawn_pos.x, spawn_pos.y], "FireDragon", get_tree())
+	await get_tree().create_timer(0.5).timeout
+	ChatBox.send_chat_message("System", "💀 Fire Dragon location: (%.0f, %.0f)" % [spawn_pos.x, spawn_pos.y], "System", get_tree())
+
 	print("════════════════════════════════════════")
 	print("")
 
@@ -232,6 +241,17 @@ func spawn_vampire_lord():
 	# ← AUDIO: Play boss music and laugh
 	AudioManager.play_boss_music("VampireLord")
 	AudioManager.play_sfx("vampire_laugh")
+
+	# 🎭 BOSS ANNOUNCEMENT - Creative vampire dialogue
+	ChatBox.send_chat_message("System", "⚠️ THE BLOOD MOON RISES!", "System", get_tree())
+	await get_tree().create_timer(0.5).timeout
+	ChatBox.send_chat_message("Vampire Lord", "Ahahahaha... At last, a worthy challenger approaches...", "VampireLord", get_tree())
+	await get_tree().create_timer(1.2).timeout
+	ChatBox.send_chat_message("Vampire Lord", "Come, find me in my blood-soaked temple at (%.0f, %.0f)..." % [spawn_pos.x, spawn_pos.y], "VampireLord", get_tree())
+	await get_tree().create_timer(0.8).timeout
+	ChatBox.send_chat_message("Vampire Lord", "Your blood shall make a fine vintage!", "VampireLord", get_tree())
+	await get_tree().create_timer(0.5).timeout
+	ChatBox.send_chat_message("System", "🩸 Vampire Lord location: (%.0f, %.0f)" % [spawn_pos.x, spawn_pos.y], "System", get_tree())
 
 	print("════════════════════════════════════════")
 	print("")
