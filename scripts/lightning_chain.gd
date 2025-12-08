@@ -68,6 +68,10 @@ func chain_lightning(current_target: CharacterBody2D, hit_list: Array, jumps_lef
 		# Small delay then chain
 		await get_tree().create_timer(0.1).timeout
 
+		# Check if target still valid after await (could be freed during delay)
+		if not is_instance_valid(next_target):
+			return
+
 		# Continue chain
 		chain_lightning(next_target, hit_list, jumps_left - 1)
 
