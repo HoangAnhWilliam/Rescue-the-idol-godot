@@ -709,7 +709,7 @@ func cmd_tp(args: Array):
 
 		if pos == Vector2.ZERO:
 			send_error("Could not find biome: " + biome_name)
-			send_response("[HINT] Try: forest, desert, tundra, volcanic, blood temple")
+			send_response("[HINT] Try: forest, desert, tundra, volcanic, darklands, blood temple")
 			send_response("[HINT] Or use /tp boss <name> for exact boss positions")
 			return
 
@@ -1776,8 +1776,9 @@ func search_for_biome(biome_name: String) -> Vector2:
 	var target_biome_type = -1
 
 	# Map biome names to BiomeType enum
+	# Note: All biomes are procedurally generated, so we search for nearest instance
 	if "forest" in lower or "starting" in lower:
-		return Vector2(0, 0)  # Always at spawn
+		target_biome_type = 0  # BiomeType.STARTING_FOREST
 	elif "desert" in lower or "wasteland" in lower:
 		target_biome_type = 1  # BiomeType.DESERT_WASTELAND
 	elif "tundra" in lower or "frozen" in lower:
