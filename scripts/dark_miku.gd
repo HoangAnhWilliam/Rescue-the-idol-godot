@@ -107,7 +107,14 @@ func mirror_player_weapon():
 	if player.has_method("get_equipped_weapons"):
 		var weapons = player.get_equipped_weapons()
 		if weapons and weapons.size() > 0:
-			available_weapons = weapons
+			# Convert to Array[String] to fix type mismatch
+			for weapon in weapons:
+				if weapon is String:
+					available_weapons.append(weapon)
+				elif weapon is Node and weapon.has_method("get_name"):
+					available_weapons.append(weapon.get_name())
+				else:
+					available_weapons.append(str(weapon))
 
 	# If no weapons found, use default
 	if available_weapons.is_empty():
