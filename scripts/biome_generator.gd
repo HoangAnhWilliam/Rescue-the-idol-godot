@@ -63,6 +63,7 @@ signal entered_boss_zone(biome_type: BiomeType)
 
 func _ready():
 	print("=== BiomeGenerator Init ===")
+	add_to_group("biome_generator")
 	initialize_noise()
 	initialize_biomes()
 
@@ -264,11 +265,11 @@ func chunk_to_world(chunk: Vector2i) -> Vector2:
 
 func update_current_biome():
 	var new_biome = get_biome_at_position(player.global_position)
-	
+
 	if new_biome.type != current_biome.type:
 		var old_biome = current_biome
 		current_biome = new_biome
-		
+
 		print("=== Biome Changed ===")
 		print("From: ", old_biome.name)
 		print("To: ", new_biome.name)
@@ -280,6 +281,33 @@ func update_current_biome():
 		# ← AUDIO: Change music to new biome
 		AudioManager.play_biome_music(new_biome.name)
 
+		biome_changed.emit(old_biome, new_biome)
+		check_boss_zone()
+
+func force_update_biome(position: Vector2 = Vector2.ZERO):
+	"""Force biome update at a specific position (used for teleport commands)"""
+	if not player:
+		return
+
+	var check_pos = position if position != Vector2.ZERO else player.global_position
+	var new_biome = get_biome_at_position(check_pos)
+
+	# Always update even if same biome (in case music was changed)
+	var old_biome = current_biome
+	current_biome = new_biome
+
+	print("=== Biome Force Updated ===")
+	print("Position: (%.0f, %.0f)" % [check_pos.x, check_pos.y])
+	print("Biome: ", new_biome.name)
+	print("Temp: %.2f, Moisture: %.2f" % [
+		temperature_noise.get_noise_2dv(check_pos),
+		moisture_noise.get_noise_2dv(check_pos)
+	])
+
+	# Change music to new biome
+	AudioManager.play_biome_music(new_biome.name)
+
+	if new_biome.type != old_biome.type:
 		biome_changed.emit(old_biome, new_biome)
 		check_boss_zone()
 

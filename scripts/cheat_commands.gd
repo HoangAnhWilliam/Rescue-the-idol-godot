@@ -47,6 +47,14 @@ var debug_fps: bool = false
 var debug_hitbox: bool = false
 var debug_enemy_ai: bool = false
 
+# Music system state
+var song_loop_count: int = 0
+var song_loop_max: int = 0
+var is_song_looping: bool = false
+var current_loop_song: String = ""
+var song_queue: Array[String] = []
+var is_shuffling: bool = false
+
 func _ready():
 	print("=== CheatCommands System Initializing ===")
 	await get_tree().process_frame
@@ -154,6 +162,15 @@ func process_command(command_text: String) -> void:
 
 		# CATEGORY 15: HELP
 		"help": cmd_help(args)
+
+		# CATEGORY 16: MUSIC SYSTEM
+		"song": cmd_song(args)
+		"music": cmd_music(args)
+		"sfx": cmd_sfx(args)
+		"playlist": cmd_playlist(args)
+		"queue": cmd_queue(args)
+		"shuffle": cmd_shuffle()
+		"skip": cmd_skip()
 
 		_:
 			send_error("Unknown command: /" + cmd + ". Type /help for command list")
@@ -671,6 +688,12 @@ func cmd_tp(args: Array):
 		var y = args[1].to_float()
 		player.global_position = Vector2(x, y)
 		send_response("Teleported to (%.0f, %.0f)" % [x, y])
+
+		# Update biome and music after teleport
+		await get_tree().process_frame
+		var biome_generator = get_tree().get_first_node_in_group("biome_generator")
+		if biome_generator and biome_generator.has_method("force_update_biome"):
+			biome_generator.force_update_biome(player.global_position)
 	else:
 		# Biome name
 		var biome_name = " ".join(args).to_lower()
@@ -682,6 +705,12 @@ func cmd_tp(args: Array):
 
 		player.global_position = pos
 		send_response("Teleported to " + biome_name.capitalize())
+
+		# Update biome and music after teleport
+		await get_tree().process_frame
+		var biome_generator = get_tree().get_first_node_in_group("biome_generator")
+		if biome_generator and biome_generator.has_method("force_update_biome"):
+			biome_generator.force_update_biome(player.global_position)
 
 func cmd_tprandom(args: Array):
 	"""Random teleport within radius
@@ -763,6 +792,7 @@ func cmd_summon(args: Array):
 	# Spawn enemies
 	var enemy_scene = load(scene_path)
 	var spawned_count = 0
+	var is_boss = is_boss_enemy(enemy_name)
 
 	for i in range(count):
 		var enemy = enemy_scene.instantiate()
@@ -784,10 +814,17 @@ func cmd_summon(args: Array):
 			enemy.add_child(timer)
 			timer.start()
 
+	# Play boss music if it's a boss
+	if is_boss and spawned_count > 0:
+		await get_tree().process_frame
+		play_boss_music(enemy_name)
+
 	# Response
 	var response = "Summoned %d %s" % [spawned_count, enemy_name]
 	if lifetime > 0:
 		response += " for " + format_time(lifetime)
+	if is_boss:
+		response += " (Boss music started)"
 
 	send_response(response)
 
@@ -1236,6 +1273,343 @@ func show_command_help(cmd: String):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# CATEGORY 16: MUSIC SYSTEM
+# ═══════════════════════════════════════════════════════════════════════════════
+
+func cmd_song(args: Array):
+	"""Song control commands
+	Usage: /song <name> [loop] [count] OR /song list OR /song random OR /song break"""
+	if args.size() < 1:
+		send_error("Usage: /song <name|list|random|break> [loop] [count]")
+		return
+
+	var subcommand = args[0].to_lower()
+
+	match subcommand:
+		"list":
+			show_song_list()
+
+		"random":
+			play_random_song()
+
+		"break":
+			stop_song_loop()
+
+		_:
+			# /song <name> [loop] [count]
+			var song_name = args[0].to_lower()
+			var is_loop = false
+			var loop_count = 0
+
+			# Check for "loop" parameter
+			if args.size() >= 2 and args[1].to_lower() == "loop":
+				is_loop = true
+
+				# Check for loop count
+				if args.size() >= 3:
+					loop_count = args[2].to_int()
+					if loop_count <= 0:
+						send_error("Loop count must be > 0")
+						return
+
+			play_song(song_name, is_loop, loop_count)
+
+func show_song_list():
+	"""Show all available songs"""
+	if not AudioManager:
+		send_error("AudioManager not found")
+		return
+
+	send_response("=== AVAILABLE SONGS ===")
+
+	var songs = AudioManager.music_tracks.keys()
+	songs.sort()
+
+	for i in range(songs.size()):
+		var song = songs[i]
+		var number = i + 1
+		send_response("%d. %s" % [number, song])
+
+	send_response("Total: %d songs" % songs.size())
+	send_response("Usage: /song <name> [loop] [count]")
+
+func play_song(song_name: String, is_loop: bool = false, loop_count: int = 0):
+	"""Play a song with optional looping"""
+	if not AudioManager:
+		send_error("AudioManager not found")
+		return
+
+	# Check if song exists
+	if not song_name in AudioManager.music_tracks:
+		send_error("Song not found: " + song_name)
+		send_response("[HINT] Use /song list to see all songs")
+		return
+
+	# Stop current loop if any
+	if is_song_looping:
+		stop_song_loop()
+
+	# Play song
+	AudioManager.play_music(song_name)
+	send_response("[♪] Playing: " + song_name)
+
+	# Setup looping
+	if is_loop:
+		is_song_looping = true
+		current_loop_song = song_name
+		song_loop_count = 0
+		song_loop_max = loop_count
+
+		if loop_count > 0:
+			send_response("[♪] Looping %d times" % loop_count)
+		else:
+			send_response("[♪] Looping infinitely (use /song break to stop)")
+
+		# Start loop monitoring
+		start_song_loop()
+
+func start_song_loop():
+	"""Start monitoring for song end to loop"""
+	if not is_song_looping:
+		return
+
+	# Wait for current song to end
+	var music_player = AudioManager.current_music_player
+	if not music_player:
+		return
+
+	# Get song duration
+	if music_player.stream:
+		var duration = music_player.stream.get_length()
+
+		# Wait for song to finish
+		await get_tree().create_timer(duration).timeout
+
+		# Check if still should loop
+		if is_song_looping:
+			song_loop_count += 1
+
+			# Check loop limit
+			if song_loop_max > 0 and song_loop_count >= song_loop_max:
+				send_response("[♪] Loop complete (%d times)" % song_loop_max)
+				stop_song_loop()
+				return
+
+			# Loop again
+			AudioManager.play_music(current_loop_song)
+
+			if song_loop_max > 0:
+				send_response("[♪] Loop %d/%d" % [song_loop_count + 1, song_loop_max])
+			else:
+				send_response("[♪] Loop %d" % (song_loop_count + 1))
+
+			# Continue looping
+			start_song_loop()
+
+func stop_song_loop():
+	"""Stop current song loop"""
+	if not is_song_looping:
+		send_response("[INFO] No song is looping")
+		return
+
+	is_song_looping = false
+	send_response("[♪] Stopped looping: " + current_loop_song)
+	current_loop_song = ""
+	song_loop_count = 0
+	song_loop_max = 0
+
+func play_random_song():
+	"""Play a random song"""
+	if not AudioManager:
+		send_error("AudioManager not found")
+		return
+
+	var songs = AudioManager.music_tracks.keys()
+	if songs.is_empty():
+		send_error("No songs available")
+		return
+
+	var random_song = songs[randi() % songs.size()]
+	play_song(random_song)
+
+func cmd_music(args: Array):
+	"""Music volume and control commands
+	Usage: /music mute OR /music unmute OR /music volume <0-100>"""
+	if args.size() < 1:
+		send_error("Usage: /music <mute|unmute|volume>")
+		return
+
+	var subcommand = args[0].to_lower()
+
+	match subcommand:
+		"mute":
+			if AudioManager:
+				AudioManager.set_music_volume(0.0)
+				send_response("[♪] Music muted")
+
+		"unmute":
+			if AudioManager:
+				AudioManager.set_music_volume(0.7)  # Default 70%
+				send_response("[♪] Music unmuted (70%)")
+
+		"volume":
+			if args.size() < 2:
+				send_error("Usage: /music volume <0-100>")
+				return
+
+			var volume = args[1].to_int()
+			if volume < 0 or volume > 100:
+				send_error("Volume must be 0-100")
+				return
+
+			if AudioManager:
+				AudioManager.set_music_volume(volume / 100.0)
+				send_response("[♪] Music volume: %d%%" % volume)
+
+		_:
+			send_error("Unknown music command: " + subcommand)
+
+func cmd_sfx(args: Array):
+	"""SFX volume and control commands
+	Usage: /sfx mute OR /sfx unmute OR /sfx volume <0-100>"""
+	if args.size() < 1:
+		send_error("Usage: /sfx <mute|unmute|volume>")
+		return
+
+	var subcommand = args[0].to_lower()
+
+	match subcommand:
+		"mute":
+			if AudioManager:
+				AudioManager.set_sfx_volume(0.0)
+				send_response("[🔊] SFX muted")
+
+		"unmute":
+			if AudioManager:
+				AudioManager.set_sfx_volume(1.0)  # Default 100%
+				send_response("[🔊] SFX unmuted")
+
+		"volume":
+			if args.size() < 2:
+				send_error("Usage: /sfx volume <0-100>")
+				return
+
+			var volume = args[1].to_int()
+			if volume < 0 or volume > 100:
+				send_error("Volume must be 0-100")
+				return
+
+			if AudioManager:
+				AudioManager.set_sfx_volume(volume / 100.0)
+				send_response("[🔊] SFX volume: %d%%" % volume)
+
+		_:
+			send_error("Unknown sfx command: " + subcommand)
+
+func cmd_playlist(args: Array):
+	"""Playlist management commands
+	Usage: /playlist add <song> OR /playlist play OR /playlist clear OR /playlist show"""
+	if args.size() < 1:
+		send_error("Usage: /playlist <add|play|clear|show>")
+		return
+
+	var action = args[0].to_lower()
+
+	match action:
+		"add":
+			if args.size() < 2:
+				send_error("Usage: /playlist add <song>")
+				return
+
+			var song = args[1].to_lower()
+			if song in AudioManager.music_tracks:
+				song_queue.append(song)
+				send_response("[♪] Added to queue: " + song)
+			else:
+				send_error("Song not found: " + song)
+
+		"play":
+			play_playlist()
+
+		"clear":
+			song_queue.clear()
+			send_response("[♪] Queue cleared")
+
+		"show":
+			if song_queue.is_empty():
+				send_response("[INFO] Queue is empty")
+			else:
+				send_response("=== QUEUE ===")
+				for i in range(song_queue.size()):
+					send_response("%d. %s" % [i + 1, song_queue[i]])
+
+		_:
+			send_error("Unknown playlist action: " + action)
+
+func play_playlist():
+	"""Play queued songs"""
+	if song_queue.is_empty():
+		send_error("Queue is empty")
+		return
+
+	var song = song_queue[0]
+	song_queue.remove_at(0)
+
+	AudioManager.play_music(song)
+	send_response("[♪] Playing: " + song)
+	send_response("[♪] %d songs remaining in queue" % song_queue.size())
+
+	# Auto-play next after song ends
+	if not song_queue.is_empty():
+		var music_player = AudioManager.current_music_player
+		if music_player and music_player.stream:
+			var duration = music_player.stream.get_length()
+			await get_tree().create_timer(duration).timeout
+			if not song_queue.is_empty():
+				play_playlist()
+
+func cmd_queue(args: Array):
+	"""Quick queue multiple songs
+	Usage: /queue <song1> [song2] [song3]..."""
+	if args.size() < 1:
+		send_error("Usage: /queue <song1> [song2] [song3]...")
+		return
+
+	var added = 0
+	for i in range(args.size()):
+		var song = args[i].to_lower()
+		if song in AudioManager.music_tracks:
+			song_queue.append(song)
+			added += 1
+
+	send_response("[♪] Added %d songs to queue" % added)
+
+	# Auto-play if not playing
+	var music_player = AudioManager.current_music_player
+	if not music_player.playing:
+		play_playlist()
+
+func cmd_shuffle():
+	"""Toggle shuffle mode"""
+	is_shuffling = !is_shuffling
+
+	if is_shuffling:
+		send_response("[♪] Shuffle: ON")
+		send_response("[HINT] Songs will play randomly")
+	else:
+		send_response("[♪] Shuffle: OFF")
+
+func cmd_skip():
+	"""Skip current song"""
+	if song_queue.is_empty():
+		send_error("No songs in queue to skip to")
+		return
+
+	play_playlist()
+	send_response("[♪] Skipped to next song")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1331,6 +1705,48 @@ func get_enemy_scene_path(enemy_name: String) -> String:
 			return enemy_scenes[key]
 
 	return ""
+
+func is_boss_enemy(enemy_name: String) -> bool:
+	"""Check if enemy is a boss"""
+	var boss_names = ["fire_dragon", "vampire_lord", "pam_tung_ken", "despair_miku", "dark_miku"]
+	var lower = enemy_name.to_lower().replace(" ", "_")
+	return lower in boss_names
+
+func play_boss_music(boss_name: String):
+	"""Play boss music with random variant selection"""
+	if not AudioManager:
+		return
+
+	var lower = boss_name.to_lower().replace(" ", "_")
+	var music_key = ""
+
+	match lower:
+		"fire_dragon":
+			music_key = "fire_dragon_boss"
+
+		"vampire_lord":
+			music_key = "vampire_lord_boss"
+
+		"pam_tung_ken":
+			music_key = "pam_boss"
+
+		"dark_miku":
+			# 50% chance between two tracks
+			if randf() < 0.5:
+				music_key = "dark_miku_boss"
+			else:
+				music_key = "dark_miku_boss_alt"
+
+		"despair_miku":
+			# 50% chance between two tracks
+			if randf() < 0.5:
+				music_key = "despair_miku_boss"
+			else:
+				music_key = "despair_miku_boss_alt"
+
+	if music_key:
+		AudioManager.play_music(music_key, 1.0)  # Faster fade for boss
+		print("Playing boss music: ", music_key)
 
 func send_response(text: String):
 	"""Send success response to chat"""

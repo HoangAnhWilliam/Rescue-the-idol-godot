@@ -53,7 +53,9 @@ var music_tracks := {
 	"vampire_lord_boss": "res://audio/music/vampire_lord_boss.ogg",
 	"pam_boss": "res://audio/music/pam_boss.ogg",
 	"dark_miku_boss": "res://audio/music/dark_miku_boss.ogg",
+	"dark_miku_boss_alt": "res://audio/music/dark_miku_boss_alt.ogg",  # Alternative track
 	"despair_miku_boss": "res://audio/music/despair_miku_boss.ogg",
+	"despair_miku_boss_alt": "res://audio/music/despair_miku_boss_alt.ogg",  # Alternative track
 
 	# Special Areas
 	"otaku_fortress": "res://audio/music/otaku_fortress.ogg",
