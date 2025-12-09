@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://dq8m5xwapn3wk"]
 
-[ext_resource type="Script" path="res://scripts/despair_miku.gd" id="1_despair"]
+[ext_resource type="Script" path="res://scripts/despair_kiku.gd" id="1_despair"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_despair"]
 size = Vector2(64, 64)
 
-[node name="DespairMiku" type="CharacterBody2D"]
+[node name="DespairKiku" type="CharacterBody2D"]
 script = ExtResource("1_despair")
 
 [node name="ColorRect" type="ColorRect" parent="."]

@@ -8,7 +8,7 @@ const COMMON_WEAPONS = ["wooden_sword"]
 const UNCOMMON_WEAPONS = ["earthshatter_staff", "shadow_daggers"]
 const RARE_WEAPONS = ["acid_gauntlets", "frost_bow", "lightning_chain"]
 const EPIC_WEAPONS = ["enchanting_flute"]
-const LEGENDARY_WEAPONS = ["miku_sword"]
+const LEGENDARY_WEAPONS = ["kiku_sword"]
 
 # ATM tier enum (must match WeaponATM.ATMTier)
 enum ATMTier { BRONZE, SILVER, GOLD, DIVINE }
@@ -128,7 +128,7 @@ func get_weapon_display_name(weapon_id: String) -> String:
 	"""Get display name for weapon"""
 	match weapon_id:
 		"wooden_sword": return "Wooden Sword"
-		"miku_sword": return "Miku Sword"
+		"kiku_sword": return "Kiku Sword"
 		"earthshatter_staff": return "Earthshatter Staff"
 		"acid_gauntlets": return "Acid Storm Gauntlets"
 		"enchanting_flute": return "Enchanting Flute"

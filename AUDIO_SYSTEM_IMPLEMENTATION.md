@@ -1,5 +1,5 @@
 # 🎵🔊 Audio System Implementation Guide
-## Miku's Despair - Melody of the Dead
+## Kiku's Despair - Melody of the Dead
 
 **Complete sound & music system for Godot 4.3**
 
@@ -83,7 +83,7 @@ AudioManager.set_sfx_volume(value)
 
 **Integrated Sounds:**
 - ✅ Lines 62-63: Weapon-specific attack sounds
-  - MikuSword → `magic_slash`
+  - KikuSword → `magic_slash`
   - WoodenSword → `sword_slash`
   - FrostBow → `bow_shoot`
   - LightningChain → `lightning_zap`
@@ -176,10 +176,10 @@ Rescue-the-idol-godot/
 │   │   ├── fire_dragon_boss.ogg   ⚠️ TODO: Generate
 │   │   ├── vampire_lord_boss.ogg  ⚠️ TODO: Generate
 │   │   ├── pam_boss.ogg           ⚠️ TODO: Generate
-│   │   ├── dark_miku_boss.ogg     ⚠️ TODO: Generate
-│   │   ├── despair_miku_boss.ogg  ⚠️ TODO: Generate
+│   │   ├── dark_kiku_boss.ogg     ⚠️ TODO: Generate
+│   │   ├── despair_kiku_boss.ogg  ⚠️ TODO: Generate
 │   │   ├── otaku_fortress.ogg     ⚠️ TODO: Generate
-│   │   ├── miku_rescue.ogg        ⚠️ TODO: Generate
+│   │   ├── kiku_rescue.ogg        ⚠️ TODO: Generate
 │   │   ├── credits_music.ogg      ⚠️ TODO: Generate
 │   │   └── combat_layer.ogg       ⚠️ TODO: Generate (optional)
 │   │
@@ -445,7 +445,7 @@ See Testing Checklist below ↓
 - [ ] Hit impact sound plays when hitting enemy
 - [ ] Critical hit sound plays on critical hits
 - [ ] Weapon sounds play for each weapon type:
-  - [ ] MikuSword (magic slash)
+  - [ ] KikuSword (magic slash)
   - [ ] WoodenSword (sword slash)
   - [ ] FrostBow (bow shoot)
   - [ ] LightningChain (lightning zap)
@@ -558,7 +558,7 @@ AudioManager.play_biome_music(biome_name: String)
 # Helper: Play boss music
 AudioManager.play_boss_music(boss_name: String)
 # Boss names: "FireDragon", "VampireLord", "PamTungKen",
-#             "DarkMiku", "DespairMiku"
+#             "DarkKiku", "DespairKiku"
 
 # Return to biome music after boss
 AudioManager.return_to_biome_music()
@@ -598,10 +598,10 @@ AudioManager.unmute_all()
 "fire_dragon_boss"     # Fire Dragon boss
 "vampire_lord_boss"    # Vampire Lord boss
 "pam_boss"             # Pam Tung Ken boss
-"dark_miku_boss"       # Dark Miku boss
-"despair_miku_boss"    # Despair Miku boss
+"dark_kiku_boss"       # Dark Kiku boss
+"despair_kiku_boss"    # Despair Kiku boss
 "otaku_fortress"       # Otaku Fortress
-"miku_rescue"          # Miku rescue event
+"kiku_rescue"          # Kiku rescue event
 "credits"              # Credits music
 "combat_layer"         # Combat intensity (optional)
 ```

@@ -1,7 +1,7 @@
 extends PanelContainer
-class_name MikuFragmentBar
+class_name KikuFragmentBar
 
-## Visual progress indicator for Miku fragment collection (0/5)
+## Visual progress indicator for Kiku fragment collection (0/5)
 ## Shows animated slots that fill as fragments are collected
 
 @onready var slots_container: HBoxContainer = $MarginContainer/HBoxContainer/SlotsContainer
@@ -19,7 +19,7 @@ signal all_fragments_collected
 signal fragment_added(count: int)
 
 func _ready() -> void:
-	add_to_group("miku_fragment_bar")
+	add_to_group("kiku_fragment_bar")
 
 	# Create 5 fragment slots
 	create_fragment_slots()
@@ -31,7 +31,7 @@ func _ready() -> void:
 
 	# Setup count label
 	if count_label:
-		count_label.text = "Miku Fragments: 0/5"
+		count_label.text = "Kiku Fragments: 0/5"
 		count_label.add_theme_font_size_override("font_size", 16)
 
 	# Start hidden
@@ -61,7 +61,7 @@ func create_fragment_slots() -> void:
 
 
 func show_fragment_bar_first_time() -> void:
-	"""Reveal animation when first Miku is rescued"""
+	"""Reveal animation when first Kiku is rescued"""
 
 	if is_revealed:
 		return
@@ -92,11 +92,11 @@ func show_fragment_bar_first_time() -> void:
 		pulse_tween.tween_property(self, "modulate", Color(1, 1, 1), 0.3)
 		await pulse_tween.finished
 
-	ChatBox.send_chat_message("System", "Miku's Soul Shards will appear here!", "System", get_tree())
+	ChatBox.send_chat_message("System", "Kiku's Soul Shards will appear here!", "System", get_tree())
 
 
-func add_miku_fragment(miku_vanish_position: Vector2) -> void:
-	"""Animate fragment collection from Miku's last position"""
+func add_kiku_fragment(kiku_vanish_position: Vector2) -> void:
+	"""Animate fragment collection from Kiku's last position"""
 
 	fragment_count += 1
 
@@ -109,7 +109,7 @@ func add_miku_fragment(miku_vanish_position: Vector2) -> void:
 	fragment_sprite.color = Color(0, 0.85, 1, 1.0)  # Cyan
 	fragment_sprite.z_index = 100
 	get_tree().root.add_child(fragment_sprite)
-	fragment_sprite.global_position = miku_vanish_position - fragment_sprite.size / 2
+	fragment_sprite.global_position = kiku_vanish_position - fragment_sprite.size / 2
 
 	# Get target slot position in global coordinates
 	var target_slot := fragment_slots[fragment_count - 1]
@@ -162,10 +162,10 @@ func fill_fragment_slot(slot: ColorRect) -> void:
 
 	# Update count label
 	if count_label:
-		count_label.text = "Miku Fragments: %d/5" % fragment_count
+		count_label.text = "Kiku Fragments: %d/5" % fragment_count
 
 	# Chat notification
-	ChatBox.send_chat_message("System", "Miku's Soul Shard collected: %d/5" % fragment_count, "System", get_tree())
+	ChatBox.send_chat_message("System", "Kiku's Soul Shard collected: %d/5" % fragment_count, "System", get_tree())
 
 	# Check if all collected
 	if fragment_count >= 5:
@@ -239,4 +239,4 @@ func reset_fragments() -> void:
 		slot.scale = Vector2(1, 1)
 
 	if count_label:
-		count_label.text = "Miku Fragments: 0/5"
+		count_label.text = "Kiku Fragments: 0/5"

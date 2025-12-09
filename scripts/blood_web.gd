@@ -1,7 +1,7 @@
 extends Area2D
 class_name BloodWeb
 
-## Blood Web projectile for Dark Miku
+## Blood Web projectile for Dark Kiku
 ## Creates tether that slows player when moving away
 
 @onready var sprite: ColorRect = $ColorRect

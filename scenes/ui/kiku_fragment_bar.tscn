@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://bqm3k5h8toavl"]
 
-[ext_resource type="Script" path="res://scripts/miku_fragment_bar.gd" id="1_fragment_bar"]
+[ext_resource type="Script" path="res://scripts/kiku_fragment_bar.gd" id="1_fragment_bar"]
 
-[node name="MikuFragmentBar" type="PanelContainer"]
+[node name="KikuFragmentBar" type="PanelContainer"]
 custom_minimum_size = Vector2(400, 60)
 offset_right = 400.0
 offset_bottom = 60.0
@@ -31,4 +31,4 @@ theme_override_constants/separation = 5
 [node name="CountLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Miku Fragments: 0/5"
+text = "Kiku Fragments: 0/5"

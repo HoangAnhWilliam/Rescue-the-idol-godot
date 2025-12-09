@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://b4tedgs0dxwcr"]
 
-[ext_resource type="Script" path="res://scripts/miku_sword.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/kiku_sword.gd" id="1"]
 
-[node name="MikuSword" type="Node2D"]
+[node name="KikuSword" type="Node2D"]
 script = ExtResource("1")
 
 [node name="ColorRect" type="ColorRect" parent="."]

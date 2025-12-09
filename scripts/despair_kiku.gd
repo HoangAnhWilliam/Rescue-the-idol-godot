@@ -1,9 +1,9 @@
 extends CharacterBody2D
-class_name DespairMiku
+class_name DespairKiku
 
-## Despair Miku - Final boss of Miku Rescue Quest
+## Despair Kiku - Final boss of Kiku Rescue Quest
 ## 3 phases with 7 unique attacks
-## Defeating her grants permanent Miku companion
+## Defeating her grants permanent Kiku companion
 
 enum State { INTRO, IDLE, CHASE, ATTACK, DEAD }
 enum BossPhase { PHASE_1, PHASE_2, PHASE_3 }
@@ -51,7 +51,7 @@ var phase_transition_active: bool = false
 
 # Scenes
 var tear_projectile_scene: PackedScene = preload("res://scenes/projectiles/tear_projectile.tscn")
-var permanent_miku_scene: PackedScene = preload("res://scenes/miku/permanent_miku.tscn")
+var permanent_kiku_scene: PackedScene = preload("res://scenes/kiku/permanent_kiku.tscn")
 
 # Signals
 signal boss_defeated
@@ -59,7 +59,7 @@ signal phase_changed(new_phase: int)
 
 func _ready() -> void:
 	add_to_group("bosses")
-	add_to_group("despair_miku")
+	add_to_group("despair_kiku")
 
 	# Setup sprite
 	if sprite:
@@ -111,13 +111,13 @@ func start_boss_intro() -> void:
 	await tween.finished
 
 	# Dialogue sequence
-	ChatBox.send_chat_message("Despair Miku", "You freed me... only to bind me...", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "You freed me... only to bind me...", "DespairKiku", get_tree())
 	await get_tree().create_timer(2.5).timeout
 
-	ChatBox.send_chat_message("Despair Miku", "I am the despair you cannot escape...", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "I am the despair you cannot escape...", "DespairKiku", get_tree())
 	await get_tree().create_timer(2.5).timeout
 
-	ChatBox.send_chat_message("Despair Miku", "FACE ME!", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "FACE ME!", "DespairKiku", get_tree())
 	await get_tree().create_timer(1.0).timeout
 
 	# Start combat
@@ -128,7 +128,7 @@ func start_combat() -> void:
 	"""Start combat phase"""
 
 	current_state = State.CHASE
-	print("Despair Miku combat started!")
+	print("Despair Kiku combat started!")
 
 
 func _physics_process(delta: float) -> void:
@@ -227,7 +227,7 @@ func enter_phase_2() -> void:
 	velocity = Vector2.ZERO
 
 	# Dialogue
-	ChatBox.send_chat_message("Despair Miku", "You infuriate me!", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "You infuriate me!", "DespairKiku", get_tree())
 
 	# Visual changes: Add red tint
 	if sprite:
@@ -268,7 +268,7 @@ func enter_phase_3() -> void:
 	velocity = Vector2.ZERO
 
 	# Dialogue
-	ChatBox.send_chat_message("Despair Miku", "This is my ultimate power!", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "This is my ultimate power!", "DespairKiku", get_tree())
 
 	# Visual: Purple-cyan mix
 	if sprite:
@@ -388,7 +388,7 @@ func execute_phase3_attacks() -> void:
 func attack_tears() -> void:
 	"""Attack 1: Tear Projectiles (5 homing tears)"""
 
-	print("Despair Miku: Tear Projectiles")
+	print("Despair Kiku: Tear Projectiles")
 
 	for i in range(5):
 		var tear := tear_projectile_scene.instantiate()
@@ -402,7 +402,7 @@ func attack_tears() -> void:
 func attack_lament_wave() -> void:
 	"""Attack 2: Lament Wave (expanding AoE)"""
 
-	print("Despair Miku: Lament Wave")
+	print("Despair Kiku: Lament Wave")
 
 	# Create expanding shockwave
 	var wave := Area2D.new()
@@ -445,10 +445,10 @@ func attack_lament_wave() -> void:
 func attack_shadow_clone() -> void:
 	"""Attack 3: Shadow Clone (spawn 2 clones)"""
 
-	print("Despair Miku: Shadow Clone")
+	print("Despair Kiku: Shadow Clone")
 
 	for i in range(2):
-		var clone := duplicate() as DespairMiku
+		var clone := duplicate() as DespairKiku
 		if not clone:
 			continue
 
@@ -476,7 +476,7 @@ func attack_shadow_clone() -> void:
 func attack_despair_beam() -> void:
 	"""Attack 4: Despair Beam (tracking laser)"""
 
-	print("Despair Miku: Despair Beam")
+	print("Despair Kiku: Despair Beam")
 
 	# Create laser Line2D
 	var beam := Line2D.new()
@@ -516,9 +516,9 @@ func attack_despair_beam() -> void:
 func attack_skeleton_summon() -> void:
 	"""Attack 5: Skeleton Summon (5 skeletons in circle)"""
 
-	print("Despair Miku: Skeleton Summon")
+	print("Despair Kiku: Skeleton Summon")
 
-	ChatBox.send_chat_message("Despair Miku", "Fight in my name!", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "Fight in my name!", "DespairKiku", get_tree())
 
 	# Summon 5 basic enemies in circle
 	for i in range(5):
@@ -541,7 +541,7 @@ func attack_skeleton_summon() -> void:
 func attack_teleport_strike() -> void:
 	"""Attack 6: Teleport Strike (backstab)"""
 
-	print("Despair Miku: Teleport Strike")
+	print("Despair Kiku: Teleport Strike")
 
 	if not player or not is_instance_valid(player):
 		return
@@ -579,9 +579,9 @@ func attack_teleport_strike() -> void:
 func attack_void_collapse() -> void:
 	"""Attack 7: Void Collapse (ultimate AoE + void zones)"""
 
-	print("Despair Miku: VOID COLLAPSE!")
+	print("Despair Kiku: VOID COLLAPSE!")
 
-	ChatBox.send_chat_message("Despair Miku", "VOID COLLAPSE!", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "VOID COLLAPSE!", "DespairKiku", get_tree())
 
 	# Warning circle (3 second telegraph)
 	var warning := ColorRect.new()
@@ -712,7 +712,7 @@ func die() -> void:
 	velocity = Vector2.ZERO
 
 	# Dialogue
-	ChatBox.send_chat_message("Despair Miku", "At last... I am free...", "DespairMiku", get_tree())
+	ChatBox.send_chat_message("Despair Kiku", "At last... I am free...", "DespairKiku", get_tree())
 
 	await get_tree().create_timer(2.0).timeout
 
@@ -743,13 +743,13 @@ func die() -> void:
 		if player.has_method("add_gold"):
 			player.add_gold(gold_reward)
 
-	# Spawn permanent Miku
-	spawn_permanent_miku()
+	# Spawn permanent Kiku
+	spawn_permanent_kiku()
 
 	# Chat notifications
 	ChatBox.send_chat_message("System", "", "System", get_tree())
 	ChatBox.send_chat_message("System", "VICTORY!", "System", get_tree())
-	ChatBox.send_chat_message("System", "You obtained Permanent Miku!", "System", get_tree())
+	ChatBox.send_chat_message("System", "You obtained Permanent Kiku!", "System", get_tree())
 	ChatBox.send_chat_message("System", "", "System", get_tree())
 
 	# Save progress
@@ -758,8 +758,8 @@ func die() -> void:
 		if save_system.get("save_data"):
 			var save_data: Dictionary = save_system.save_data
 			if save_data.has("progress"):
-				save_data.progress["despair_miku_defeated"] = true
-				save_data.progress["miku_rescues"] = save_data.progress.get("miku_rescues", 0) + 1
+				save_data.progress["despair_kiku_defeated"] = true
+				save_data.progress["kiku_rescues"] = save_data.progress.get("kiku_rescues", 0) + 1
 			save_system.save_game()
 
 	# Emit signal
@@ -771,17 +771,17 @@ func die() -> void:
 	queue_free()
 
 
-func spawn_permanent_miku() -> void:
-	"""Spawn permanent Miku pet for player"""
+func spawn_permanent_kiku() -> void:
+	"""Spawn permanent Kiku pet for player"""
 
 	if not player or not is_instance_valid(player):
 		return
 
-	var miku := permanent_miku_scene.instantiate()
-	# Miku will auto-attach to player in its _ready()
-	get_parent().add_child(miku)
+	var kiku := permanent_kiku_scene.instantiate()
+	# Kiku will auto-attach to player in its _ready()
+	get_parent().add_child(kiku)
 
-	print(" Permanent Miku pet spawned!")
+	print(" Permanent Kiku pet spawned!")
 
 
 func flash_screen(color: Color, duration: float) -> void:

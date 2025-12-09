@@ -2,7 +2,7 @@ extends Node2D
 class_name RitualCircle
 
 ## Ritual circle that appears after collecting all 5 fragments
-## Summons Despair Miku boss when activated
+## Summons Despair Kiku boss when activated
 
 @onready var circle_sprite: Polygon2D = $CircleSprite
 @onready var skull_markers: Node2D = $SkullMarkers
@@ -15,7 +15,7 @@ var player_in_range: bool = false
 var ritual_active: bool = false
 
 # References
-var despair_miku_scene: PackedScene = preload("res://scenes/bosses/despair_miku.tscn")
+var despair_kiku_scene: PackedScene = preload("res://scenes/bosses/despair_kiku.tscn")
 
 # Signals
 signal ritual_started
@@ -179,8 +179,8 @@ func start_ritual_sequence() -> void:
 	flash_screen(Color.WHITE, 0.5)
 	await get_tree().create_timer(0.5).timeout
 
-	# 5. Spawn Despair Miku boss
-	spawn_despair_miku_boss()
+	# 5. Spawn Despair Kiku boss
+	spawn_despair_kiku_boss()
 
 	# 6. Remove vignette
 	if vignette:
@@ -220,7 +220,7 @@ func display_ritual_chant() -> void:
 	var chant_lines := [
 		"From the void, I summon you...",
 		"From despair, I call out to you...",
-		"Miku... Awaken!"
+		"Kiku... Awaken!"
 	]
 
 	# Create centered label
@@ -278,15 +278,15 @@ func flash_screen(color: Color, duration: float) -> void:
 	flash.queue_free()
 
 
-func spawn_despair_miku_boss() -> void:
-	"""Spawn Despair Miku boss at ritual position"""
+func spawn_despair_kiku_boss() -> void:
+	"""Spawn Despair Kiku boss at ritual position"""
 
-	var boss := despair_miku_scene.instantiate()
+	var boss := despair_kiku_scene.instantiate()
 	boss.global_position = global_position
 	get_parent().add_child(boss)
 
 	# Chat notification
-	ChatBox.send_chat_message("System", "⚠️ Despair Miku has been summoned!", "System", get_tree())
+	ChatBox.send_chat_message("System", "⚠️ Despair Kiku has been summoned!", "System", get_tree())
 
 	# Camera shake
 	var camera_shake := get_node_or_null("/root/CameraShake")
@@ -296,4 +296,4 @@ func spawn_despair_miku_boss() -> void:
 	# Emit signal
 	boss_spawned.emit()
 
-	print("Despair Miku Boss spawned at %s" % global_position)
+	print("Despair Kiku Boss spawned at %s" % global_position)

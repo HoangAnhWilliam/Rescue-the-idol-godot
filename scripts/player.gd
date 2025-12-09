@@ -39,8 +39,8 @@ var equipped_weapons: Array[Node] = []  # ← NEW: Support multiple weapons
 var attack_cooldown: float = 0.0
 
 # Buffs
-var miku_active: bool = false
-var miku_buffs := {
+var kiku_active: bool = false
+var kiku_buffs := {
 	"attack_speed": 1.0,
 	"hp_regen": 1.0,
 	"crit_chance": 0.0,
@@ -55,7 +55,7 @@ var invincible_mana: bool = false
 
 # Special items (for quest system)
 var special_items: Dictionary = {}
-var has_miku_seal_key: bool = false
+var has_kiku_seal_key: bool = false
 
 # Preload particle scene
 var levelup_particle_scene = preload("res://scenes/effects/levelup_particle.tscn")
@@ -202,7 +202,7 @@ func handle_input():
 	#	use_special_skill()
 
 func apply_movement(delta):
-	var speed = stats.move_speed * miku_buffs["move_speed"] * buff_speed_multiplier
+	var speed = stats.move_speed * kiku_buffs["move_speed"] * buff_speed_multiplier
 	velocity = input_vector * speed
 	move_and_slide()
 
@@ -216,7 +216,7 @@ func handle_weapon(delta):
 
 	attack_cooldown -= delta
 	if attack_cooldown <= 0:
-		var attack_rate = stats.attack_speed * miku_buffs["attack_speed"]
+		var attack_rate = stats.attack_speed * kiku_buffs["attack_speed"]
 		attack_cooldown = 1.0 / attack_rate
 
 		# Each weapon attacks independently
@@ -250,7 +250,7 @@ func find_closest_enemy(weapon: Node) -> Enemy:
 func regenerate(delta):
 	# HP regeneration
 	if current_hp < stats.max_hp:
-		var regen = stats.hp_regen_per_second * miku_buffs["hp_regen"] * delta
+		var regen = stats.hp_regen_per_second * kiku_buffs["hp_regen"] * delta
 		current_hp = min(current_hp + regen, stats.max_hp)
 		hp_changed.emit(current_hp, stats.max_hp)
 	
@@ -399,18 +399,18 @@ func use_special_skill():
 		mana_changed.emit(current_mana, stats.max_mana)
 """
 
-func apply_miku_buffs():
-	miku_active = true
-	miku_buffs = {
+func apply_kiku_buffs():
+	kiku_active = true
+	kiku_buffs = {
 		"attack_speed": 1.3,
 		"hp_regen": 1.2,
 		"crit_chance": 0.1,
 		"move_speed": 1.15
 	}
 
-func remove_miku_buffs():
-	miku_active = false
-	miku_buffs = {
+func remove_kiku_buffs():
+	kiku_active = false
+	kiku_buffs = {
 		"attack_speed": 1.0,
 		"hp_regen": 1.0,
 		"crit_chance": 0.0,
@@ -427,12 +427,12 @@ func apply_permanent_upgrades():
 	current_mana = stats.max_mana
 
 
-# === SPECIAL ITEMS SYSTEM (for Miku Quest) ===
+# === SPECIAL ITEMS SYSTEM (for Kiku Quest) ===
 
 func has_item(item_name: String) -> bool:
 	"""Check if player has a special item"""
-	if item_name == "Miku's Seal Key":
-		return has_miku_seal_key
+	if item_name == "Kiku's Seal Key":
+		return has_kiku_seal_key
 	return special_items.get(item_name, false)
 
 
@@ -440,9 +440,9 @@ func add_special_item(item_name: String) -> void:
 	"""Add a special item to player's inventory"""
 	special_items[item_name] = true
 
-	if item_name == "Miku's Seal Key":
-		has_miku_seal_key = true
-		print("✓ Player obtained: Miku's Seal Key")
+	if item_name == "Kiku's Seal Key":
+		has_kiku_seal_key = true
+		print("✓ Player obtained: Kiku's Seal Key")
 
 
 func add_item(item_name: String) -> void:
@@ -450,8 +450,8 @@ func add_item(item_name: String) -> void:
 	add_special_item(item_name)
 
 
-func apply_permanent_miku_buffs() -> void:
-	"""Apply permanent buffs from Permanent Miku pet"""
+func apply_permanent_kiku_buffs() -> void:
+	"""Apply permanent buffs from Permanent Kiku pet"""
 	# +10% luck (better drops)
 	if stats.has("lucky"):
 		stats.lucky *= 1.1
@@ -460,7 +460,7 @@ func apply_permanent_miku_buffs() -> void:
 	if stats.has("hp_regen_per_second"):
 		stats.hp_regen_per_second += 0.2
 
-	print("✓ Permanent Miku buffs applied: +10% luck, +0.2 HP/s regen")
+	print("✓ Permanent Kiku buffs applied: +10% luck, +0.2 HP/s regen")
 
 
 # === INPUT CONTROL (for cutscenes) ===
@@ -500,7 +500,7 @@ func equip_weapon(weapon: Weapon):
 
 
 func get_equipped_weapons() -> Array:
-	"""Get list of currently equipped weapon names (for Dark Miku mirroring)"""
+	"""Get list of currently equipped weapon names (for Dark Kiku mirroring)"""
 	var weapon_names: Array = []
 
 	for weapon in equipped_weapons:
@@ -520,7 +520,7 @@ func calculate_damage(base_damage: float) -> float:
 	damage *= buff_damage_multiplier
 
 	# Crit check
-	var crit_chance = stats.crit_chance + miku_buffs["crit_chance"]
+	var crit_chance = stats.crit_chance + kiku_buffs["crit_chance"]
 	if randf() < crit_chance:
 		damage *= stats.crit_multiplier
 		show_crit_text(damage)
@@ -619,8 +619,8 @@ func load_weapon_scene(weapon_id: String) -> PackedScene:
 	match weapon_id:
 		"wooden_sword":
 			return load("res://scenes/weapons/WoodenSword.tscn")
-		"miku_sword":
-			return load("res://scenes/weapons/MikuSword.tscn")
+		"kiku_sword":
+			return load("res://scenes/weapons/KikuSword.tscn")
 		"earthshatter_staff":
 			return load("res://scenes/weapons/EarthshatterStaff.tscn")
 		"acid_gauntlets":
@@ -647,14 +647,14 @@ func set_mobile_input(direction: Vector2) -> void:
 	mobile_input_vector = direction
 
 
-func use_miku_blessing() -> void:
-	"""Activate Miku's Blessing special skill (mobile skill button)"""
-	if miku_active:
-		print("Miku's Blessing already active!")
+func use_kiku_blessing() -> void:
+	"""Activate Kiku's Blessing special skill (mobile skill button)"""
+	if kiku_active:
+		print("Kiku's Blessing already active!")
 		return
 
-	# Apply Miku buffs
-	apply_miku_buffs()
+	# Apply Kiku buffs
+	apply_kiku_buffs()
 
 	# Visual feedback
 	if sprite:
@@ -665,7 +665,7 @@ func use_miku_blessing() -> void:
 	# Camera effect
 	CameraShake.shake(5.0, 0.2)
 
-	print("Miku's Blessing activated!")
+	print("Kiku's Blessing activated!")
 	print("  +30% Attack Speed")
 	print("  +20% HP Regen")
 	print("  +10% Crit Chance")
@@ -673,5 +673,5 @@ func use_miku_blessing() -> void:
 
 	# Auto-remove after 30 seconds
 	await get_tree().create_timer(30.0).timeout
-	remove_miku_buffs()
-	print("Miku's Blessing expired!")
+	remove_kiku_buffs()
+	print("Kiku's Blessing expired!")

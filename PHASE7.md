@@ -30,7 +30,7 @@ Central manager for weapon rarity pools and random selection logic.
 - **Uncommon:** Earthshatter Staff, Shadow Daggers
 - **Rare:** Acid Gauntlets, Frost Bow, Lightning Chain
 - **Epic:** Enchanting Flute
-- **Legendary:** Miku Sword
+- **Legendary:** Kiku Sword
 
 ### 2. Weapon ATM (Entity)
 **File:** `scripts/weapon_atm.gd`

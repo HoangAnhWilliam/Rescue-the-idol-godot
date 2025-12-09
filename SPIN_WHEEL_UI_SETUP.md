@@ -160,7 +160,7 @@ Starting spin...
 
 [After 3 seconds...]
 
-🎰 Spin complete! Selected weapon: Miku Sword
+🎰 Spin complete! Selected weapon: Kiku Sword
    Rarity: Uncommon
 ✨ Created effects for Uncommon rarity
 ✅ Added miku_sword to inventory
@@ -175,7 +175,7 @@ Starting spin...
 - [ ] Wheel stops with selected weapon aligned to arrow
 - [ ] Camera shakes when result shown
 - [ ] Particles spawn around result
-- [ ] Status label shows "You got: Miku Sword (Uncommon)!" in green color
+- [ ] Status label shows "You got: Kiku Sword (Uncommon)!" in green color
 - [ ] Spin button changes to "CLOSE" (gray)
 - [ ] Close button REAPPEARS
 - [ ] Weapon appears in inventory hotbar

@@ -1,7 +1,7 @@
 extends Enemy
-class_name DarkMiku
+class_name DarkKiku
 
-# Dark Miku specific mechanics - Anti-Miku mini-boss
+# Dark Kiku specific mechanics - Anti-Kiku mini-boss
 var current_mirrored_weapon: String = "DarkBlast"
 var weapon_switch_timer: float = 15.0
 var weapon_switch_time: float = 0.0
@@ -41,7 +41,7 @@ func _ready():
 	attack_cooldown = 1.2
 
 	add_to_group("enemies")
-	add_to_group("dark_miku")  # Special group for quest tracking
+	add_to_group("dark_kiku")  # Special group for quest tracking
 
 	if hitbox:
 		hitbox.body_entered.connect(_on_hitbox_entered)
@@ -57,10 +57,10 @@ func _ready():
 	add_child(tether_line)
 
 	# Chat messages (boss introduction)
-	ChatBox.send_chat_message("System", "⚠️ Dark Miku has appeared!", "System", get_tree())
-	ChatBox.send_chat_message("Dark Miku", "Have you come to kill me?", "DarkMiku", get_tree())
+	ChatBox.send_chat_message("System", "⚠️ Dark Kiku has appeared!", "System", get_tree())
+	ChatBox.send_chat_message("Dark Kiku", "Have you come to kill me?", "DarkKiku", get_tree())
 
-	print("Dark Miku spawned at ", global_position)
+	print("Dark Kiku spawned at ", global_position)
 
 func _physics_process(delta):
 	if current_state == State.DEAD:
@@ -119,12 +119,12 @@ func mirror_player_weapon():
 	# If no weapons found, use default
 	if available_weapons.is_empty():
 		current_mirrored_weapon = "DarkBlast"
-		print("Dark Miku mirroring: DarkBlast (default)")
+		print("Dark Kiku mirroring: DarkBlast (default)")
 		return
 
 	# Pick random weapon
 	current_mirrored_weapon = available_weapons.pick_random()
-	print("Dark Miku mirroring weapon: ", current_mirrored_weapon)
+	print("Dark Kiku mirroring weapon: ", current_mirrored_weapon)
 
 func handle_tether(delta):
 	tether_timer -= delta
@@ -179,17 +179,17 @@ func check_despair_aura(delta):
 
 	if player_hp_percent < 0.3:
 		if not despair_aura_active:
-			print("Dark Miku DESPAIR AURA activated!")
+			print("Dark Kiku DESPAIR AURA activated!")
 			despair_aura_active = true
 
-		# Heal Dark Miku
+		# Heal Dark Kiku
 		despair_heal_timer -= delta
 		if despair_heal_timer <= 0:
 			current_hp = min(current_hp + despair_heal_rate, max_hp)
 			despair_heal_timer = 1.0  # Heal every second
-			print("Dark Miku healing from despair: ", despair_heal_rate, " HP")
+			print("Dark Kiku healing from despair: ", despair_heal_rate, " HP")
 
-			# Visual: Red particles flowing player -> Dark Miku
+			# Visual: Red particles flowing player -> Dark Kiku
 			if has_node("/root/ParticleManager"):
 				get_node("/root/ParticleManager").create_hit_effect(global_position)
 	else:
@@ -229,7 +229,7 @@ func shadow_dash():
 	if not player:
 		return
 
-	print("Dark Miku SHADOW DASH!")
+	print("Dark Kiku SHADOW DASH!")
 
 	# Teleport behind player (180 degrees from facing)
 	var player_facing = Vector2.RIGHT  # Default
@@ -258,7 +258,7 @@ func shoot_blood_web():
 	if not player or not blood_web_scene:
 		return
 
-	print("Dark Miku shooting BLOOD WEB!")
+	print("Dark Kiku shooting BLOOD WEB!")
 
 	var projectile = blood_web_scene.instantiate()
 	projectile.global_position = global_position
@@ -285,7 +285,7 @@ func attack_with_mirrored_weapon():
 
 	# Simulate weapon attacks based on mirrored weapon
 	match current_mirrored_weapon:
-		"WoodenSword", "MikuSword":
+		"WoodenSword", "KikuSword":
 			# Melee attack
 			if distance <= 60.0:
 				if player.has_method("take_damage"):
@@ -336,7 +336,7 @@ func shoot_dark_blast():
 	# Dark visual (will be purple in scene)
 	get_parent().add_child(projectile)
 
-	print("Dark Miku used Dark Blast!")
+	print("Dark Kiku used Dark Blast!")
 
 func take_damage(amount: float, from_position: Vector2 = Vector2.ZERO, is_crit: bool = false):
 	current_hp -= amount
@@ -363,7 +363,7 @@ func die():
 	set_physics_process(false)
 
 	# Chat messages (death dialogue)
-	ChatBox.send_chat_message("Dark Miku", "No... I have been defeated...", "DarkMiku", get_tree())
+	ChatBox.send_chat_message("Dark Kiku", "No... I have been defeated...", "DarkKiku", get_tree())
 
 	# Drop XP
 	if player and player.has_method("add_xp"):
@@ -391,9 +391,9 @@ func die():
 	drop_seal_key()
 
 	# Chat notification about key
-	ChatBox.send_chat_message("System", "You obtained Miku's Seal Key!", "System", get_tree())
+	ChatBox.send_chat_message("System", "You obtained Kiku's Seal Key!", "System", get_tree())
 
-	print("Dark Miku defeated! Key dropped.")
+	print("Dark Kiku defeated! Key dropped.")
 
 	queue_free()
 
@@ -401,18 +401,18 @@ func die():
 # ============ KEY DROP ============
 
 func drop_seal_key() -> void:
-	"""Add Miku's Seal Key to player inventory"""
+	"""Add Kiku's Seal Key to player inventory"""
 
 	if not player:
 		return
 
 	# Try different methods to add the key
 	if player.has_method("add_special_item"):
-		player.add_special_item("Miku's Seal Key")
+		player.add_special_item("Kiku's Seal Key")
 	elif player.has_method("add_item"):
-		player.add_item("Miku's Seal Key")
+		player.add_item("Kiku's Seal Key")
 	elif player.has_method("set"):
 		# Fallback: Set a property
-		player.set("has_miku_seal_key", true)
+		player.set("has_kiku_seal_key", true)
 
-	print("✓ Miku's Seal Key added to player inventory")
+	print("✓ Kiku's Seal Key added to player inventory")

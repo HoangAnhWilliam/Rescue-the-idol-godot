@@ -1,16 +1,16 @@
 extends CharacterBody2D
-class_name Miku
+class_name Kiku
 
 # Corruption sprites
 var corruption_stages: Array[Texture2D] = []
 
 # State
-enum MikuState { SEALED, RESCUED, CORRUPTING, VANISHED }
-var current_state: MikuState = MikuState.SEALED
+enum KikuState { SEALED, RESCUED, CORRUPTING, VANISHED }
+var current_state: KikuState = KikuState.SEALED
 
 # Timer
-var miku_duration: float = 600.0  # 10 minutes
-var miku_timer: float = 0.0
+var kiku_duration: float = 600.0  # 10 minutes
+var kiku_timer: float = 0.0
 
 # References
 var player: CharacterBody2D  # ← SỬA: Đổi từ Player thành CharacterBody2D
@@ -22,47 +22,47 @@ var follow_speed: float = 250.0
 var min_distance: float = 80.0
 
 # Signals
-signal miku_vanished
+signal kiku_vanished
 
 func _ready():
 	load_corruption_sprites()
-	if current_state == MikuState.RESCUED:
+	if current_state == KikuState.RESCUED:
 		start_following()
 
 func _physics_process(delta):
-	if current_state != MikuState.RESCUED and current_state != MikuState.CORRUPTING:
+	if current_state != KikuState.RESCUED and current_state != KikuState.CORRUPTING:
 		return
 	
 	# Update timer
-	miku_timer += delta
+	kiku_timer += delta
 	
 	# Check for vanish
-	if miku_timer >= miku_duration:
+	if kiku_timer >= kiku_duration:
 		vanish()
 		return
 	
 	# Update corruption visual
-	if miku_timer >= 300.0:  # After 5 minutes
-		current_state = MikuState.CORRUPTING
+	if kiku_timer >= 300.0:  # After 5 minutes
+		current_state = KikuState.CORRUPTING
 		update_corruption_visual()
 	
 	# Follow player
 	follow_player(delta)
 
 func start_following():
-	current_state = MikuState.RESCUED
-	miku_timer = 0.0
+	current_state = KikuState.RESCUED
+	kiku_timer = 0.0
 	
 	# Apply buffs to player
 	if player:
 		# TODO: Apply buffs later
 		pass
-		# player.apply_miku_buffs()
-		# player.equip_weapon(create_miku_sword())
+		# player.apply_kiku_buffs()
+		# player.equip_weapon(create_kiku_sword())
 	
 	# Start music - COMMENT TẠM THỜI ↓
-	# AudioManager.play_miku_music()
-	print("Miku started following!")
+	# AudioManager.play_kiku_music()
+	print("Kiku started following!")
 
 func follow_player(delta):
 	if not player:
@@ -85,7 +85,7 @@ func update_corruption_visual():
 	if corruption_stages.size() == 0:  # ← THÊM check
 		return
 		
-	var time_ratio = (miku_timer - 300.0) / 300.0  # 0-1 over last 5 minutes
+	var time_ratio = (kiku_timer - 300.0) / 300.0  # 0-1 over last 5 minutes
 	var stage = int(time_ratio * 4)
 	stage = clamp(stage, 0, corruption_stages.size() - 1)
 	
@@ -93,27 +93,27 @@ func update_corruption_visual():
 		sprite.texture = corruption_stages[stage]
 		
 		# Fade effect in last 30 seconds
-		if miku_timer >= miku_duration - 30.0:
-			var fade_progress = (miku_duration - miku_timer) / 30.0
+		if kiku_timer >= kiku_duration - 30.0:
+			var fade_progress = (kiku_duration - kiku_timer) / 30.0
 			sprite.modulate.a = fade_progress
 
 func vanish():
-	current_state = MikuState.VANISHED
+	current_state = KikuState.VANISHED
 	
 	# Remove buffs
 	if player:
 		# TODO: Remove buffs later
 		pass
-		# player.remove_miku_buffs()
+		# player.remove_kiku_buffs()
 	
 	# Fade out music - COMMENT TẠM THỜI ↓
 	# AudioManager.fade_out_music()
-	print("Miku vanished!")
+	print("Kiku vanished!")
 	
 	# Play vanish effect
 	play_vanish_effect()
 	
-	miku_vanished.emit()
+	kiku_vanished.emit()
 	
 	# Remove self
 	await get_tree().create_timer(2.0).timeout
@@ -131,21 +131,21 @@ func load_corruption_sprites():
 	
 	# COMMENT TẠM THỜI ↓
 	# corruption_stages = [
-	# 	load("res://sprites/miku_normal.png"),
-	# 	load("res://sprites/miku_pale.png"),
-	# 	load("res://sprites/miku_half_skeleton.png"),
-	# 	load("res://sprites/miku_skeleton.png")
+	# 	load("res://sprites/kiku_normal.png"),
+	# 	load("res://sprites/kiku_pale.png"),
+	# 	load("res://sprites/kiku_half_skeleton.png"),
+	# 	load("res://sprites/kiku_skeleton.png")
 	# ]
 
-func create_miku_sword():
+func create_kiku_sword():
 	# TODO: Create weapon later
 	# COMMENT TẠM THỜI ↓
-	# var sword = preload("res://weapons/miku_sword.tscn").instantiate()
+	# var sword = preload("res://weapons/kiku_sword.tscn").instantiate()
 	# return sword
 	return null
 
 func get_time_remaining() -> float:
-	return miku_duration - miku_timer
+	return kiku_duration - kiku_timer
 
 func get_time_remaining_formatted() -> String:
 	var remaining = get_time_remaining()
