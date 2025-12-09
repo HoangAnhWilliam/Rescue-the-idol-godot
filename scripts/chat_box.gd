@@ -19,11 +19,11 @@ var hidden_offset: Vector2 = Vector2(350, 0)  # Slide off-screen to the right
 var sender_colors := {
 	"System": Color(1.0, 0.84, 0.0),         # Gold
 	"Player": Color(0.2, 1.0, 0.2),          # Green
-	"DarkMiku": Color(0.6, 0.2, 0.8),        # Purple
+	"DarkKiku": Color(0.6, 0.2, 0.8),        # Purple
 	"FireDragon": Color(1.0, 0.3, 0.0),      # Orange
-	"DespairMiku": Color(0.0, 0.85, 1.0),    # Cyan
+	"DespairKiku": Color(0.0, 0.85, 1.0),    # Cyan
 	"VampireLord": Color(0.8, 0.0, 0.0),     # Red
-	"Miku": Color(0.0, 0.85, 1.0),           # Cyan
+	"Kiku": Color(0.0, 0.85, 1.0),           # Cyan
 	"Enemy": Color(0.8, 0.8, 0.8),           # White
 }
 
@@ -119,7 +119,7 @@ func add_message(sender: String, text: String, sender_type: String = "System") -
 	"""Add a new message to the chat log with color-coded sender"""
 
 	# Auto-open chat for boss/system messages (not player messages)
-	if sender_type in ["System", "DarkMiku", "DespairMiku", "FireDragon", "VampireLord"] and sender_type != "Player":
+	if sender_type in ["System", "DarkKiku", "DespairKiku", "FireDragon", "VampireLord"] and sender_type != "Player":
 		if not is_chat_open:
 			open_chat()
 
@@ -253,7 +253,7 @@ static func send_chat_message(sender: String, text: String, sender_type: String,
 		chat_box.add_message(sender, text, sender_type)
 
 		# Show boss dialogue as floating popup
-		if sender_type in ["DarkMiku", "DespairMiku", "FireDragon", "VampireLord"]:
+		if sender_type in ["DarkKiku", "DespairKiku", "FireDragon", "VampireLord"]:
 			chat_box.show_floating_message(sender, text, sender_type)
 
 

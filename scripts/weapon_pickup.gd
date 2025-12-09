@@ -3,8 +3,8 @@ class_name WeaponPickup
 
 ## Weapon Pickup - Collectible weapon that adds to inventory
 
-@export var weapon_id: String = "miku_sword"
-@export var weapon_name: String = "Miku Sword"
+@export var weapon_id: String = "kiku_sword"
+@export var weapon_name: String = "Kiku Sword"
 
 # Magnet system
 const MAGNET_RANGE: float = 100.0

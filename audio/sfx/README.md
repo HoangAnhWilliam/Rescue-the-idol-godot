@@ -34,7 +34,7 @@ sfx/
 - `daggers_slash.ogg` - Fast triple slash
 - `acid_sizzle.ogg` - Acid/poison effect
 - `flute_notes.ogg` - Musical weapon
-- `magic_slash.ogg` - Miku sword special
+- `magic_slash.ogg` - Kiku sword special
 
 ### UI (7 SFX):
 - `button_click.ogg` - Button press
@@ -50,8 +50,8 @@ sfx/
 - `vampire_laugh.ogg` - Vampire Lord laugh
 - `boss_phase_change.ogg` - Phase transition
 - `pam_anime_shout.ogg` - Pam "NANI?!"
-- `dark_magic.ogg` - Dark Miku ability
-- `tragic_note.ogg` - Despair Miku attack
+- `dark_magic.ogg` - Dark Kiku ability
+- `tragic_note.ogg` - Despair Kiku attack
 
 ### ENVIRONMENT (5 SFX):
 - `footstep_grass.ogg` - Walking on grass

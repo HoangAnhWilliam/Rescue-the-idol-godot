@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://dpq8w5vm3xn4k"]
 
-[ext_resource type="Script" path="res://scripts/permanent_miku.gd" id="1_permanent"]
+[ext_resource type="Script" path="res://scripts/permanent_kiku.gd" id="1_permanent"]
 
-[node name="PermanentMiku" type="Node2D"]
+[node name="PermanentKiku" type="Node2D"]
 script = ExtResource("1_permanent")
 
 [node name="ColorRect" type="ColorRect" parent="."]

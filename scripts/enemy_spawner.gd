@@ -18,7 +18,7 @@ class_name EnemySpawner
 @export var snowman_warrior_scene: PackedScene  # Frozen Tundra
 @export var snowdwarf_traitor_scene: PackedScene  # Frozen Tundra
 @export var lava_elemental_scene: PackedScene  # Volcanic Darklands
-@export var dark_miku_scene: PackedScene  # Blood Temple
+@export var dark_kiku_scene: PackedScene  # Blood Temple
 
 # Spawn settings
 @export var base_spawn_interval: float = 2.0
@@ -126,10 +126,10 @@ func _ready():
 		if lava_elemental_scene:
 			print("✓ Lava Elemental scene loaded!")
 
-	if not dark_miku_scene:
-		dark_miku_scene = load("res://scenes/enemies/dark_miku.tscn")
-		if dark_miku_scene:
-			print("✓ Dark Miku scene loaded!")
+	if not dark_kiku_scene:
+		dark_kiku_scene = load("res://scenes/enemies/dark_kiku.tscn")
+		if dark_kiku_scene:
+			print("✓ Dark Kiku scene loaded!")
 
 	print("========================")
 
@@ -351,7 +351,7 @@ func get_volcanic_enemy() -> PackedScene:
 				print("🔥 SPAWNING MAGMA SLIME!")
 			return magma_slime_scene if magma_slime_scene else zombie_scene
 
-# Blood Temple enemies - NEW: Dark Miku + time-based
+# Blood Temple enemies - NEW: Dark Kiku + time-based
 func get_temple_enemy() -> PackedScene:
 	var minutes = int(game_time / 60.0)
 	var roll = randf()
@@ -359,12 +359,12 @@ func get_temple_enemy() -> PackedScene:
 	# Time-based progression:
 	# 0-10 min: Zombie
 	# 10-20 min: Zombie
-	# 20+ min: Dark Miku (mini-boss!)
+	# 20+ min: Dark Kiku (mini-boss!)
 
 	if minutes >= 20:  # HARD MODE (20+ min)
-		if roll < 0.40 and dark_miku_scene:  # 40% - Dark Miku (mini-boss!)
+		if roll < 0.40 and dark_kiku_scene:  # 40% - Dark Kiku (mini-boss!)
 			print("💀 SPAWNING DARK MIKU!")
-			return dark_miku_scene
+			return dark_kiku_scene
 		else:  # 60% - Zombie
 			return zombie_scene
 

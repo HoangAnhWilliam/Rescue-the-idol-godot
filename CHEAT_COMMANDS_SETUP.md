@@ -326,10 +326,10 @@ var enemy_scenes := {
 	"zombie": "res://scenes/enemies/Zombie.tscn",
 	"skeleton": "res://scenes/enemies/Skeleton.tscn",
 	"anime_ghost": "res://scenes/enemies/AnimeGhost.tscn",
-	"dark_miku": "res://scenes/enemies/DarkMiku.tscn",
+	"dark_kiku": "res://scenes/enemies/DarkKiku.tscn",
 	"fire_dragon": "res://scenes/bosses/FireDragon.tscn",
 	"vampire_lord": "res://scenes/bosses/VampireLord.tscn",
-	"despair_miku": "res://scenes/bosses/DespairMiku.tscn",
+	"despair_kiku": "res://scenes/bosses/DespairKiku.tscn",
 }
 ```
 
@@ -352,7 +352,7 @@ Edit `enemy_scenes` dictionary in `scripts/cheat_commands.gd`
 ### **Boss Testing:**
 ```
 /summon @player fire_dragon 1      → Test Fire Dragon boss
-/summon @4500 0 despair_miku 1     → Test Despair Miku boss
+/summon @4500 0 despair_kiku 1     → Test Despair Kiku boss
 /god infinite                      → Fight without dying
 ```
 

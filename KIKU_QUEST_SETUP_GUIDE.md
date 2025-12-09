@@ -1,6 +1,6 @@
-# 🎮 Miku Rescue Quest System - Setup Guide
+# 🎮 Kiku Rescue Quest System - Setup Guide
 
-**Complete implementation guide for integrating the Miku Rescue Quest system into your Godot 4.3 project.**
+**Complete implementation guide for integrating the Kiku Rescue Quest system into your Godot 4.3 project.**
 
 ---
 
@@ -9,16 +9,16 @@
 ### **Scripts (12 files)**
 ```
 ✅ scripts/chat_box.gd                  - Roblox-style chat system
-✅ scripts/miku_fragment_bar.gd        - Fragment collection UI
-✅ scripts/miku_companion.gd           - Temporary Miku (5min timer)
+✅ scripts/kiku_fragment_bar.gd        - Fragment collection UI
+✅ scripts/kiku_companion.gd           - Temporary Kiku (5min timer)
 ✅ scripts/crystal_cage.gd              - Crystal cage with rescue mechanic
 ✅ scripts/ritual_circle.gd             - Summoning circle
-✅ scripts/permanent_miku.gd            - Permanent Miku pet reward
-✅ scripts/tear_projectile.gd           - Tear projectile for Despair Miku
-✅ scripts/blood_web.gd                 - Blood web projectile for Dark Miku
-✅ scripts/dark_miku.gd                 - Dark Miku mini-boss (UPDATED)
-✅ scripts/despair_miku.gd              - Despair Miku final boss
-✅ scripts/miku_quest_manager.gd        - Quest system coordinator
+✅ scripts/permanent_kiku.gd            - Permanent Kiku pet reward
+✅ scripts/tear_projectile.gd           - Tear projectile for Despair Kiku
+✅ scripts/blood_web.gd                 - Blood web projectile for Dark Kiku
+✅ scripts/dark_kiku.gd                 - Dark Kiku mini-boss (UPDATED)
+✅ scripts/despair_kiku.gd              - Despair Kiku final boss
+✅ scripts/kiku_quest_manager.gd        - Quest system coordinator
 ✅ scripts/player.gd                    - (UPDATED with new methods)
 ```
 
@@ -27,8 +27,8 @@
 ✅ scripts/player.gd - Added:
    - Special items system (has_item, add_item, add_special_item)
    - Input control (disable_input, enable_input)
-   - get_equipped_weapons() for Dark Miku
-   - apply_permanent_miku_buffs()
+   - get_equipped_weapons() for Dark Kiku
+   - apply_permanent_kiku_buffs()
    - get_hp_percent()
 ```
 
@@ -64,16 +64,16 @@ Properties:
 
 ---
 
-### **2. Miku Fragment Bar** (`scenes/ui/miku_fragment_bar.tscn`)
+### **2. Kiku Fragment Bar** (`scenes/ui/kiku_fragment_bar.tscn`)
 
 ```
-Root: PanelContainer (miku_fragment_bar.gd attached)
+Root: PanelContainer (kiku_fragment_bar.gd attached)
 ├── MarginContainer (margin: 5px all sides)
 │   └── HBoxContainer (spacing: 5)
 │       ├── IconLabel (Label) "💙"
 │       ├── SlotsContainer (HBoxContainer) spacing: 5
 │       │   └── [5 ColorRect slots created in script]
-│       └── CountLabel (Label) "Miku Fragments: 0/5"
+│       └── CountLabel (Label) "Kiku Fragments: 0/5"
 
 Properties:
 - custom_minimum_size: (400, 60)
@@ -83,17 +83,17 @@ Properties:
 
 **Steps:**
 1. Create PanelContainer
-2. Attach `miku_fragment_bar.gd`
+2. Attach `kiku_fragment_bar.gd`
 3. Add MarginContainer → HBoxContainer
 4. Add IconLabel, SlotsContainer (HBoxContainer), CountLabel
-5. Save as `scenes/ui/miku_fragment_bar.tscn`
+5. Save as `scenes/ui/kiku_fragment_bar.tscn`
 
 ---
 
-### **3. Miku Companion** (`scenes/miku/miku_companion.tscn`)
+### **3. Kiku Companion** (`scenes/kiku/kiku_companion.tscn`)
 
 ```
-Root: CharacterBody2D (miku_companion.gd attached)
+Root: CharacterBody2D (kiku_companion.gd attached)
 ├── ColorRect (sprite)
 │   └── size: (32, 32), color: Cyan (0, 0.85, 1)
 └── [Other nodes created in script]
@@ -105,20 +105,20 @@ Properties:
 
 **Steps:**
 1. Create CharacterBody2D
-2. Attach `miku_companion.gd`
+2. Attach `kiku_companion.gd`
 3. Add ColorRect child named "ColorRect"
 4. Set ColorRect size to 32×32, center anchors
 5. Set color to cyan
-6. Save as `scenes/miku/miku_companion.tscn`
+6. Save as `scenes/kiku/kiku_companion.tscn`
 
 ---
 
-### **4. Crystal Cage** (`scenes/miku/crystal_cage.tscn`)
+### **4. Crystal Cage** (`scenes/kiku/crystal_cage.tscn`)
 
 ```
 Root: Area2D (crystal_cage.gd attached)
 ├── Background (ColorRect) 64×64
-├── MikuSprite (ColorRect) 32×32 cyan
+├── KikuSprite (ColorRect) 32×32 cyan
 ├── Chains (Node2D)
 │   └── [4 chain ColorRects created in script]
 ├── Particles (CPUParticles2D)
@@ -133,15 +133,15 @@ Properties:
 **Steps:**
 1. Create Area2D
 2. Attach `crystal_cage.gd`
-3. Add Background (ColorRect), MikuSprite (ColorRect), Chains (Node2D)
+3. Add Background (ColorRect), KikuSprite (ColorRect), Chains (Node2D)
 4. Add CPUParticles2D for particles
 5. Add CollisionShape2D with CircleShape2D
 6. Add InteractionPrompt (Label) centered above cage
-7. Save as `scenes/miku/crystal_cage.tscn`
+7. Save as `scenes/kiku/crystal_cage.tscn`
 
 ---
 
-### **5. Ritual Circle** (`scenes/miku/ritual_circle.tscn`)
+### **5. Ritual Circle** (`scenes/kiku/ritual_circle.tscn`)
 
 ```
 Root: Node2D (ritual_circle.gd attached)
@@ -164,14 +164,14 @@ Properties:
 3. Add Polygon2D for circle, Node2D for markers
 4. Add CPUParticles2D, Area2D with collision
 5. Add InteractionPrompt Label
-6. Save as `scenes/miku/ritual_circle.tscn`
+6. Save as `scenes/kiku/ritual_circle.tscn`
 
 ---
 
-### **6. Permanent Miku** (`scenes/miku/permanent_miku.tscn`)
+### **6. Permanent Kiku** (`scenes/kiku/permanent_kiku.tscn`)
 
 ```
-Root: Node2D (permanent_miku.gd attached)
+Root: Node2D (permanent_kiku.gd attached)
 └── ColorRect (sprite)
     └── size: (24, 24), color: Cyan (0, 0.85, 1)
 
@@ -181,11 +181,11 @@ Properties:
 
 **Steps:**
 1. Create Node2D
-2. Attach `permanent_miku.gd`
+2. Attach `permanent_kiku.gd`
 3. Add ColorRect child named "ColorRect"
 4. Set size to 24×24, centered
 5. Set color to cyan
-6. Save as `scenes/miku/permanent_miku.tscn`
+6. Save as `scenes/kiku/permanent_kiku.tscn`
 
 ---
 
@@ -230,11 +230,11 @@ Properties:
 
 ---
 
-### **9. Dark Miku Boss** (`scenes/enemies/dark_miku.tscn`)
+### **9. Dark Kiku Boss** (`scenes/enemies/dark_kiku.tscn`)
 
 **EXISTING SCENE - Check if it exists:**
 ```bash
-ls scenes/enemies/dark_miku.tscn
+ls scenes/enemies/dark_kiku.tscn
 ```
 
 **If it exists:** Script is already updated with key drop and chat messages.
@@ -248,17 +248,17 @@ Root: CharacterBody2D (extends Enemy)
 └── [Other Enemy base nodes]
 
 Properties:
-- Script: dark_miku.gd attached
+- Script: dark_kiku.gd attached
 - HP: 300
 - Damage: 15 (backstab: 25)
 ```
 
 ---
 
-### **10. Despair Miku Boss** (`scenes/bosses/despair_miku.tscn`)
+### **10. Despair Kiku Boss** (`scenes/bosses/despair_kiku.tscn`)
 
 ```
-Root: CharacterBody2D (despair_miku.gd attached)
+Root: CharacterBody2D (despair_kiku.gd attached)
 ├── ColorRect (sprite) 64×64
 │   └── color: Cyan-white mix (0.5, 0.85, 0.95)
 ├── HPBar (ProgressBar)
@@ -272,11 +272,11 @@ Properties:
 
 **Steps:**
 1. Create CharacterBody2D
-2. Attach `despair_miku.gd`
+2. Attach `despair_kiku.gd`
 3. Add ColorRect 64×64 cyan-white
 4. Add ProgressBar for HP bar
 5. Add CollisionShape2D
-6. Save as `scenes/bosses/despair_miku.tscn`
+6. Save as `scenes/bosses/despair_kiku.tscn`
 
 ---
 
@@ -292,7 +292,7 @@ HUD (Control)
 │   └── HP/Mana/XP bars
 ├── ChatBox (Instance of chat_box.tscn) ← ADD THIS
 │   └── Position: Right of StatsContainer (x: 250, y: 10)
-├── MikuFragmentBar (Instance of miku_fragment_bar.tscn) ← ADD THIS
+├── KikuFragmentBar (Instance of kiku_fragment_bar.tscn) ← ADD THIS
 │   └── Position: Above hotbar (y: viewport_height - 150)
 └── HotbarUI (existing)
     └── Bottom center
@@ -301,19 +301,19 @@ HUD (Control)
 **In `hud.gd` script, add:**
 ```gdscript
 @onready var chat_box := $ChatBox
-@onready var miku_fragment_bar := $MikuFragmentBar
+@onready var kiku_fragment_bar := $KikuFragmentBar
 
 func _ready():
     # ... existing code ...
 
     # Fragment bar starts hidden
-    if miku_fragment_bar:
-        miku_fragment_bar.hide()
+    if kiku_fragment_bar:
+        kiku_fragment_bar.hide()
 ```
 
 ---
 
-### **2. Add Miku Quest Manager to Main Scene**
+### **2. Add Kiku Quest Manager to Main Scene**
 
 In your main game scene or level manager:
 
@@ -322,14 +322,14 @@ Main (Node2D or Node)
 ├── Player
 ├── TileMap
 ├── ... other game nodes ...
-└── MikuQuestManager (Node) ← ADD THIS
-    └── Script: miku_quest_manager.gd
+└── KikuQuestManager (Node) ← ADD THIS
+    └── Script: kiku_quest_manager.gd
 ```
 
 **Steps:**
 1. Open main game scene
-2. Add Node as child (name it "MikuQuestManager")
-3. Attach `miku_quest_manager.gd` script
+2. Add Node as child (name it "KikuQuestManager")
+3. Attach `kiku_quest_manager.gd` script
 4. Save scene
 
 ---
@@ -340,7 +340,7 @@ Ensure these actions exist in **Project → Project Settings → Input Map:**
 
 ```
 interact (KEY_E) - For interacting with cages/ritual
-special_skill (KEY_SPACE) - For Miku's Blessing (future)
+special_skill (KEY_SPACE) - For Kiku's Blessing (future)
 ```
 
 ---
@@ -357,10 +357,10 @@ var save_data := {
     },
     "progress": {
         # ... existing ...
-        "dark_miku_defeated": false,
-        "despair_miku_defeated": false,
-        "miku_rescues": 0,
-        "permanent_miku_unlocked": false
+        "dark_kiku_defeated": false,
+        "despair_kiku_defeated": false,
+        "kiku_rescues": 0,
+        "permanent_kiku_unlocked": false
     },
     "unlocks": {
         # ... existing ...
@@ -390,30 +390,30 @@ var save_data := {
 
 ---
 
-### **Phase 2: Test Dark Miku**
-1. Wait 5 seconds (or trigger manually via MikuQuestManager)
-2. Dark Miku should spawn at (0, 0)
+### **Phase 2: Test Dark Kiku**
+1. Wait 5 seconds (or trigger manually via KikuQuestManager)
+2. Dark Kiku should spawn at (0, 0)
 
 **Expected Chat Messages:**
 ```
-[System]: ⚠️ Dark Miku has appeared!
-[Dark Miku]: Have you come to kill me?
+[System]: ⚠️ Dark Kiku has appeared!
+[Dark Kiku]: Have you come to kill me?
 ```
 
-3. Defeat Dark Miku
-4. Should get: Miku's Seal Key
+3. Defeat Dark Kiku
+4. Should get: Kiku's Seal Key
 
 **Expected Output:**
 ```
-Dark Miku spawned at (0, 0)
-Dark Miku defeated! Key dropped.
-✓ Miku's Seal Key added to player inventory
+Dark Kiku spawned at (0, 0)
+Dark Kiku defeated! Key dropped.
+✓ Kiku's Seal Key added to player inventory
 ```
 
 ---
 
 ### **Phase 3: Test Crystal Cages**
-1. After Dark Miku defeated, 5 cages spawn
+1. After Dark Kiku defeated, 5 cages spawn
 2. Fragment bar appears (initially hidden)
 3. Find first cage (should be glowing cyan)
 
@@ -424,13 +424,13 @@ Crystal Cage #1 activated at (...)
 ```
 
 4. Press E near cage
-5. Miku Companion spawns, 5:00 timer starts
+5. Kiku Companion spawns, 5:00 timer starts
 6. Fragment bar reveals with animation
 
 ---
 
-### **Phase 4: Test Miku Companion**
-1. Miku follows player (100px to left)
+### **Phase 4: Test Kiku Companion**
+1. Kiku follows player (100px to left)
 2. Check buffs are applied
 3. Wait for timer or use `force_vanish()` for testing
 
@@ -440,17 +440,17 @@ Crystal Cage #1 activated at (...)
 - 2:00 - 1:00: Light gray (half skeleton) + chat "No... it is happening..."
 - 1:00 - 0:00: White (full skeleton) + chat "I must leave soon..."
 
-4. At 0:00, Miku vanishes
+4. At 0:00, Kiku vanishes
 5. Fragment flies to fragment bar slot
 6. Next cage activates
 
 **Expected Output:**
 ```
-Miku Companion spawned at (...)
+Kiku Companion spawned at (...)
 Timer: 5:00 started
 Buffs applied to player
 Corruption stage changed: 2
-Miku vanishing...
+Kiku vanishing...
 Fragment collected: 1/5
 Crystal Cage #2 activated
 ```
@@ -472,11 +472,11 @@ A ritual circle has awakened!
 4. Chant appears letter-by-letter:
    - "From the void, I summon you..."
    - "From despair, I call out to you..."
-   - "Miku... Awaken!"
+   - "Kiku... Awaken!"
 
 ---
 
-### **Phase 6: Test Despair Miku Boss**
+### **Phase 6: Test Despair Kiku Boss**
 1. Boss spawns with intro dialogue
 2. 3 phases at 100%, 70%, 40% HP
 3. 7 different attacks
@@ -498,46 +498,46 @@ A ritual circle has awakened!
 - All attacks + Void Collapse (ultimate)
 
 4. Defeat boss
-5. Permanent Miku spawns
+5. Permanent Kiku spawns
 
 **Expected Output:**
 ```
-=== DESPAIR MIKU BOSS SPAWNED ===
+=== DESPAIR KIKU BOSS SPAWNED ===
 === PHASE 2: RAGE ===
 === PHASE 3: ACCEPTANCE ===
-=== DESPAIR MIKU DEFEATED ===
-✓ Permanent Miku pet spawned!
+=== DESPAIR KIKU DEFEATED ===
+✓ Permanent Kiku pet spawned!
 [System]: ━━━ VICTORY! ━━━
-[System]: You obtained Permanent Miku!
+[System]: You obtained Permanent Kiku!
 ```
 
 ---
 
-### **Phase 7: Test Permanent Miku**
-1. Miku pet appears upper-right of player
+### **Phase 7: Test Permanent Kiku**
+1. Kiku pet appears upper-right of player
 2. Bobbing animation
 3. Reacts to player HP (red tint when low)
 4. Passive buffs applied: +10% luck, +5% XP, +5% gold, +0.2 HP/s
 
 **Verification:**
 ```
-✓ Permanent Miku pet unlocked!
-✓ Permanent Miku buffs applied: +10% luck, +0.2 HP/s regen
+✓ Permanent Kiku pet unlocked!
+✓ Permanent Kiku buffs applied: +10% luck, +0.2 HP/s regen
 ```
 
 ---
 
 ## 🐛 **DEBUGGING COMMANDS**
 
-Add these to `MikuQuestManager` for testing:
+Add these to `KikuQuestManager` for testing:
 
 ```gdscript
 # In console or debug menu:
-MikuQuestManager.force_spawn_dark_miku()
-MikuQuestManager.force_spawn_cages()
-MikuQuestManager.force_spawn_ritual()
-MikuQuestManager.skip_to_ritual()
-MikuQuestManager.reset_quest()
+KikuQuestManager.force_spawn_dark_kiku()
+KikuQuestManager.force_spawn_cages()
+KikuQuestManager.force_spawn_ritual()
+KikuQuestManager.skip_to_ritual()
+KikuQuestManager.reset_quest()
 ```
 
 **Example Debug Setup:**
@@ -545,7 +545,7 @@ MikuQuestManager.reset_quest()
 # In player.gd or debug console:
 func _input(event):
     if event.is_action_pressed("ui_page_down"):  # PageDown key
-        var mgr = get_tree().get_first_node_in_group("miku_quest_manager")
+        var mgr = get_tree().get_first_node_in_group("kiku_quest_manager")
         if mgr:
             mgr.skip_to_ritual()
             print("DEBUG: Skipped to ritual phase")
@@ -558,38 +558,38 @@ func _input(event):
 When system is working correctly, you should see:
 
 ```
-=== Miku Quest System Initialized ===
+=== Kiku Quest System Initialized ===
 ✓ Fragment bar created (hidden)
 ✓ Chat Box Initialized
-=== MIKU RESCUE QUEST STARTED ===
-Dark Miku spawned at (0, 0)
-[System]: ⚠️ Dark Miku has appeared!
-[Dark Miku]: Have you come to kill me?
+=== KIKU RESCUE QUEST STARTED ===
+Dark Kiku spawned at (0, 0)
+[System]: ⚠️ Dark Kiku has appeared!
+[Dark Kiku]: Have you come to kill me?
 
-[After defeating Dark Miku]
-=== DARK MIKU DEFEATED ===
-Dark Miku defeated! Key dropped.
-✓ Miku's Seal Key added to player inventory
-[Dark Miku]: No... I have been defeated...
-[System]: You obtained Miku's Seal Key!
+[After defeating Dark Kiku]
+=== DARK KIKU DEFEATED ===
+Dark Kiku defeated! Key dropped.
+✓ Kiku's Seal Key added to player inventory
+[Dark Kiku]: No... I have been defeated...
+[System]: You obtained Kiku's Seal Key!
 
 [2 seconds later]
 === SPAWNING CRYSTAL CAGES ===
 Crystal Cage #1 activated at (x, y)
-[System]: Crystal cages have appeared! Find them to rescue Miku!
+[System]: Crystal cages have appeared! Find them to rescue Kiku!
 
-[When rescuing Miku]
+[When rescuing Kiku]
 Crystal Cage #1 opened
-Miku Companion spawned at (x, y)
+Kiku Companion spawned at (x, y)
 Timer: 5:00 started
 Buffs applied to player
-[Miku]: Thank you! I will fight by your side!
+[Kiku]: Thank you! I will fight by your side!
 
-[When Miku vanishes]
-Miku vanishing...
+[When Kiku vanishes]
+Kiku vanishing...
 Fragment collected: 1/5
-[Miku]: Goodbye... Thank you...
-[System]: Miku's Soul Shard collected: 1/5
+[Kiku]: Goodbye... Thank you...
+[System]: Kiku's Soul Shard collected: 1/5
 
 [After 5 fragments]
 === ALL FRAGMENTS COLLECTED ===
@@ -602,27 +602,27 @@ Ritual Circle spawned at (0, 0)
 [System]: A ritual circle has awakened!
 
 [Performing ritual]
-Despair Miku Boss spawned at (0, 0)
-=== DESPAIR MIKU BOSS SPAWNED ===
-[Despair Miku]: You freed me... only to bind me...
-[Despair Miku]: I am the despair you cannot escape...
-[Despair Miku]: FACE ME!
+Despair Kiku Boss spawned at (0, 0)
+=== DESPAIR KIKU BOSS SPAWNED ===
+[Despair Kiku]: You freed me... only to bind me...
+[Despair Kiku]: I am the despair you cannot escape...
+[Despair Kiku]: FACE ME!
 
 [Phase transitions]
 === PHASE 2: RAGE ===
-[Despair Miku]: You infuriate me!
+[Despair Kiku]: You infuriate me!
 
 === PHASE 3: ACCEPTANCE ===
-[Despair Miku]: This is my ultimate power!
+[Despair Kiku]: This is my ultimate power!
 
 [Boss defeated]
-=== DESPAIR MIKU DEFEATED - QUEST COMPLETE ===
-✓ Permanent Miku pet spawned!
-✓ Permanent Miku buffs applied: +10% luck, +0.2 HP/s regen
-[Despair Miku]: At last... I am free...
+=== DESPAIR KIKU DEFEATED - QUEST COMPLETE ===
+✓ Permanent Kiku pet spawned!
+✓ Permanent Kiku buffs applied: +10% luck, +0.2 HP/s regen
+[Despair Kiku]: At last... I am free...
 [System]: ━━━━━━━━━━━━━━━━━━━━━
 [System]: VICTORY!
-[System]: You obtained Permanent Miku!
+[System]: You obtained Permanent Kiku!
 [System]: ━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -636,47 +636,47 @@ Despair Miku Boss spawned at (0, 0)
 - Verify ChatBox scene is instantiated in HUD
 - Make sure `add_to_group("chat_box")` is in chat_box.gd _ready()
 
-### **Issue 2: Dark Miku doesn't spawn**
+### **Issue 2: Dark Kiku doesn't spawn**
 **Solution:**
-- Check MikuQuestManager is in scene
-- Verify dark_miku.tscn scene path is correct
-- Manually call: `MikuQuestManager.force_spawn_dark_miku()`
+- Check KikuQuestManager is in scene
+- Verify dark_kiku.tscn scene path is correct
+- Manually call: `KikuQuestManager.force_spawn_dark_kiku()`
 
 ### **Issue 3: Key not being added to inventory**
 **Solution:**
 - Check player has `has_item()` and `add_special_item()` methods
-- Verify `has_miku_seal_key` variable exists in player
-- Check debug output for "✓ Player obtained: Miku's Seal Key"
+- Verify `has_kiku_seal_key` variable exists in player
+- Check debug output for "✓ Player obtained: Kiku's Seal Key"
 
 ### **Issue 4: Cages not interactable**
 **Solution:**
 - Ensure Input Map has "interact" action (KEY_E)
 - Check cage is set to `set_active()` (should be glowing cyan)
-- Verify player has Miku's Seal Key: `player.has_miku_seal_key`
+- Verify player has Kiku's Seal Key: `player.has_kiku_seal_key`
 
 ### **Issue 5: Fragment bar doesn't appear**
 **Solution:**
-- Check MikuFragmentBar is child of HUD
+- Check KikuFragmentBar is child of HUD
 - Verify first rescue triggers `show_fragment_bar_first_time()`
 - Check fragments_collected signal connections
 
-### **Issue 6: Miku Companion doesn't follow**
+### **Issue 6: Kiku Companion doesn't follow**
 **Solution:**
 - Verify player is in group "player"
-- Check MikuCompanion has valid player reference
+- Check KikuCompanion has valid player reference
 - Ensure collision_layer and collision_mask are set to 0
 
 ### **Issue 7: Ritual doesn't summon boss**
 **Solution:**
-- Check despair_miku.tscn scene path
+- Check despair_kiku.tscn scene path
 - Verify all 5 fragments collected
 - Check ritual_circle signals connected
 
-### **Issue 8: Permanent Miku doesn't attach**
+### **Issue 8: Permanent Kiku doesn't attach**
 **Solution:**
-- Verify permanent_miku.tscn scene exists
+- Verify permanent_kiku.tscn scene exists
 - Check player reference is valid
-- Ensure Miku attaches as child of player in _ready()
+- Ensure Kiku attaches as child of player in _ready()
 
 ---
 
@@ -686,10 +686,10 @@ Want to customize colors? Here's where to change them:
 
 | Element | File | Line | Current Color |
 |---------|------|------|---------------|
-| Miku (Normal) | miku_companion.gd | sprite.color | Cyan (0, 0.85, 1) |
-| Dark Miku | dark_miku.tscn | sprite.color | Black (0.1, 0, 0) |
-| Despair Miku | despair_miku.gd | sprite.color | Cyan-white (0.5, 0.85, 0.95) |
-| Fragment Slots | miku_fragment_bar.gd | slot.color | Cyan (0, 0.85, 1) |
+| Kiku (Normal) | kiku_companion.gd | sprite.color | Cyan (0, 0.85, 1) |
+| Dark Kiku | dark_kiku.tscn | sprite.color | Black (0.1, 0, 0) |
+| Despair Kiku | despair_kiku.gd | sprite.color | Cyan-white (0.5, 0.85, 0.95) |
+| Fragment Slots | kiku_fragment_bar.gd | slot.color | Cyan (0, 0.85, 1) |
 | Chat Box BG | chat_box.tscn | StyleBox | Black (0, 0, 0, 0.6) |
 | Ritual Circle | ritual_circle.gd | color | Purple (0.5, 0.2, 0.6, 0.7) |
 
@@ -700,16 +700,16 @@ Want to customize colors? Here's where to change them:
 - [ ] All 12 script files created
 - [ ] player.gd updated with new methods
 - [ ] ChatBox scene created and added to HUD
-- [ ] MikuFragmentBar scene created and added to HUD
-- [ ] MikuCompanion scene created
+- [ ] KikuFragmentBar scene created and added to HUD
+- [ ] KikuCompanion scene created
 - [ ] CrystalCage scene created
 - [ ] RitualCircle scene created
-- [ ] PermanentMiku scene created
+- [ ] PermanentKiku scene created
 - [ ] TearProjectile scene created
 - [ ] BloodWeb scene created
-- [ ] DarkMiku scene verified/created
-- [ ] DespairMiku scene created
-- [ ] MikuQuestManager added to main scene
+- [ ] DarkKiku scene verified/created
+- [ ] DespairKiku scene created
+- [ ] KikuQuestManager added to main scene
 - [ ] Input Map has "interact" action
 - [ ] SaveSystem updated (optional)
 - [ ] All phases tested successfully
@@ -723,7 +723,7 @@ Want to customize colors? Here's where to change them:
 3. **Audio Integration** - Add boss music, SFX for abilities
 4. **Visual Polish** - Replace ColorRects with proper sprites
 5. **Save Integration** - Persist quest progress across sessions
-6. **Miku's Blessing Skill** - Implement active skill (SPACE key)
+6. **Kiku's Blessing Skill** - Implement active skill (SPACE key)
 
 ---
 

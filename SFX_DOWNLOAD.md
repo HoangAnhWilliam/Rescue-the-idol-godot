@@ -1,6 +1,6 @@
 # 🔊 Sound Effects Download Guide - Freesound.org
 
-This document provides direct links to download all 35 sound effects needed for "Miku's Despair - Melody of the Dead".
+This document provides direct links to download all 35 sound effects needed for "Kiku's Despair - Melody of the Dead".
 
 ## 📋 Quick Reference
 

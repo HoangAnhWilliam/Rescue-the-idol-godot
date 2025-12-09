@@ -1,8 +1,8 @@
 extends Enemy
-class_name FakeMiku
+class_name FakeKiku
 
 # ========== FAKE MIKU ==========
-# Miku clone summoned by Pam in Phase 2
+# Kiku clone summoned by Pam in Phase 2
 # Attacks with musical notes
 
 var projectile_mover_script = preload("res://scripts/projectile_mover.gd")
@@ -23,22 +23,22 @@ func _ready():
 	gold_drop_min = 0
 	gold_drop_max = 0  # No gold (illusion)
 
-	print("Fake Miku spawned!")
+	print("Fake Kiku spawned!")
 
 	# Add to groups
 	add_to_group("enemies")
-	add_to_group("fake_mikus")
+	add_to_group("fake_kikus")
 
-	# Set visual (teal like Miku)
+	# Set visual (teal like Kiku)
 	if sprite and sprite is ColorRect:
 		sprite.scale = Vector2(1.2, 1.5)
-		sprite.color = Color(0.0, 0.8, 0.8)  # Teal (Miku color)
-		print("✓ Fake Miku visual set")
+		sprite.color = Color(0.0, 0.8, 0.8)  # Teal (Kiku color)
+		print("✓ Fake Kiku visual set")
 
 	# Connect hitbox
 	if hitbox:
 		hitbox.body_entered.connect(_on_hitbox_entered)
-		print("✓ Fake Miku hitbox connected")
+		print("✓ Fake Kiku hitbox connected")
 
 	# Initialize state
 	current_state = State.IDLE
@@ -115,7 +115,7 @@ func perform_ranged_attack(delta):
 
 func shoot_musical_note():
 	"""Shoot a musical note projectile"""
-	print("🎵 Fake Miku: Musical note!")
+	print("🎵 Fake Kiku: Musical note!")
 
 	var note = Area2D.new()
 	note.name = "MusicalNote"
@@ -145,7 +145,7 @@ func shoot_musical_note():
 	get_tree().root.add_child(note)
 
 func die():
-	print("Fake Miku defeated!")
+	print("Fake Kiku defeated!")
 
 	# Illusion - no gold drops
 	print("💨 It was an illusion!")

@@ -173,11 +173,11 @@ Style Tags: anime, electronic, j-pop, energetic, 8-bit, upbeat
 
 ---
 
-### 1️⃣2️⃣ DARK MIKU BOSS MUSIC
+### 1️⃣2️⃣ DARK KIKU BOSS MUSIC
 **Filename:** `dark_miku_boss.ogg`
 
 ```
-Dark J-pop ominous vocaloid style music, corrupted Hatsune Miku vibes,
+Dark J-pop ominous vocaloid style music, corrupted Hatsune Kiku vibes,
 electronic with distorted synths, haunting melody, tempo 140 BPM,
 beautiful but sinister, glitch effects, Japanese pop with dark twist,
 3 minutes seamless loop, vocaloid inspired instrumental
@@ -187,7 +187,7 @@ Style Tags: j-pop, vocaloid, dark, electronic, glitch, haunting
 
 ---
 
-### 1️⃣3️⃣ DESPAIR MIKU BOSS MUSIC
+### 1️⃣3️⃣ DESPAIR KIKU BOSS MUSIC
 **Filename:** `despair_miku_boss.ogg`
 
 ```
@@ -215,7 +215,7 @@ Style Tags: anime, electronic, chiptune, energetic, otaku, j-core
 
 ---
 
-### 1️⃣5️⃣ MIKU RESCUE EVENT MUSIC
+### 1️⃣5️⃣ KIKU RESCUE EVENT MUSIC
 **Filename:** `miku_rescue.ogg`
 
 ```

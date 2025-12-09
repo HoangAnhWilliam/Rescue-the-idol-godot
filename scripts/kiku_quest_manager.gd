@@ -1,8 +1,8 @@
 extends Node
-class_name MikuQuestManager
+class_name KikuQuestManager
 
-## Manages the entire Miku Rescue Quest System
-## Coordinates: Dark Miku → Cages → Fragments → Ritual → Despair Miku → Permanent Miku
+## Manages the entire Kiku Rescue Quest System
+## Coordinates: Dark Kiku → Cages → Fragments → Ritual → Despair Kiku → Permanent Kiku
 
 # Quest state
 enum QuestState {
@@ -34,21 +34,21 @@ const TOTAL_FRAGMENTS: int = 5
 var ritual_circle: RitualCircle = null
 
 # Scenes
-var dark_miku_scene: PackedScene = preload("res://scenes/enemies/dark_miku.tscn")
-var crystal_cage_scene: PackedScene = preload("res://scenes/miku/crystal_cage.tscn")
-var ritual_circle_scene: PackedScene = preload("res://scenes/miku/ritual_circle.tscn")
+var dark_kiku_scene: PackedScene = preload("res://scenes/enemies/dark_kiku.tscn")
+var crystal_cage_scene: PackedScene = preload("res://scenes/kiku/crystal_cage.tscn")
+var ritual_circle_scene: PackedScene = preload("res://scenes/kiku/ritual_circle.tscn")
 
 # Signals
 signal quest_state_changed(new_state: QuestState)
-signal dark_miku_defeated
+signal dark_kiku_defeated
 signal cage_rescued(cage_number: int)
 signal all_fragments_collected
 signal ritual_unlocked
-signal despair_miku_summoned
+signal despair_kiku_summoned
 signal quest_completed
 
 func _ready() -> void:
-	add_to_group("miku_quest_manager")
+	add_to_group("kiku_quest_manager")
 
 	# Find player
 	player = get_tree().get_first_node_in_group("player") as CharacterBody2D
@@ -56,7 +56,7 @@ func _ready() -> void:
 	# Wait a frame for everything to initialize
 	await get_tree().process_frame
 
-	print("=== Miku Quest System Initialized ===")
+	print("=== Kiku Quest System Initialized ===")
 
 	# Check if player is in Blood Temple to start quest
 	call_deferred("check_start_conditions")
@@ -76,23 +76,23 @@ func check_start_conditions() -> void:
 
 
 func start_quest() -> void:
-	"""Start the Miku Rescue Quest"""
+	"""Start the Kiku Rescue Quest"""
 
 	if current_state != QuestState.NOT_STARTED:
 		return
 
 	print("=== MIKU RESCUE QUEST STARTED ===")
 
-	# Spawn Dark Miku
-	spawn_dark_miku()
+	# Spawn Dark Kiku
+	spawn_dark_kiku()
 
 	# Change state
 	current_state = QuestState.DARK_MIKU_ACTIVE
 	quest_state_changed.emit(current_state)
 
 
-func spawn_dark_miku() -> void:
-	"""Spawn Dark Miku mini-boss"""
+func spawn_dark_kiku() -> void:
+	"""Spawn Dark Kiku mini-boss"""
 
 	# Find Blood Temple position (center of map for now)
 	var spawn_position := Vector2(0, 0)
@@ -102,26 +102,26 @@ func spawn_dark_miku() -> void:
 	if blood_temple:
 		spawn_position = blood_temple.global_position
 
-	# Spawn Dark Miku
-	var dark_miku := dark_miku_scene.instantiate()
-	dark_miku.global_position = spawn_position
-	get_tree().root.add_child(dark_miku)
+	# Spawn Dark Kiku
+	var dark_kiku := dark_kiku_scene.instantiate()
+	dark_kiku.global_position = spawn_position
+	get_tree().root.add_child(dark_kiku)
 
 	# Connect defeat signal
-	if dark_miku.has_signal("boss_defeated"):
-		dark_miku.boss_defeated.connect(on_dark_miku_defeated)
+	if dark_kiku.has_signal("boss_defeated"):
+		dark_kiku.boss_defeated.connect(on_dark_kiku_defeated)
 
-	print("Dark Miku spawned at %s" % spawn_position)
+	print("Dark Kiku spawned at %s" % spawn_position)
 
 
-func on_dark_miku_defeated() -> void:
-	"""Called when Dark Miku is defeated"""
+func on_dark_kiku_defeated() -> void:
+	"""Called when Dark Kiku is defeated"""
 
 	print("=== DARK MIKU DEFEATED ===")
 
 	current_state = QuestState.DARK_MIKU_DEFEATED
 	quest_state_changed.emit(current_state)
-	dark_miku_defeated.emit()
+	dark_kiku_defeated.emit()
 
 	# Spawn crystal cages
 	await get_tree().create_timer(2.0).timeout
@@ -158,7 +158,7 @@ func spawn_crystal_cages() -> void:
 	current_state = QuestState.CAGES_ACTIVE
 	quest_state_changed.emit(current_state)
 
-	ChatBox.send_chat_message("System", "Crystal cages have appeared! Find them to rescue Miku!", "System", get_tree())
+	ChatBox.send_chat_message("System", "Crystal cages have appeared! Find them to rescue Kiku!", "System", get_tree())
 
 
 func generate_cage_positions() -> Array[Vector2]:
@@ -185,22 +185,22 @@ func on_cage_rescued(cage_index: int) -> void:
 
 	cage_rescued.emit(cage_index + 1)
 
-	# Connect to Miku companion vanish signal
-	var miku_companion := get_tree().get_first_node_in_group("miku_companion")
-	if miku_companion and miku_companion.has_signal("miku_vanished"):
-		miku_companion.miku_vanished.connect(on_miku_vanished)
+	# Connect to Kiku companion vanish signal
+	var kiku_companion := get_tree().get_first_node_in_group("kiku_companion")
+	if kiku_companion and kiku_companion.has_signal("kiku_vanished"):
+		kiku_companion.kiku_vanished.connect(on_kiku_vanished)
 
 
-func on_miku_vanished(vanish_position: Vector2) -> void:
-	"""Called when Miku companion vanishes"""
+func on_kiku_vanished(vanish_position: Vector2) -> void:
+	"""Called when Kiku companion vanishes"""
 
-	print("Miku vanished at %s" % vanish_position)
+	print("Kiku vanished at %s" % vanish_position)
 
 	# Collect fragment
 	fragments_collected += 1
 
 	# Add fragment to UI
-	var fragment_bar := get_tree().get_first_node_in_group("miku_fragment_bar") as MikuFragmentBar
+	var fragment_bar := get_tree().get_first_node_in_group("kiku_fragment_bar") as KikuFragmentBar
 	if fragment_bar:
 		# Show bar on first fragment
 		if fragments_collected == 1 and not fragment_bar.is_revealed:
@@ -208,7 +208,7 @@ func on_miku_vanished(vanish_position: Vector2) -> void:
 			await get_tree().create_timer(1.0).timeout
 
 		# Add fragment animation
-		fragment_bar.add_miku_fragment(vanish_position)
+		fragment_bar.add_kiku_fragment(vanish_position)
 
 	# Check if all fragments collected
 	if fragments_collected >= TOTAL_FRAGMENTS:
@@ -263,34 +263,34 @@ func spawn_ritual_circle() -> void:
 
 	# Connect signals
 	if ritual_circle.has_signal("boss_spawned"):
-		ritual_circle.boss_spawned.connect(on_despair_miku_spawned)
+		ritual_circle.boss_spawned.connect(on_despair_kiku_spawned)
 
 	# Notify player
 	ChatBox.send_chat_message("System", "A ritual circle has awakened!", "System", get_tree())
-	ChatBox.send_chat_message("System", "Go to the center to summon Despair Miku!", "System", get_tree())
+	ChatBox.send_chat_message("System", "Go to the center to summon Despair Kiku!", "System", get_tree())
 
 	ritual_unlocked.emit()
 
 
-func on_despair_miku_spawned() -> void:
-	"""Called when Despair Miku boss is summoned"""
+func on_despair_kiku_spawned() -> void:
+	"""Called when Despair Kiku boss is summoned"""
 
 	print("=== DESPAIR MIKU SUMMONED ===")
 
 	current_state = QuestState.DESPAIR_MIKU_ACTIVE
 	quest_state_changed.emit(current_state)
-	despair_miku_summoned.emit()
+	despair_kiku_summoned.emit()
 
 	# Connect to boss defeat
 	await get_tree().create_timer(0.5).timeout
 
-	var despair_miku := get_tree().get_first_node_in_group("despair_miku")
-	if despair_miku and despair_miku.has_signal("boss_defeated"):
-		despair_miku.boss_defeated.connect(on_despair_miku_defeated)
+	var despair_kiku := get_tree().get_first_node_in_group("despair_kiku")
+	if despair_kiku and despair_kiku.has_signal("boss_defeated"):
+		despair_kiku.boss_defeated.connect(on_despair_kiku_defeated)
 
 
-func on_despair_miku_defeated() -> void:
-	"""Called when Despair Miku is defeated"""
+func on_despair_kiku_defeated() -> void:
+	"""Called when Despair Kiku is defeated"""
 
 	print("=== DESPAIR MIKU DEFEATED - QUEST COMPLETE ===")
 
@@ -327,7 +327,7 @@ func reset_quest() -> void:
 	cages_spawned = false
 
 	# Reset fragment bar
-	var fragment_bar := get_tree().get_first_node_in_group("miku_fragment_bar") as MikuFragmentBar
+	var fragment_bar := get_tree().get_first_node_in_group("kiku_fragment_bar") as KikuFragmentBar
 	if fragment_bar:
 		fragment_bar.reset_fragments()
 
@@ -336,9 +336,9 @@ func reset_quest() -> void:
 
 # Debug helpers
 
-func force_spawn_dark_miku() -> void:
-	"""Debug: Force spawn Dark Miku"""
-	spawn_dark_miku()
+func force_spawn_dark_kiku() -> void:
+	"""Debug: Force spawn Dark Kiku"""
+	spawn_dark_kiku()
 
 
 func force_spawn_cages() -> void:

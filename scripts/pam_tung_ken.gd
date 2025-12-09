@@ -2,9 +2,9 @@ extends CharacterBody2D
 class_name PamTungKen
 
 # ========== PAM TUNG KEN ==========
-# "The Obsessed Otaku", "Miku's Self-Proclaimed Husband"
+# "The Obsessed Otaku", "Kiku's Self-Proclaimed Husband"
 # Age: 25
-# Professional NEET, Miku Superfan
+# Professional NEET, Kiku Superfan
 # 347 Nendoroid collection
 
 # ========== ENCOUNTER SYSTEM ==========
@@ -94,7 +94,7 @@ const KAMEHAMEHA_CD: float = 20.0
 const KAMEHAMEHA_DAMAGE: float = 60.0
 const KAMEHAMEHA_CHARGE_TIME: float = 3.0
 
-var miku_clone_cooldown: float = 0.0
+var kiku_clone_cooldown: float = 0.0
 const MIKU_CLONE_CD: float = 30.0
 
 var body_pillow_fortress_cooldown: float = 0.0
@@ -138,7 +138,7 @@ var pillow_fortress_active: bool = false
 @onready var collision = $CollisionShape2D if has_node("CollisionShape2D") else null
 
 var player: CharacterBody2D = null
-var miku: Node = null  # Miku companion reference
+var kiku: Node = null  # Kiku companion reference
 
 # Preload effects
 var damage_number_scene = preload("res://scenes/effects/damage_number.tscn")
@@ -150,7 +150,7 @@ var projectile_mover_script = preload("res://scripts/projectile_mover.gd")
 
 # Preload minions (loaded in _ready)
 var nendoroid_minion_scene: Resource = null
-var miku_clone_scene: Resource = null
+var kiku_clone_scene: Resource = null
 
 # ========== SIGNALS ==========
 
@@ -158,7 +158,7 @@ signal boss_defeated
 signal phase_changed(phase: int)
 signal attack_started(attack_type: String)
 signal pam_retreated
-signal miku_kidnapped
+signal kiku_kidnapped
 
 # ========== INITIALIZATION ==========
 
@@ -203,13 +203,13 @@ func _ready():
 	# Scale and color (otaku nerd)
 	if sprite:
 		sprite.scale = Vector2(2.5, 3.5)  # Shorter, wider (nerd physique)
-		sprite.color = Color(0.2, 0.8, 0.8)  # Teal (Miku hoodie)
+		sprite.color = Color(0.2, 0.8, 0.8)  # Teal (Kiku hoodie)
 		print("✓ Pam scale set to 2.5 x 3.5")
-		print("✓ Pam color set to teal (Miku hoodie)")
+		print("✓ Pam color set to teal (Kiku hoodie)")
 
 	# Load minion scenes
 	# nendoroid_minion_scene = load("res://scenes/enemies/nendoroid_minion.tscn")
-	# miku_clone_scene = load("res://scenes/enemies/fake_miku.tscn")
+	# kiku_clone_scene = load("res://scenes/enemies/fake_kiku.tscn")
 
 	print("Pam Tung Ken ready!")
 	print("══════════════════════════════════════")
@@ -433,9 +433,9 @@ func fortress_phase_2_ai(distance: float, delta: float):
 		attack_kamehameha()
 		return
 
-	# 2. Miku Clone Jutsu
-	if miku_clone_cooldown <= 0:
-		summon_miku_clones()
+	# 2. Kiku Clone Jutsu
+	if kiku_clone_cooldown <= 0:
+		summon_kiku_clones()
 		return
 
 	# 3. Body Pillow Fortress (defense)
@@ -521,7 +521,7 @@ func activate_berserk_mode():
 		sprite.modulate = Color(2.0, 0.0, 0.0)  # Bright red (rage)
 
 func attempt_cage_destruction():
-	"""CRITICAL: Pam tries to destroy Miku's cage at 5% HP"""
+	"""CRITICAL: Pam tries to destroy Kiku's cage at 5% HP"""
 	cage_destruction_attempted = true
 	is_channeling = true
 	current_state = State.CHANNELING
@@ -554,7 +554,7 @@ func attempt_cage_destruction():
 		# Check if interrupted (damage sets is_channeling = false)
 		if not is_channeling:
 			print("✓ Cage destruction INTERRUPTED by player!")
-			print("✓ Miku is safe!")
+			print("✓ Kiku is safe!")
 			return
 
 		# Visual warning
@@ -567,8 +567,8 @@ func attempt_cage_destruction():
 	print("")
 	print("╔══════════════════════════════════════╗")
 	print("║        ❌ GAME OVER ❌               ║")
-	print("║   Pam destroyed Miku's cage!         ║")
-	print("║   Miku is lost forever...            ║")
+	print("║   Pam destroyed Kiku's cage!         ║")
+	print("║   Kiku is lost forever...            ║")
 	print("╚══════════════════════════════════════╝")
 
 	# TODO: Trigger game over
@@ -737,7 +737,7 @@ func attack_naruto_run_combo():
 				print("💥 Combo hit %d! Damage: 5" % (i + 1))
 
 func attack_waifu_shield():
-	"""Summon Miku hologram for invincibility"""
+	"""Summon Kiku hologram for invincibility"""
 	print("🎮 Pam: WAIFU SHIELD!")
 
 	attack_started.emit("waifu_shield")
@@ -748,7 +748,7 @@ func attack_waifu_shield():
 
 	CameraShake.shake(5.0, 0.3)
 
-	# Visual: Miku hologram
+	# Visual: Kiku hologram
 	if sprite:
 		sprite.modulate = Color(0.0, 1.0, 1.0)  # Cyan glow
 
@@ -779,7 +779,7 @@ func attack_waifu_shield_enhanced():
 
 	CameraShake.shake(7.0, 0.5)
 
-	# Visual: Miku hologram orbiting
+	# Visual: Kiku hologram orbiting
 	if sprite:
 		sprite.modulate = Color(0.0, 1.5, 1.5)  # Brighter cyan
 
@@ -966,20 +966,20 @@ func attack_kamehameha():
 	if is_instance_valid(beam):
 		beam.queue_free()
 
-func summon_miku_clones():
-	"""Phase 2: Summon 3 Fake Miku clones"""
+func summon_kiku_clones():
+	"""Phase 2: Summon 3 Fake Kiku clones"""
 	print("🎮 Pam: SHADOW CLONE JUTSU!")
 
-	attack_started.emit("miku_clones")
-	miku_clone_cooldown = MIKU_CLONE_CD
+	attack_started.emit("kiku_clones")
+	kiku_clone_cooldown = MIKU_CLONE_CD
 
-	play_dialogue_miku_clones()
+	play_dialogue_kiku_clones()
 
 	CameraShake.shake(10.0, 0.4)
 
-	# Spawn 3 Fake Mikus
-	# TODO: Create actual Fake Miku enemy
-	print("✓ Summoned 3 Miku clones (not implemented yet)")
+	# Spawn 3 Fake Kikus
+	# TODO: Create actual Fake Kiku enemy
+	print("✓ Summoned 3 Kiku clones (not implemented yet)")
 
 func activate_body_pillow_fortress():
 	"""Phase 2: 50% damage reduction for 10 seconds"""
@@ -1362,8 +1362,8 @@ func spare_pam_ending():
 	print("╚══════════════════════════════════════╝")
 
 	print("🎮 Pam: \"Why... why would you spare me?\"")
-	print("🎮 Pam: \"I tried to kidnap Miku-chan...\"")
-	print("💙 Miku: \"True fans don't cage their idols.\"")
+	print("🎮 Pam: \"I tried to kidnap Kiku-chan...\"")
+	print("💙 Kiku: \"True fans don't cage their idols.\"")
 	print("🎮 Pam: \"I... I understand now.\"")
 	print("🎮 Pam: \"Thank you... both of you.\"")
 
@@ -1373,8 +1373,8 @@ func spare_pam_ending():
 	print("✓ Pam will help in final battle (if applicable)")
 	print("✓ Post-game: Pam's shop available")
 
-	# Free Miku permanently
-	free_miku_permanently()
+	# Free Kiku permanently
+	free_kiku_permanently()
 
 	final_death()
 
@@ -1387,7 +1387,7 @@ func defeat_pam_ending():
 
 	print("🎮 Pam: \"I... I failed...\"")
 	print("🎮 Pam: \"My 347 Nendoroids... worthless...\"")
-	print("🎮 Pam: \"Miku-chan... I'm sorry...\"")
+	print("🎮 Pam: \"Kiku-chan... I'm sorry...\"")
 	print("🎮 [Dissolves into anime sparkles]")
 
 	print("")
@@ -1396,20 +1396,20 @@ func defeat_pam_ending():
 	print("✓ Unlocked: Pam's Katana (legendary weapon)")
 	print("✓ Post-game: No Pam shop")
 
-	# Free Miku permanently
-	free_miku_permanently()
+	# Free Kiku permanently
+	free_kiku_permanently()
 
 	final_death()
 
-func free_miku_permanently():
-	"""Break Miku's cage and set as permanent companion"""
+func free_kiku_permanently():
+	"""Break Kiku's cage and set as permanent companion"""
 	print("")
 	print("╔══════════════════════════════════════╗")
 	print("║   MIKU FREED PERMANENTLY!            ║")
 	print("║   No more timer! Companion forever!  ║")
 	print("╚══════════════════════════════════════╝")
 
-	# TODO: Implement actual Miku permanent companion
+	# TODO: Implement actual Kiku permanent companion
 	# For now just print
 
 func final_death():
@@ -1491,7 +1491,7 @@ func update_cooldowns(delta: float):
 	# Phase 2
 	katana_strike_cooldown = max(0, katana_strike_cooldown - delta * cooldown_mult)
 	kamehameha_cooldown = max(0, kamehameha_cooldown - delta * cooldown_mult)
-	miku_clone_cooldown = max(0, miku_clone_cooldown - delta * cooldown_mult)
+	kiku_clone_cooldown = max(0, kiku_clone_cooldown - delta * cooldown_mult)
 	body_pillow_fortress_cooldown = max(0, body_pillow_fortress_cooldown - delta * cooldown_mult)
 	teleport_combo_cooldown = max(0, teleport_combo_cooldown - delta * cooldown_mult)
 
@@ -1519,16 +1519,16 @@ func update_sprite_direction():
 func play_dialogue_intro():
 	if encounter_type == Encounter.BLOOD_TEMPLE:
 		var lines = [
-			"YAMERO! Don't touch Miku-chan!",
+			"YAMERO! Don't touch Kiku-chan!",
 			"I've been waiting for her my ENTIRE LIFE!",
-			"Miku-chan wa ore no yome desu!"
+			"Kiku-chan wa ore no yome desu!"
 		]
 		print("🎮 \"%s\"" % lines[randi() % lines.size()])
 	else:  # Fortress
 		var lines = [
 			"YOU FOUND MY FORTRESS?!",
 			"Impressive... for a normie.",
-			"But you'll NEVER take Miku-chan from me!"
+			"But you'll NEVER take Kiku-chan from me!"
 		]
 		print("🎮 \"%s\"" % lines[randi() % lines.size()])
 
@@ -1553,14 +1553,14 @@ func play_dialogue_phase_3():
 func play_dialogue_death():
 	print("🎮 \"No... my 347 Nendoroids...\"")
 	print("🎮 \"My... perfect... plan...\"")
-	print("🎮 \"In another timeline... Miku-chan...\"")
+	print("🎮 \"In another timeline... Kiku-chan...\"")
 	print("🎮 \"Tell her... I... loved her...\"")
 
 func play_dialogue_retreat():
 	var lines = [
 		"Tch... I'll let you have this round!",
 		"This isn't over! I'll be back!",
-		"Miku-chan will be MINE!"
+		"Kiku-chan will be MINE!"
 	]
 	print("🎮 \"%s\"" % lines[randi() % lines.size()])
 
@@ -1582,7 +1582,7 @@ func play_dialogue_katana():
 func play_dialogue_kamehameha():
 	print("🎮 \"KA-ME-HA-ME-HAAA!\"")
 
-func play_dialogue_miku_clones():
+func play_dialogue_kiku_clones():
 	print("🎮 \"SHADOW CLONE JUTSU!\"")
 
 func play_dialogue_pillow_fortress():

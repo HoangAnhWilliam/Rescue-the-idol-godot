@@ -360,7 +360,7 @@ func get_weapon_name(weapon_id: String) -> String:
 	"""Phase 6: Get weapon display name"""
 	match weapon_id:
 		"wooden_sword": return "Wooden Sword"
-		"miku_sword": return "Miku Sword"
+		"kiku_sword": return "Miku Sword"
 		"earthshatter_staff": return "Earthshatter Staff"
 		"acid_gauntlets": return "Acid Storm Gauntlets"
 		"enchanting_flute": return "Enchanting Flute"

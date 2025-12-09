@@ -1,14 +1,14 @@
 extends CharacterBody2D
-class_name MikuCompanion
+class_name KikuCompanion
 
-## Temporary Miku companion that follows player for 5 minutes
+## Temporary Kiku companion that follows player for 5 minutes
 ## Has 4 corruption stages based on time remaining
 ## Provides buffs to player while active
 
-enum MikuState { FOLLOWING, VANISHING, VANISHED }
+enum KikuState { FOLLOWING, VANISHING, VANISHED }
 
 # State
-var current_state: MikuState = MikuState.FOLLOWING
+var current_state: KikuState = KikuState.FOLLOWING
 
 # Timer
 const MIKU_DURATION := 300.0  # 5 minutes
@@ -33,17 +33,17 @@ var bob_time: float = 0.0
 @onready var sprite: ColorRect = $ColorRect
 
 # Signals
-signal miku_vanished(position: Vector2)
+signal kiku_vanished(position: Vector2)
 signal corruption_stage_changed(stage: int)
-signal miku_spawned
+signal kiku_spawned
 
 func _ready() -> void:
-	add_to_group("miku_companion")
+	add_to_group("kiku_companion")
 
 	# Find player
 	player = get_tree().get_first_node_in_group("player") as CharacterBody2D
 	if not player:
-		push_error("MikuCompanion: Player not found!")
+		push_error("KikuCompanion: Player not found!")
 		queue_free()
 		return
 
@@ -61,17 +61,17 @@ func _ready() -> void:
 	apply_buffs_to_player()
 
 	# Chat message
-	ChatBox.send_chat_message("Miku", "Thank you! I will fight by your side!", "Miku", get_tree())
+	ChatBox.send_chat_message("Kiku", "Thank you! I will fight by your side!", "Kiku", get_tree())
 
 	# Emit signal
-	miku_spawned.emit()
+	kiku_spawned.emit()
 
-	print("Miku Companion spawned at %s" % global_position)
+	print("Kiku Companion spawned at %s" % global_position)
 	print("Timer: %d:00 started" % int(MIKU_DURATION / 60))
 
 
 func _physics_process(delta: float) -> void:
-	if current_state != MikuState.FOLLOWING:
+	if current_state != KikuState.FOLLOWING:
 		return
 
 	# Update timer
@@ -169,7 +169,7 @@ func transition_to_stage(stage: int) -> void:
 	# Send chat message
 	var message := get_stage_message(stage)
 	if not message.is_empty():
-		ChatBox.send_chat_message("Miku", message, "Miku", get_tree())
+		ChatBox.send_chat_message("Kiku", message, "Kiku", get_tree())
 
 	print("Corruption stage changed: %d" % stage)
 
@@ -196,9 +196,9 @@ func get_stage_message(stage: int) -> String:
 
 
 func apply_buffs_to_player() -> void:
-	"""Apply Miku's buffs to player"""
+	"""Apply Kiku's buffs to player"""
 
-	if not player or not player.has_method("apply_miku_buffs"):
+	if not player or not player.has_method("apply_kiku_buffs"):
 		return
 
 	var buffs := {
@@ -208,21 +208,21 @@ func apply_buffs_to_player() -> void:
 		"move_speed": 1.15     # +15%
 	}
 
-	player.apply_miku_buffs(buffs)
+	player.apply_kiku_buffs(buffs)
 	print("Buffs applied to player")
 
 
 func start_vanish_sequence() -> void:
-	"""Start Miku's vanish sequence"""
+	"""Start Kiku's vanish sequence"""
 
-	current_state = MikuState.VANISHING
+	current_state = KikuState.VANISHING
 
 	# Stop moving
 	velocity = Vector2.ZERO
 	set_physics_process(false)
 
 	# Chat dialogue
-	ChatBox.send_chat_message("Miku", "Goodbye... Thank you...", "Miku", get_tree())
+	ChatBox.send_chat_message("Kiku", "Goodbye... Thank you...", "Kiku", get_tree())
 
 	await get_tree().create_timer(1.0).timeout
 
@@ -246,16 +246,16 @@ func start_vanish_sequence() -> void:
 		camera_shake.shake(5.0, 0.5)
 
 	# Remove buffs from player
-	if player and is_instance_valid(player) and player.has_method("remove_miku_buffs"):
-		player.remove_miku_buffs()
+	if player and is_instance_valid(player) and player.has_method("remove_kiku_buffs"):
+		player.remove_kiku_buffs()
 
-	print("Miku vanishing...")
+	print("Kiku vanishing...")
 
 	# Store position for fragment animation
 	var vanish_pos := global_position
 
 	# Emit signal for fragment collection
-	miku_vanished.emit(vanish_pos)
+	kiku_vanished.emit(vanish_pos)
 
 	# Despawn
 	queue_free()
@@ -292,7 +292,7 @@ func get_time_remaining_formatted() -> String:
 
 
 func force_vanish() -> void:
-	"""Force Miku to vanish immediately (for testing)"""
+	"""Force Kiku to vanish immediately (for testing)"""
 
 	time_remaining = 0
 	start_vanish_sequence()

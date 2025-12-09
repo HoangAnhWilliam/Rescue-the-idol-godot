@@ -1,7 +1,7 @@
 extends Node2D
-class_name PermanentMiku
+class_name PermanentKiku
 
-## Permanent Miku pet companion (reward after defeating Despair Miku)
+## Permanent Kiku pet companion (reward after defeating Despair Kiku)
 ## Follows player, provides passive buffs, visual reactions
 
 # Following
@@ -17,15 +17,15 @@ var bob_time: float = 0.0
 @onready var sprite: ColorRect = $ColorRect
 
 # Signals
-signal miku_unlocked
+signal kiku_unlocked
 
 func _ready() -> void:
-	add_to_group("permanent_miku")
+	add_to_group("permanent_kiku")
 
 	# Find player
 	player = get_tree().get_first_node_in_group("player") as CharacterBody2D
 	if not player:
-		push_error("PermanentMiku: Player not found!")
+		push_error("PermanentKiku: Player not found!")
 		queue_free()
 		return
 
@@ -47,9 +47,9 @@ func _ready() -> void:
 	apply_passive_buffs()
 
 	# Emit signal
-	miku_unlocked.emit()
+	kiku_unlocked.emit()
 
-	print("✓ Permanent Miku pet unlocked!")
+	print("✓ Permanent Kiku pet unlocked!")
 
 
 func _process(delta: float) -> void:
@@ -109,8 +109,8 @@ func apply_passive_buffs() -> void:
 		return
 
 	# Apply passive bonuses
-	if player.has_method("apply_permanent_miku_buffs"):
-		player.apply_permanent_miku_buffs()
+	if player.has_method("apply_permanent_kiku_buffs"):
+		player.apply_permanent_kiku_buffs()
 	else:
 		# Fallback: Apply buffs directly if method exists
 		if player.get("stats"):

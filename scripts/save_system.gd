@@ -15,7 +15,7 @@ var save_data: Dictionary = {
 	"progress": {
 		"blood_temple_cleared": false,
 		"darkland_cleared": false,
-		"miku_rescues": 0,
+		"kiku_rescues": 0,
 		"highest_wave": 0,
 		"games_played": 0,
 	},
@@ -80,7 +80,7 @@ func reset_save():
 		"progress": {
 			"blood_temple_cleared": false,
 			"darkland_cleared": false,
-			"miku_rescues": 0,
+			"kiku_rescues": 0,
 			"highest_wave": 0,
 			"games_played": 0,
 		},
@@ -132,8 +132,8 @@ func mark_darkland_cleared():
 	save_data.progress.darkland_cleared = true
 	save_game()
 
-func add_miku_rescue():
-	save_data.progress.miku_rescues += 1
+func add_kiku_rescue():
+	save_data.progress.kiku_rescues += 1
 	save_game()
 
 func update_highest_wave(wave: int):
@@ -196,8 +196,8 @@ func get_playtime_formatted() -> String:
 	var seconds = total_seconds % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
 
-func get_miku_rescues() -> int:
-	return save_data.progress.miku_rescues
+func get_kiku_rescues() -> int:
+	return save_data.progress.kiku_rescues
 
 func get_permanent_hp() -> int:
 	return 100 + (save_data.player.permanent_hp_upgrades * 50)

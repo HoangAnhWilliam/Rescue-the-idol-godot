@@ -1,5 +1,5 @@
 extends Node
-## AudioManager Singleton - Central audio control system for Miku's Despair
+## AudioManager Singleton - Central audio control system for Kiku's Despair
 ##
 ## Handles all music and sound effects in the game with:
 ## - Dynamic music system (biome/boss music with crossfading)
@@ -52,14 +52,14 @@ var music_tracks := {
 	"fire_dragon_boss": "res://audio/music/fire_dragon_boss.ogg",
 	"vampire_lord_boss": "res://audio/music/vampire_lord_boss.ogg",
 	"pam_boss": "res://audio/music/pam_boss.ogg",
-	"dark_miku_boss": "res://audio/music/dark_miku_boss.ogg",
-	"dark_miku_boss_alt": "res://audio/music/dark_miku_boss_alt.ogg",  # Alternative track
-	"despair_miku_boss": "res://audio/music/despair_miku_boss.ogg",
-	"despair_miku_boss_alt": "res://audio/music/despair_miku_boss_alt.ogg",  # Alternative track
+	"dark_kiku_boss": "res://audio/music/dark_kiku_boss.ogg",
+	"dark_kiku_boss_alt": "res://audio/music/dark_kiku_boss_alt.ogg",  # Alternative track
+	"despair_kiku_boss": "res://audio/music/despair_kiku_boss.ogg",
+	"despair_kiku_boss_alt": "res://audio/music/despair_kiku_boss_alt.ogg",  # Alternative track
 
 	# Special Areas
 	"otaku_fortress": "res://audio/music/otaku_fortress.ogg",
-	"miku_rescue": "res://audio/music/miku_rescue.ogg",
+	"kiku_rescue": "res://audio/music/kiku_rescue.ogg",
 	"credits": "res://audio/music/credits_music.ogg",
 
 	# Optional
@@ -423,8 +423,8 @@ func play_boss_music(boss_name: String):
 		"FireDragon": "fire_dragon_boss",
 		"VampireLord": "vampire_lord_boss",
 		"PamTungKen": "pam_boss",
-		"DarkMiku": "dark_miku_boss",
-		"DespairMiku": "despair_miku_boss"
+		"DarkKiku": "dark_kiku_boss",
+		"DespairKiku": "despair_kiku_boss"
 	}
 
 	if boss_name in boss_map:
@@ -446,7 +446,7 @@ func return_to_biome_music():
 ## Play weapon-specific sound based on weapon class name
 func play_weapon_sound(weapon_name: String):
 	var sound_map = {
-		"MikuSword": "magic_slash",
+		"KikuSword": "magic_slash",
 		"WoodenSword": "sword_slash",
 		"FrostBow": "bow_shoot",
 		"LightningChain": "lightning_zap",

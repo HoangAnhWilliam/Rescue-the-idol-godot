@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjul2ft3xn8x5" path="res://scripts/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://cj8v0xh5qn8mk" path="res://scenes/ui/chat_box.tscn" id="2_chat_box"]
-[ext_resource type="PackedScene" uid="uid://bqm3k5h8tn9vl" path="res://scenes/ui/miku_fragment_bar.tscn" id="3_fragment_bar"]
+[ext_resource type="PackedScene" uid="uid://bqm3k5h8tn9vl" path="res://scenes/ui/kiku_fragment_bar.tscn" id="3_fragment_bar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
 bg_color = Color(1, 0, 0.2, 1)

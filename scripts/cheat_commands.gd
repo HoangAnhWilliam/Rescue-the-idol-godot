@@ -24,7 +24,7 @@ var enemy_scenes := {
 	"skeleton_bad": "res://scenes/enemies/skeleton_bad.tscn",
 	"skeleton_buff": "res://scenes/enemies/skeleton_buff.tscn",
 	"anime_ghost": "res://scenes/enemies/anime_ghost.tscn",
-	"dark_miku": "res://scenes/enemies/dark_miku.tscn",
+	"dark_kiku": "res://scenes/enemies/dark_kiku.tscn",
 
 	# Biome-specific enemies
 	"desert_nomad": "res://scenes/enemies/desert_nomad.tscn",
@@ -39,7 +39,7 @@ var enemy_scenes := {
 	# Bosses (lowercase paths - FIXED)
 	"fire_dragon": "res://scenes/bosses/fire_dragon.tscn",
 	"vampire_lord": "res://scenes/bosses/vampire_lord.tscn",
-	"despair_miku": "res://scenes/bosses/despair_miku.tscn",
+	"despair_kiku": "res://scenes/bosses/despair_kiku.tscn",
 }
 
 # Debug toggles
@@ -150,7 +150,7 @@ func process_command(command_text: String) -> void:
 		"biome": cmd_biome(args)
 
 		# CATEGORY 12: MIKU SYSTEM
-		"miku": cmd_miku(args)
+		"kiku": cmd_kiku(args)
 
 		# CATEGORY 13: DEBUG & INFO
 		"debug": cmd_debug(args)
@@ -1015,11 +1015,11 @@ func cmd_biome(args: Array):
 # CATEGORY 12: MIKU SYSTEM
 # ═══════════════════════════════════════════════════════════════════════════════
 
-func cmd_miku(args: Array):
+func cmd_kiku(args: Array):
 	"""Miku system cheats
-	Usage: /miku spawn OR /miku timer set <minutes> OR /miku fragment add <count> OR /miku unlock"""
+	Usage: /kiku spawn OR /kiku timer set <minutes> OR /kiku fragment add <count> OR /kiku unlock"""
 	if args.size() < 1:
-		send_error("Usage: /miku spawn OR /miku timer set <mins> OR /miku fragment add <count> OR /miku unlock")
+		send_error("Usage: /kiku spawn OR /kiku timer set <mins> OR /kiku fragment add <count> OR /kiku unlock")
 		return
 
 	var action = args[0].to_lower()
@@ -1033,14 +1033,14 @@ func cmd_miku(args: Array):
 				var minutes = args[2].to_float()
 				send_response("Miku timer set to %.0f minutes (not fully implemented)" % minutes)
 			else:
-				send_error("Usage: /miku timer set <minutes>")
+				send_error("Usage: /kiku timer set <minutes>")
 
 		"fragment":
 			if args.size() >= 3 and args[1].to_lower() == "add":
 				var count = args[2].to_int()
 				send_response("Added %d Miku fragments (not fully implemented)" % count)
 			else:
-				send_error("Usage: /miku fragment add <count>")
+				send_error("Usage: /kiku fragment add <count>")
 
 		"unlock":
 			send_response("Permanent Miku unlocked (not fully implemented)")
@@ -1219,12 +1219,12 @@ func show_command_help(cmd: String):
 			send_response("=== SPAWN ENEMIES ===")
 			send_response("/summon @player <enemy> <count> [time]")
 			send_response("  Basic: zombie, skeleton_bad, skeleton_buff")
-			send_response("  anime_ghost, dark_miku")
+			send_response("  anime_ghost, dark_kiku")
 			send_response("  Desert: desert_nomad, skeleton_camel")
 			send_response("  Tundra: ice_golem, snowdwarf_traitor, snowman_warrior")
 			send_response("  Volcanic: lava_elemental, magma_slime")
 			send_response("  Temple: vampire_bat")
-			send_response("  Bosses: fire_dragon, vampire_lord, despair_miku")
+			send_response("  Bosses: fire_dragon, vampire_lord, despair_kiku")
 
 		"revive":
 			send_response("=== REVIVE ===")
@@ -1275,7 +1275,7 @@ func show_command_help(cmd: String):
 			send_response("/give $ <amount> OR /give <weapon> <amount>")
 			send_response("Examples:")
 			send_response("  /give $ 1000000 - Give gold")
-			send_response("  /give miku_sword 1 - Give weapon")
+			send_response("  /give kiku_sword 1 - Give weapon")
 
 		_:
 			send_error("Unknown command/category: " + cmd)
@@ -1914,7 +1914,7 @@ func get_enemy_scene_path(enemy_name: String) -> String:
 
 func is_boss_enemy(enemy_name: String) -> bool:
 	"""Check if enemy is a boss"""
-	var boss_names = ["fire_dragon", "vampire_lord", "pam_tung_ken", "despair_miku", "dark_miku"]
+	var boss_names = ["fire_dragon", "vampire_lord", "pam_tung_ken", "despair_kiku", "dark_kiku"]
 	var lower = enemy_name.to_lower().replace(" ", "_")
 	return lower in boss_names
 
@@ -1936,19 +1936,19 @@ func play_boss_music(boss_name: String):
 		"pam_tung_ken":
 			music_key = "pam_boss"
 
-		"dark_miku":
+		"dark_kiku":
 			# 50% chance between two tracks
 			if randf() < 0.5:
-				music_key = "dark_miku_boss"
+				music_key = "dark_kiku_boss"
 			else:
-				music_key = "dark_miku_boss_alt"
+				music_key = "dark_kiku_boss_alt"
 
-		"despair_miku":
+		"despair_kiku":
 			# 50% chance between two tracks
 			if randf() < 0.5:
-				music_key = "despair_miku_boss"
+				music_key = "despair_kiku_boss"
 			else:
-				music_key = "despair_miku_boss_alt"
+				music_key = "despair_kiku_boss_alt"
 
 	if music_key:
 		AudioManager.play_music(music_key, 1.0)  # Faster fade for boss

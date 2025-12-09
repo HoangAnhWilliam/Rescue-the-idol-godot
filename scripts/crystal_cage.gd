@@ -1,12 +1,12 @@
 extends Area2D
 class_name CrystalCage
 
-## Crystal cage containing Miku
+## Crystal cage containing Kiku
 ## Can be active (interactable) or dormant (non-interactable)
 ## Sequential activation system
 
 @onready var background: ColorRect = $Background
-@onready var miku_sprite: ColorRect = $MikuSprite
+@onready var kiku_sprite: ColorRect = $KikuSprite
 @onready var chains: Node2D = $Chains
 @onready var particles: CPUParticles2D = $Particles
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -18,7 +18,7 @@ var cage_number: int = 0
 var player_in_range: bool = false
 
 # References
-var miku_companion_scene: PackedScene = preload("res://scenes/miku/miku_companion.tscn")
+var kiku_companion_scene: PackedScene = preload("res://scenes/kiku/kiku_companion.tscn")
 
 # Signals
 signal cage_opened(cage_number: int)
@@ -50,11 +50,11 @@ func setup_visuals() -> void:
 		background.size = Vector2(64, 64)
 		background.position = -background.size / 2
 
-	# Miku inside
-	if miku_sprite:
-		miku_sprite.size = Vector2(32, 32)
-		miku_sprite.position = -miku_sprite.size / 2
-		miku_sprite.color = Color(0, 0.85, 1, 1.0)  # Cyan
+	# Kiku inside
+	if kiku_sprite:
+		kiku_sprite.size = Vector2(32, 32)
+		kiku_sprite.position = -kiku_sprite.size / 2
+		kiku_sprite.color = Color(0, 0.85, 1, 1.0)  # Cyan
 
 	# Create chain visuals
 	if chains:
@@ -79,7 +79,7 @@ func setup_visuals() -> void:
 
 
 func create_chains() -> void:
-	"""Create chain visual elements around Miku"""
+	"""Create chain visual elements around Kiku"""
 
 	if not chains:
 		return
@@ -89,7 +89,7 @@ func create_chains() -> void:
 		chain.size = Vector2(4, 16)
 		chain.color = Color(0.5, 0.5, 0.5)
 
-		# Position around Miku (4 corners)
+		# Position around Kiku (4 corners)
 		var angle := (TAU / 4) * i + TAU / 8
 		var offset := Vector2(cos(angle), sin(angle)) * 20
 		chain.position = offset - chain.size / 2
@@ -166,15 +166,15 @@ func stop_pulse_animation() -> void:
 
 
 func start_bobbing_animation() -> void:
-	"""Start Miku bobbing animation"""
+	"""Start Kiku bobbing animation"""
 
-	if not miku_sprite:
+	if not kiku_sprite:
 		return
 
 	var tween := create_tween()
 	tween.set_loops()
-	tween.tween_property(miku_sprite, "position:y", -miku_sprite.size.y / 2 - 5, 1.0).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(miku_sprite, "position:y", -miku_sprite.size.y / 2 + 5, 1.0).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(kiku_sprite, "position:y", -kiku_sprite.size.y / 2 - 5, 1.0).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(kiku_sprite, "position:y", -kiku_sprite.size.y / 2 + 5, 1.0).set_trans(Tween.TRANS_SINE)
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -200,7 +200,7 @@ func show_interaction_prompt() -> void:
 	"""Show 'Press E to rescue' prompt"""
 
 	if interaction_prompt:
-		interaction_prompt.text = "Press E to rescue Miku"
+		interaction_prompt.text = "Press E to rescue Kiku"
 		interaction_prompt.show()
 
 
@@ -222,14 +222,14 @@ func _input(event: InputEvent) -> void:
 
 
 func attempt_rescue() -> void:
-	"""Attempt to rescue Miku from cage"""
+	"""Attempt to rescue Kiku from cage"""
 
 	# Check if player has key
 	var player := get_tree().get_first_node_in_group("player") as CharacterBody2D
 	if not player:
 		return
 
-	if not player.has_method("has_item") or not player.has_item("Miku's Seal Key"):
+	if not player.has_method("has_item") or not player.has_item("Kiku's Seal Key"):
 		ChatBox.send_chat_message("System", "You need the Sealing Key!", "System", get_tree())
 		return
 
@@ -263,17 +263,17 @@ func start_rescue_sequence() -> void:
 		tween.tween_property(chains, "modulate:a", 0.0, 0.5)
 		await tween.finished
 
-	# Miku flies upward
-	if miku_sprite:
+	# Kiku flies upward
+	if kiku_sprite:
 		var tween := create_tween()
-		tween.tween_property(miku_sprite, "position:y", miku_sprite.position.y - 50, 0.5)
+		tween.tween_property(kiku_sprite, "position:y", kiku_sprite.position.y - 50, 0.5)
 		await tween.finished
 
 	# Chat
-	ChatBox.send_chat_message("Miku", "Thank you! I will fight by your side!", "Miku", get_tree())
+	ChatBox.send_chat_message("Kiku", "Thank you! I will fight by your side!", "Kiku", get_tree())
 
-	# Spawn MikuCompanion
-	spawn_miku_companion()
+	# Spawn KikuCompanion
+	spawn_kiku_companion()
 
 	# Enable player input
 	if player and player.has_method("enable_input"):
@@ -314,14 +314,14 @@ func break_chains() -> void:
 			tween.parallel().tween_property(chain, "modulate:a", 0.0, 0.3)
 
 
-func spawn_miku_companion() -> void:
-	"""Spawn Miku companion at cage position"""
+func spawn_kiku_companion() -> void:
+	"""Spawn Kiku companion at cage position"""
 
-	var miku := miku_companion_scene.instantiate()
-	miku.global_position = global_position
-	get_parent().add_child(miku)
+	var kiku := kiku_companion_scene.instantiate()
+	kiku.global_position = global_position
+	get_parent().add_child(kiku)
 
-	print("Miku Companion spawned at %s" % global_position)
+	print("Kiku Companion spawned at %s" % global_position)
 
 
 func transition_to_active() -> void:
@@ -338,8 +338,8 @@ func transition_to_active() -> void:
 		tween.tween_property(background, "modulate", Color(1.5, 1.5, 1.5), 2.0)
 		tween.tween_property(background, "color", Color(0, 0.85, 1, 0.6), 2.0)
 
-	if miku_sprite:
-		tween.tween_property(miku_sprite, "color", Color(0, 0.85, 1, 1.0), 2.0)
+	if kiku_sprite:
+		tween.tween_property(kiku_sprite, "color", Color(0, 0.85, 1, 1.0), 2.0)
 
 	await tween.finished
 

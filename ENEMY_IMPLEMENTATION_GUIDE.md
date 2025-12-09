@@ -95,7 +95,7 @@ Successfully implemented **8 new biome-specific enemies** with unique mechanics 
    - Attacks other biome enemies (territorial)
 
 ### **🩸 Blood Temple (1 enemy)**
-8. **Dark Miku** (40%) [20+ min only!]
+8. **Dark Kiku** (40%) [20+ min only!]
    - **Mini-boss tier** (120 HP, 60 XP)
    - Mirrors player weapons
    - Blood web: Tether for 4s (-50% speed)
@@ -112,7 +112,7 @@ Enemy difficulty scales with game time:
 |------------|------|-------------------|
 | **0-10 min** | Easy | Vampire Bat, Snowman Warrior, Lava Elemental, Zombie |
 | **10-20 min** | Medium | + Skeleton Camel, Ice Golem |
-| **20+ min** | Hard | + Desert Nomad, Snowdwarf Traitor, Dark Miku |
+| **20+ min** | Hard | + Desert Nomad, Snowdwarf Traitor, Dark Kiku |
 
 ---
 
@@ -198,14 +198,14 @@ get_tree().root.add_child(camel)
 - [ ] Attacks enemies from other biomes
 - **Debug output:** "Lava Elemental FLAME BURST!", "Lava Elemental attacking intruder enemy!"
 
-#### **8. DARK MIKU**
+#### **8. DARK KIKU**
 - [ ] Mirrors player's equipped weapon
 - [ ] Changes weapon every 15s
 - [ ] Blood web creates red tether line
 - [ ] Tether slows player moving away (-50%)
 - [ ] Shadow dash teleports behind player
-- [ ] Despair aura heals Dark Miku when player HP < 30%
-- **Debug output:** "Dark Miku mirroring weapon: [name]", "Dark Miku SHADOW DASH!", "Blood web tether connected!", "Dark Miku healing from despair"
+- [ ] Despair aura heals Dark Kiku when player HP < 30%
+- **Debug output:** "Dark Kiku mirroring weapon: [name]", "Dark Kiku SHADOW DASH!", "Blood web tether connected!", "Dark Kiku healing from despair"
 
 ---
 
@@ -222,7 +222,7 @@ All enemies use ColorRect placeholders with biome-specific colors:
 | Snowman Warrior | (0.95, 0.95, 1.0) - White | 32×40 |
 | Snowdwarf Traitor | (0.8, 0.7, 0.9) - Light blue/pink | 24×28 |
 | Lava Elemental | (1.0, 0.3, 0.0) - Bright orange | 36×36 |
-| Dark Miku | (0.1, 0.0, 0.0) - Black w/ red outline | 32×32 |
+| Dark Kiku | (0.1, 0.0, 0.0) - Black w/ red outline | 32×32 |
 
 ---
 
@@ -249,7 +249,7 @@ Zombie scene: true
 ✓ Snowman Warrior scene loaded!
 ✓ Snowdwarf Traitor scene loaded!
 ✓ Lava Elemental scene loaded!
-✓ Dark Miku scene loaded!
+✓ Dark Kiku scene loaded!
 ========================
 ```
 
@@ -274,7 +274,7 @@ Zombie scene: true
 
 5. **Move to Blood Temple**
    - Should spawn Zombies only (before 20 min)
-   - After 20 min: Dark Miku (40%), Zombies (60%)
+   - After 20 min: Dark Kiku (40%), Zombies (60%)
 
 ---
 
@@ -311,7 +311,7 @@ If game lags:
 - **Desert Wasteland:** 2-3 enemies every 2s (mostly bats)
 - **Frozen Tundra:** 2 enemies every 2.5s
 - **Volcanic Darklands:** 1-2 enemies every 3s (fewer but tougher)
-- **Blood Temple:** 1-2 enemies every 2s (Dark Miku is rare but deadly)
+- **Blood Temple:** 1-2 enemies every 2s (Dark Kiku is rare but deadly)
 
 ### **Difficulty Scaling**
 - Each wave (60s) increases:
@@ -330,7 +330,7 @@ If game lags:
 | Snowman Warrior | Stay outside aura range, hit & run |
 | Snowdwarf Traitor | Trade if rich, kill if poor |
 | Lava Elemental | Stay outside burst range, avoid pools |
-| Dark Miku | Break tether, watch for shadow dash |
+| Dark Kiku | Break tether, watch for shadow dash |
 
 ---
 
@@ -342,7 +342,7 @@ If game lags:
 - ✓ ParticleManager singleton
 - ✓ CameraShake singleton
 - ✓ BiomeGenerator biome detection
-- ✓ Weapon system (Dark Miku mirrors)
+- ✓ Weapon system (Dark Kiku mirrors)
 - ✓ Inventory/gold system (Snowdwarf trade)
 
 ### **No Breaking Changes**

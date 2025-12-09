@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://b2ai7uclsnr38"]
 
 [ext_resource type="Script" uid="uid://cfv3nr6ipbt4l" path="res://scripts/player.gd" id="1_8afob"]
-[ext_resource type="PackedScene" uid="uid://b4tedgs0dxwcr" path="res://scenes/weapons/MikuSword.tscn" id="2_dovo2"]
+[ext_resource type="PackedScene" uid="uid://b4tedgs0dxwcr" path="res://scenes/weapons/KikuSword.tscn" id="2_dovo2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dovo2"]
 size = Vector2(32, 32)
@@ -27,4 +27,4 @@ position_smoothing_speed = 10.0
 
 [node name="WeaponPivot" type="Node2D" parent="."]
 
-[node name="MikuSword" parent="WeaponPivot" instance=ExtResource("2_dovo2")]
+[node name="KikuSword" parent="WeaponPivot" instance=ExtResource("2_dovo2")]

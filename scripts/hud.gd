@@ -25,10 +25,10 @@ var boss_manager: BossManager
 @onready var boss_hp_label = $BossHealthBar/VBoxContainer/HPBarContainer/HPLabel if has_node("BossHealthBar/VBoxContainer/HPBarContainer/HPLabel") else null
 @onready var boss_phase_label = $BossHealthBar/VBoxContainer/PhaseLabel if has_node("BossHealthBar/VBoxContainer/PhaseLabel") else null
 
-# Miku Quest UI
+# Kiku Quest UI
 @onready var chat_box = $ChatBox if has_node("ChatBox") else null
 @onready var chat_indicator = $ChatIndicator if has_node("ChatIndicator") else null
-@onready var miku_fragment_bar = $MikuFragmentBar if has_node("MikuFragmentBar") else null
+@onready var kiku_fragment_bar = $KikuFragmentBar if has_node("KikuFragmentBar") else null
 
 var current_boss: Node = null
 

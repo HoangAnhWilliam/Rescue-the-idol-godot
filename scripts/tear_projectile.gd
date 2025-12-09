@@ -1,7 +1,7 @@
 extends Area2D
 class_name TearProjectile
 
-## Projectile used by Despair Miku boss
+## Projectile used by Despair Kiku boss
 ## Can be homing or straight-line
 
 @onready var sprite: ColorRect = $ColorRect
