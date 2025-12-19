@@ -1,0 +1,434 @@
+[gd_scene load_steps=2 format=3 uid="uid://ciq7g8n3vm2rh"]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_menu_new.gd" id="1_settings"]
+
+[node name="SettingsMenu" type="CanvasLayer"]
+script = ExtResource("1_settings")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.101961, 0.0509804, 0.121569, 1)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 100.0
+offset_top = 50.0
+offset_right = -100.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0.25098, 1)
+theme_override_font_sizes/font_size = 36
+text = "⚙️ SETTINGS"
+horizontal_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Audio" type="VBoxContainer" parent="Panel/VBox/TabContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MasterVolume" type="HBoxContainer" parent="Panel/VBox/TabContainer/Audio"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Audio/MasterVolume"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Master Volume"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Audio/MasterVolume"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Audio/MasterVolume"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+
+[node name="TestButton" type="Button" parent="Panel/VBox/TabContainer/Audio/MasterVolume"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+text = "🔊"
+
+[node name="MusicVolume" type="HBoxContainer" parent="Panel/VBox/TabContainer/Audio"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Audio/MusicVolume"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Music Volume"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Audio/MusicVolume"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+max_value = 100.0
+value = 70.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Audio/MusicVolume"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "70%"
+horizontal_alignment = 1
+
+[node name="TestButton" type="Button" parent="Panel/VBox/TabContainer/Audio/MusicVolume"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+text = "🎵"
+
+[node name="SFXVolume" type="HBoxContainer" parent="Panel/VBox/TabContainer/Audio"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Audio/SFXVolume"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "SFX Volume"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Audio/SFXVolume"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Audio/SFXVolume"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+
+[node name="TestButton" type="Button" parent="Panel/VBox/TabContainer/Audio/SFXVolume"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+text = "💥"
+
+[node name="Controls" type="VBoxContainer" parent="Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="JoystickSize" type="HBoxContainer" parent="Panel/VBox/TabContainer/Controls"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Controls/JoystickSize"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Joystick Size"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Controls/JoystickSize"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+min_value = 50.0
+max_value = 150.0
+value = 100.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Controls/JoystickSize"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+
+[node name="ButtonSize" type="HBoxContainer" parent="Panel/VBox/TabContainer/Controls"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Controls/ButtonSize"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Button Size"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Controls/ButtonSize"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+min_value = 50.0
+max_value = 150.0
+value = 100.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Controls/ButtonSize"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+
+[node name="TouchSensitivity" type="HBoxContainer" parent="Panel/VBox/TabContainer/Controls"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Controls/TouchSensitivity"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Touch Sensitivity"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Controls/TouchSensitivity"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Controls/TouchSensitivity"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "1.0x"
+horizontal_alignment = 1
+
+[node name="ButtonOpacity" type="HBoxContainer" parent="Panel/VBox/TabContainer/Controls"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Controls/ButtonOpacity"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Button Opacity"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Controls/ButtonOpacity"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+min_value = 30.0
+max_value = 100.0
+value = 100.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Controls/ButtonOpacity"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+
+[node name="Graphics" type="VBoxContainer" parent="Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="FPSCounter" type="HBoxContainer" parent="Panel/VBox/TabContainer/Graphics"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Graphics/FPSCounter"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Show FPS Counter"
+
+[node name="CheckBox" type="CheckBox" parent="Panel/VBox/TabContainer/Graphics/FPSCounter"]
+layout_mode = 2
+
+[node name="ScreenShake" type="HBoxContainer" parent="Panel/VBox/TabContainer/Graphics"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Graphics/ScreenShake"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Screen Shake"
+
+[node name="CheckBox" type="CheckBox" parent="Panel/VBox/TabContainer/Graphics/ScreenShake"]
+layout_mode = 2
+button_pressed = true
+
+[node name="BloodEffects" type="HBoxContainer" parent="Panel/VBox/TabContainer/Graphics"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Graphics/BloodEffects"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Blood Effects"
+
+[node name="CheckBox" type="CheckBox" parent="Panel/VBox/TabContainer/Graphics/BloodEffects"]
+layout_mode = 2
+button_pressed = true
+
+[node name="Gameplay" type="VBoxContainer" parent="Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PauseMode" type="HBoxContainer" parent="Panel/VBox/TabContainer/Gameplay"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Gameplay/PauseMode"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Pause Mode"
+
+[node name="OptionButton" type="OptionButton" parent="Panel/VBox/TabContainer/Gameplay/PauseMode"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 2
+selected = 0
+popup/item_0/text = "Freeze"
+popup/item_0/id = 0
+popup/item_1/text = "Slow Motion"
+popup/item_1/id = 1
+
+[node name="DamageNumbers" type="HBoxContainer" parent="Panel/VBox/TabContainer/Gameplay"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Gameplay/DamageNumbers"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Show Damage Numbers"
+
+[node name="CheckBox" type="CheckBox" parent="Panel/VBox/TabContainer/Gameplay/DamageNumbers"]
+layout_mode = 2
+button_pressed = true
+
+[node name="AutoPause" type="HBoxContainer" parent="Panel/VBox/TabContainer/Gameplay"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Gameplay/AutoPause"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Auto-Pause on Menu Open"
+
+[node name="CheckBox" type="CheckBox" parent="Panel/VBox/TabContainer/Gameplay/AutoPause"]
+layout_mode = 2
+button_pressed = true
+
+[node name="Accessibility" type="VBoxContainer" parent="Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ColorblindMode" type="HBoxContainer" parent="Panel/VBox/TabContainer/Accessibility"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Accessibility/ColorblindMode"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Colorblind Mode"
+
+[node name="OptionButton" type="OptionButton" parent="Panel/VBox/TabContainer/Accessibility/ColorblindMode"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 4
+selected = 0
+popup/item_0/text = "None"
+popup/item_0/id = 0
+popup/item_1/text = "Protanopia"
+popup/item_1/id = 1
+popup/item_2/text = "Deuteranopia"
+popup/item_2/id = 2
+popup/item_3/text = "Tritanopia"
+popup/item_3/id = 3
+
+[node name="TextSize" type="HBoxContainer" parent="Panel/VBox/TabContainer/Accessibility"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Accessibility/TextSize"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Text Size"
+
+[node name="Slider" type="HSlider" parent="Panel/VBox/TabContainer/Accessibility/TextSize"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+min_value = 75.0
+max_value = 150.0
+value = 100.0
+
+[node name="ValueLabel" type="Label" parent="Panel/VBox/TabContainer/Accessibility/TextSize"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+
+[node name="HighContrast" type="HBoxContainer" parent="Panel/VBox/TabContainer/Accessibility"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBox/TabContainer/Accessibility/HighContrast"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "High Contrast Mode"
+
+[node name="CheckBox" type="CheckBox" parent="Panel/VBox/TabContainer/Accessibility/HighContrast"]
+layout_mode = 2
+
+[node name="About" type="VBoxContainer" parent="Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="GameInfo" type="VBoxContainer" parent="Panel/VBox/TabContainer/About"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox/TabContainer/About/GameInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Kiku's Despair"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Panel/VBox/TabContainer/About/GameInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Melody of the Dead"
+horizontal_alignment = 1
+
+[node name="VersionLabel" type="Label" parent="Panel/VBox/TabContainer/About/GameInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Version 1.0.0"
+horizontal_alignment = 1
+
+[node name="DeveloperLabel" type="Label" parent="Panel/VBox/TabContainer/About/GameInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Developed by Hoang Anh"
+horizontal_alignment = 1
+
+[node name="EngineLabel" type="Label" parent="Panel/VBox/TabContainer/About/GameInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Made with Godot 4.3"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Panel/VBox/TabContainer/About"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="ResetButton" type="Button" parent="Panel/VBox/TabContainer/About"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "⚠️ Reset Save Data"
+
+[node name="BackButton" type="Button" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "BACK"

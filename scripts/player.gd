@@ -19,6 +19,17 @@ var level: int = 1
 var total_kills: int = 0
 var xp_to_next_level: float = 100.0  # Để UI hiển thị
 
+# Additional stats tracking for Game Over screen
+var total_gold: int = 0
+var highest_wave: int = 0
+var defeated_bosses: Array[String] = []
+var total_damage_dealt: int = 0
+var total_damage_taken: int = 0
+var total_xp_gained: int = 0
+var weapons_used: Array[String] = []
+var current_biome: String = "Starting Forest"
+var game_start_time: float = 0.0
+
 # Gold system
 var gold: int = 0
 
@@ -74,6 +85,9 @@ func _ready():
 	current_mana = stats.max_mana
 	xp_to_next_level = get_xp_for_next_level()
 	apply_permanent_upgrades()
+
+	# Initialize game start time for stats tracking
+	game_start_time = Time.get_ticks_msec() / 1000.0
 
 	# Setup camera shake
 	if camera and not camera.get_script():
@@ -274,6 +288,9 @@ func take_damage(amount: float):
 		print("💫 Damage blocked by god mode/invincible HP")
 		return
 
+	# Track damage taken
+	track_damage_taken(int(amount))
+
 	current_hp -= amount
 	hp_changed.emit(current_hp, stats.max_hp)
 
@@ -307,11 +324,30 @@ func die():
 	if camera and camera.has_method("large_shake"):
 		camera.large_shake()
 
+	# Collect game stats
+	var stats_data = {
+		"time": get_game_time(),
+		"kills": total_kills,
+		"level": level,
+		"gold": total_gold,
+		"wave": highest_wave,
+		"bosses": defeated_bosses,
+		"damage_dealt": total_damage_dealt,
+		"damage_taken": total_damage_taken,
+		"xp": total_xp_gained,
+		"weapons": weapons_used,
+		"biome": current_biome
+	}
+
 	# Show game over screen
+	var game_over = load("res://scenes/ui/game_over_screen.tscn").instantiate()
+	game_over.set_stats(stats_data)
+	get_tree().root.add_child(game_over)
 
 func add_xp(amount: float):
 	current_xp += amount
 	xp_gained.emit(amount)  # ← THÊM emit để UI update
+	track_xp_gained(int(amount))  # Track total XP
 
 	# ← AUDIO: Play XP collect sound
 	AudioManager.play_sfx("xp_collect")
@@ -538,6 +574,7 @@ func show_crit_text(damage: float):
 func add_gold(amount: int):
 	gold += amount
 	gold_changed.emit(gold)
+	track_gold(amount)  # Track total gold earned
 	print("💰 +", amount, " gold! Total: ", gold)
 
 func remove_gold(amount: int) -> bool:
@@ -675,3 +712,51 @@ func use_kiku_blessing() -> void:
 	await get_tree().create_timer(30.0).timeout
 	remove_kiku_buffs()
 	print("Kiku's Blessing expired!")
+
+# === STATS TRACKING FUNCTIONS ===
+
+func get_game_time() -> float:
+	"""Get elapsed game time in seconds"""
+	return (Time.get_ticks_msec() / 1000.0) - game_start_time
+
+func add_kill():
+	"""Track enemy kill"""
+	total_kills += 1
+
+func track_gold(amount: int):
+	"""Track total gold earned (called when gold is picked up)"""
+	total_gold += amount
+
+func track_damage_dealt(amount: int):
+	"""Track total damage dealt to enemies"""
+	total_damage_dealt += amount
+
+func track_damage_taken(amount: int):
+	"""Track total damage taken"""
+	total_damage_taken += amount
+
+func track_xp_gained(amount: int):
+	"""Track total XP gained"""
+	total_xp_gained += amount
+
+func defeat_boss(boss_name: String):
+	"""Track boss defeated"""
+	if not boss_name in defeated_bosses:
+		defeated_bosses.append(boss_name)
+		print("Boss defeated: ", boss_name)
+
+func track_weapon_used(weapon_name: String):
+	"""Track weapon usage"""
+	if not weapon_name in weapons_used:
+		weapons_used.append(weapon_name)
+		print("New weapon tracked: ", weapon_name)
+
+func set_current_biome(biome_name: String):
+	"""Update current biome"""
+	current_biome = biome_name
+	print("Current biome: ", biome_name)
+
+func set_highest_wave(wave: int):
+	"""Update highest wave reached"""
+	if wave > highest_wave:
+		highest_wave = wave
