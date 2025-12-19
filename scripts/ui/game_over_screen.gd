@@ -74,9 +74,23 @@ func get_weapon_list(weapons: Array) -> String:
 	return ", ".join(weapons)
 
 func _on_retry_pressed():
-	# Reload game (new run, same slot)
-	get_tree().reload_current_scene()
+	print("🔄 Retrying game...")
+
+	# CRITICAL: Unpause game first to avoid freeze
+	get_tree().paused = false
+
+	# Remove this screen
+	queue_free()
+
+	# Wait for screen to be removed, then reload
+	await get_tree().process_frame
+
+	# Change to main scene (cleaner than reload for full reset)
+	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _on_main_menu_pressed():
+	# Unpause game before changing scene
+	get_tree().paused = false
+
 	# Return to main menu
 	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
