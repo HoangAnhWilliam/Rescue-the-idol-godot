@@ -63,5 +63,7 @@ func _on_quit_pressed():
 func _input(event):
 	# ESC or Back to resume
 	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("pause"):
+		# Set as handled BEFORE resuming to avoid potential null viewport error
+		if is_inside_tree():
+			get_viewport().set_input_as_handled()
 		_on_resume_pressed()
-		get_viewport().set_input_as_handled()
