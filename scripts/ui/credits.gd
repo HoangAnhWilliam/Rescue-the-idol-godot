@@ -108,5 +108,7 @@ func _input(event):
 	# Any key/click to skip
 	if event is InputEventKey or event is InputEventMouseButton:
 		if event.is_pressed():
+			# Set as handled BEFORE changing scene to avoid null viewport error
+			if is_inside_tree():
+				get_viewport().set_input_as_handled()
 			_on_skip_pressed()
-			get_viewport().set_input_as_handled()

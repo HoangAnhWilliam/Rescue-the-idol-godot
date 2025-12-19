@@ -91,7 +91,7 @@ func _on_continue_pressed():
 	show_save_slot_selection(false)  # false = continue
 
 func _on_settings_pressed():
-	get_tree().change_scene_to_file("res://scenes/ui/settings_menu.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/settings_menu_new.tscn")
 
 func _on_credits_pressed():
 	get_tree().change_scene_to_file("res://scenes/ui/credits.tscn")
