@@ -2,6 +2,9 @@ extends Node
 
 const SAVE_PATH = "user://save_game.dat"
 const SAVE_VERSION = "1.0"
+const TOTAL_SLOTS = 3
+
+var current_slot: int = 1  # Currently selected save slot
 
 var save_data: Dictionary = {
 	"version": SAVE_VERSION,
@@ -35,15 +38,9 @@ func _ready():
 	load_game()
 
 func save_game():
-	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	if file:
-		file.store_var(save_data)
-		file.close()
-		print("Game saved successfully")
-		return true
-	else:
-		push_error("Failed to save game")
-		return false
+	# Save to current slot
+	save_to_slot(current_slot)
+	return true
 
 func load_game() -> Dictionary:
 	if not FileAccess.file_exists(SAVE_PATH):
@@ -207,3 +204,86 @@ func get_permanent_lucky() -> float:
 
 func get_permanent_mana() -> int:
 	return 50 + (save_data.player.permanent_mana_threshold * 25)
+
+# === SAVE SLOT SYSTEM ===
+
+## Check if any save slot has data
+func has_any_save() -> bool:
+	for i in range(1, TOTAL_SLOTS + 1):
+		if FileAccess.file_exists(get_slot_path(i)):
+			return true
+	return false
+
+## Get the file path for a specific slot
+func get_slot_path(slot: int) -> String:
+	return "user://save_slot_%d.dat" % slot
+
+## Load save data from a specific slot
+func load_slot(slot: int) -> Dictionary:
+	var path = get_slot_path(slot)
+	if not FileAccess.file_exists(path):
+		return {}
+
+	var file = FileAccess.open(path, FileAccess.READ)
+	if file:
+		var data = file.get_var()
+		file.close()
+		return data
+	return {}
+
+## Save to a specific slot
+func save_to_slot(slot: int):
+	var path = get_slot_path(slot)
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	if file:
+		file.store_var(save_data)
+		file.close()
+		print("Game saved to slot ", slot)
+
+## Create a new save in the current slot
+func create_new_save():
+	# Reset save_data to defaults
+	save_data = {
+		"version": SAVE_VERSION,
+		"level": 1,
+		"playtime": 0.0,
+		"current_biome": "Starting Forest",
+		"player": {
+			"permanent_hp_upgrades": 0,
+			"permanent_luck_upgrades": 0,
+			"permanent_mana_threshold": 0,
+			"total_kills": 0,
+			"total_playtime": 0.0,
+		},
+		"progress": {
+			"blood_temple_cleared": false,
+			"darkland_cleared": false,
+			"kiku_rescues": 0,
+			"highest_wave": 0,
+			"games_played": 0,
+		},
+		"unlocks": {
+			"weapons": [],
+			"endings": [],
+			"new_game_plus": false
+		},
+		"settings": {
+			"master_volume": 1.0,
+			"music_volume": 0.7,
+			"sfx_volume": 1.0,
+			"joystick_size": 100,
+			"button_size": 100,
+			"touch_sensitivity": 1.0,
+			"button_opacity": 100,
+			"fps_counter": false,
+			"screen_shake": true,
+			"blood_effects": true,
+			"pause_mode": 0,
+			"damage_numbers": true,
+			"auto_pause": true,
+			"colorblind_mode": 0,
+			"text_size": 100,
+			"high_contrast": false
+		}
+	}
+	save_to_slot(current_slot)

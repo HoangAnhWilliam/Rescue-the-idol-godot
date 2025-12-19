@@ -1,0 +1,113 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7dj2yp1h6gwu"]
+
+[ext_resource type="Script" path="res://scripts/ui/game_over_screen.gd" id="1_game_over"]
+
+[node name="GameOverScreen" type="CanvasLayer"]
+script = ExtResource("1_game_over")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.05, 0.05, 1)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0.25098, 1)
+theme_override_font_sizes/font_size = 48
+text = "💀 GAME OVER"
+horizontal_alignment = 1
+
+[node name="StatsContainer" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TimeStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⏱️ Time Survived: 0:00"
+
+[node name="KillsStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "💀 Enemies Killed: 0"
+
+[node name="LevelStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⭐ Level Reached: 1"
+
+[node name="GoldStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "💰 Gold Earned: 0 (KEPT!)"
+
+[node name="WaveStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🌊 Highest Wave: 0"
+
+[node name="BossStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "👹 Bosses Defeated: None"
+
+[node name="DamageDealtStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⚔️ Damage Dealt: 0"
+
+[node name="DamageTakenStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🩸 Damage Taken: 0"
+
+[node name="XPStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "✨ XP Gained: 0"
+
+[node name="WeaponsStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🗡️ Weapons Used: None"
+
+[node name="BiomeStat" type="Label" parent="Panel/VBox/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🗺️ Biome Reached: Starting Forest"
+
+[node name="Spacer" type="Control" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="RetryButton" type="Button" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "RETRY"
+
+[node name="MainMenuButton" type="Button" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "MAIN MENU"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c5q3gxjbs06r7"]
+[gd_scene load_steps=18 format=3 uid="uid://c5q3gxjbs06r7"]
 
 [ext_resource type="PackedScene" uid="uid://b2ai7uclsnr38" path="res://scenes/player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://6v2uposqi627" path="res://scripts/biome_background.gd" id="1_tefeu"]
@@ -16,8 +16,10 @@
 [ext_resource type="Script" uid="uid://der02phocjijg" path="res://scripts/hotbar_ui.gd" id="13_hotbar"]
 [ext_resource type="PackedScene" path="res://scenes/ui/spin_wheel_ui.tscn" id="14_spin_wheel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/mobile_controls.tscn" id="15_mobile_controls"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="16_main_script"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("16_main_script")
 
 [node name="BiomeBackground" type="ColorRect" parent="."]
 z_index = -10
