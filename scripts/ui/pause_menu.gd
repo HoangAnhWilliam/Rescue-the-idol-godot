@@ -37,7 +37,24 @@ func _on_resume_pressed():
 func _on_settings_pressed():
 	# Open settings as child (maintains pause)
 	var settings = load("res://scenes/ui/settings_menu_new.tscn").instantiate()
+
+	# CRITICAL: Settings must run even when game is paused
+	settings.process_mode = Node.PROCESS_MODE_ALWAYS
+
+	# Mark that settings was opened from pause menu
+	settings.from_pause_menu = true
+
+	# Hide pause menu while settings is open
+	visible = false
+
+	# Add settings as child
 	add_child(settings)
+
+	# When settings is closed, show pause menu again
+	settings.tree_exited.connect(func():
+		visible = true
+		print("Settings closed, pause menu visible again")
+	)
 
 func _on_main_menu_pressed():
 	# Auto-save before quit

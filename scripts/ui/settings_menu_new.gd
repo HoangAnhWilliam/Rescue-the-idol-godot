@@ -9,6 +9,9 @@ extends CanvasLayer
 ## 5. Accessibility - Accessibility features
 ## 6. About - Game info + Reset
 
+# Flag to track if opened from pause menu
+var from_pause_menu: bool = false
+
 # Audio tab
 @onready var master_slider: HSlider = $Panel/VBox/TabContainer/Audio/MasterVolume/Slider
 @onready var master_value: Label = $Panel/VBox/TabContainer/Audio/MasterVolume/ValueLabel
@@ -243,8 +246,16 @@ func _on_high_contrast_toggled(enabled: bool):
 # Button callbacks
 func _on_back_pressed():
 	save_settings()
-	# Return to main menu or previous screen
-	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
+
+	if from_pause_menu:
+		# Opened from pause menu - just close and show pause menu again
+		print("Closing settings, returning to pause menu")
+		queue_free()
+		# Pause menu will become visible automatically when settings is removed
+	else:
+		# Opened from main menu - return to main menu
+		print("Closing settings, returning to main menu")
+		get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
 
 func _on_reset_pressed():
 	# Show confirmation dialog
