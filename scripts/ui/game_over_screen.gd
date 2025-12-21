@@ -76,21 +76,45 @@ func get_weapon_list(weapons: Array) -> String:
 func _on_retry_pressed():
 	print("🔄 Retrying game...")
 
+	# CRITICAL FIX: Stop ALL audio first to prevent conflicts
+	if AudioManager:
+		AudioManager.stop_music(0.0)  # Immediate stop, no fade
+		print("🔇 Stopped all audio")
+
 	# CRITICAL: Unpause game first to avoid freeze
 	get_tree().paused = false
+	print("▶️ Unpaused game")
+
+	# Disable buttons to prevent double-click
+	retry_btn.disabled = true
+	main_menu_btn.disabled = true
 
 	# Remove this screen
 	queue_free()
 
-	# Wait for screen to be removed, then reload
+	# Wait for multiple frames to ensure cleanup
 	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
 
 	# Change to main scene (cleaner than reload for full reset)
+	print("🔄 Loading main scene...")
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _on_main_menu_pressed():
+	print("🏠 Returning to main menu...")
+
+	# Stop all audio first
+	if AudioManager:
+		AudioManager.stop_music(0.0)
+		print("🔇 Stopped all audio")
+
 	# Unpause game before changing scene
 	get_tree().paused = false
+
+	# Disable buttons to prevent double-click
+	retry_btn.disabled = true
+	main_menu_btn.disabled = true
 
 	# Return to main menu
 	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")

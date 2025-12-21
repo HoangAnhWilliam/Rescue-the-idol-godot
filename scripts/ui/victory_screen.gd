@@ -54,6 +54,15 @@ func format_time(seconds: float) -> String:
 	return "%d:%02d" % [m, s]
 
 func _on_credits_pressed():
+	# Stop music before scene change
+	if AudioManager:
+		AudioManager.stop_music(0.0)
+
+	# Disable buttons
+	credits_btn.disabled = true
+	new_game_plus_btn.disabled = true
+	main_menu_btn.disabled = true
+
 	get_tree().change_scene_to_file("res://scenes/ui/credits.tscn")
 
 func _on_new_game_plus_pressed():
@@ -62,7 +71,25 @@ func _on_new_game_plus_pressed():
 		SaveSystem.save_data.game_mode = "new_game_plus"
 		SaveSystem.save_game()
 
+	# Stop music before scene change
+	if AudioManager:
+		AudioManager.stop_music(0.0)
+
+	# Disable buttons
+	credits_btn.disabled = true
+	new_game_plus_btn.disabled = true
+	main_menu_btn.disabled = true
+
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 func _on_main_menu_pressed():
+	# Stop music before scene change
+	if AudioManager:
+		AudioManager.stop_music(0.0)
+
+	# Disable buttons
+	credits_btn.disabled = true
+	new_game_plus_btn.disabled = true
+	main_menu_btn.disabled = true
+
 	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
