@@ -35,6 +35,9 @@ func _on_resume_pressed():
 	queue_free()
 
 func _on_settings_pressed():
+	# Hide gameplay UI elements before opening settings
+	hide_gameplay_ui()
+
 	# Open settings as child (maintains pause)
 	var settings = load("res://scenes/ui/settings_menu_new.tscn").instantiate()
 
@@ -50,9 +53,10 @@ func _on_settings_pressed():
 	# Add settings as child
 	add_child(settings)
 
-	# When settings is closed, show pause menu again
+	# When settings is closed, show pause menu AND gameplay UI again
 	settings.tree_exited.connect(func():
 		visible = true
+		show_gameplay_ui()
 		print("Settings closed, pause menu visible again")
 	)
 
@@ -84,3 +88,43 @@ func _input(event):
 		if is_inside_tree():
 			get_viewport().set_input_as_handled()
 		_on_resume_pressed()
+
+# === GAMEPLAY UI VISIBILITY HELPERS ===
+
+func hide_gameplay_ui():
+	"""Hide HUD, Hotbar, and Mobile Controls when settings opens"""
+	var main_scene = get_tree().current_scene
+
+	# Hide HUD
+	if main_scene.has_node("UI/HUD"):
+		main_scene.get_node("UI/HUD").visible = false
+		print("HUD hidden")
+
+	# Hide Hotbar
+	if main_scene.has_node("UI/HotbarUI"):
+		main_scene.get_node("UI/HotbarUI").visible = false
+		print("Hotbar hidden")
+
+	# Hide Mobile Controls
+	if main_scene.has_node("MobileControls"):
+		main_scene.get_node("MobileControls").visible = false
+		print("Mobile controls hidden")
+
+func show_gameplay_ui():
+	"""Show HUD, Hotbar, and Mobile Controls when settings closes"""
+	var main_scene = get_tree().current_scene
+
+	# Show HUD
+	if main_scene.has_node("UI/HUD"):
+		main_scene.get_node("UI/HUD").visible = true
+		print("HUD shown")
+
+	# Show Hotbar
+	if main_scene.has_node("UI/HotbarUI"):
+		main_scene.get_node("UI/HotbarUI").visible = true
+		print("Hotbar shown")
+
+	# Show Mobile Controls
+	if main_scene.has_node("MobileControls"):
+		main_scene.get_node("MobileControls").visible = true
+		print("Mobile controls shown")
