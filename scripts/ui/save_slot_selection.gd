@@ -121,14 +121,9 @@ func format_time(seconds: float) -> String:
 
 func select_slot(slot_number: int):
 	if is_new_game:
-		# Create new save in this slot
-		if SaveSystem:
-			SaveSystem.current_slot = slot_number
-			SaveSystem.create_new_save()
-			print("Created new save in slot ", slot_number)
-
-		# Start new game
-		start_game()
+		# Open World Creation Settings dialog first
+		print("📝 Opening World Creation Settings for new game in slot ", slot_number)
+		open_world_creation_dialog(slot_number)
 	else:
 		# Load existing save
 		if SaveSystem:
@@ -185,17 +180,27 @@ func edit_slot(slot_number: int):
 			print("❌ Cannot edit empty slot")
 			return
 
-		# Open Edit World Settings dialog (FEATURE #4)
-		# TODO: Implement edit world settings dialog
+		# Open World Creation Settings dialog in EDIT MODE
 		print("📝 Opening Edit World Settings for slot ", slot_number)
-		print("   World data: ", save_data.get("world_settings", {}))
 
-		# For now, show a placeholder message
-		var placeholder = create_info_dialog(
-			"Edit World Settings",
-			"This feature will allow you to edit:\n• Game Mode\n• Difficulty\n• Starting Biome\n• World Modifiers\n\n(Coming in FEATURE #4)"
+		var world_dialog = load("res://scenes/ui/world_creation_settings.tscn").instantiate()
+		world_dialog.edit_mode = true
+		world_dialog.slot_number = slot_number
+
+		# Load existing settings
+		var world_settings = save_data.get("world_settings", {})
+		if not world_settings.is_empty():
+			world_dialog.load_world_settings(world_settings)
+		else:
+			print("⚠️ No world settings found, using defaults")
+
+		# Connect to world_created signal (same handler, just updates existing save)
+		world_dialog.world_created.connect(func(updated_settings: Dictionary):
+			_on_world_edited(slot_number, updated_settings)
 		)
-		add_child(placeholder)
+
+		# Add to scene
+		add_child(world_dialog)
 
 func create_confirmation_dialog(title: String, message: String, on_confirm: Callable) -> CanvasLayer:
 	var dialog = CanvasLayer.new()
@@ -310,3 +315,55 @@ func create_info_dialog(title: String, message: String) -> CanvasLayer:
 	vbox.add_child(ok_btn)
 
 	return dialog
+
+func open_world_creation_dialog(slot_number: int):
+	# Load and instantiate World Creation Settings dialog
+	var world_dialog = load("res://scenes/ui/world_creation_settings.tscn").instantiate()
+
+	# Connect to world_created signal
+	world_dialog.world_created.connect(func(world_settings: Dictionary):
+		_on_world_created(slot_number, world_settings)
+	)
+
+	# Add to scene
+	add_child(world_dialog)
+
+func _on_world_created(slot_number: int, world_settings: Dictionary):
+	print("🌍 World created with settings: ", world_settings)
+
+	# Create new save in this slot with world settings
+	if SaveSystem:
+		SaveSystem.current_slot = slot_number
+		SaveSystem.create_new_save()
+
+		# Add world settings to save data
+		SaveSystem.save_data["world_settings"] = world_settings
+		SaveSystem.save_game()
+
+		print("✅ Created new save in slot ", slot_number, " with world settings")
+
+	# Start new game
+	start_game()
+
+func _on_world_edited(slot_number: int, updated_settings: Dictionary):
+	print("📝 World settings updated for slot ", slot_number)
+	print("   Updated settings: ", updated_settings)
+
+	# Update save data with new world settings
+	if SaveSystem:
+		var save_data = SaveSystem.load_slot(slot_number)
+
+		if not save_data.is_empty():
+			save_data["world_settings"] = updated_settings
+
+			# Save back to slot
+			SaveSystem.current_slot = slot_number
+			SaveSystem.save_data = save_data
+			SaveSystem.save_game()
+
+			print("✅ World settings updated successfully")
+
+			# Refresh display
+			update_slot_displays()
+		else:
+			print("❌ Failed to update: slot is empty")

@@ -1,0 +1,175 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpfv8yk3mxh8n"]
+
+[ext_resource type="Script" path="res://scripts/ui/world_creation_settings.gd" id="1_world_creation"]
+
+[node name="WorldCreationSettings" type="CanvasLayer"]
+script = ExtResource("1_world_creation")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -350.0
+offset_right = 400.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0.25098, 1)
+theme_override_font_sizes/font_size = 36
+text = "🌍 CREATE NEW WORLD"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Configure your adventure settings"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="SettingsLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 22
+text = "⚙️ Game Settings"
+
+[node name="SettingsGrid" type="GridContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="GameModeLabel" type="Label" parent="Panel/VBox/SettingsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Game Mode:"
+
+[node name="GameModeOption" type="OptionButton" parent="Panel/VBox/SettingsGrid"]
+custom_minimum_size = Vector2(450, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="DifficultyLabel" type="Label" parent="Panel/VBox/SettingsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Difficulty:"
+
+[node name="DifficultyOption" type="OptionButton" parent="Panel/VBox/SettingsGrid"]
+custom_minimum_size = Vector2(450, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="BiomeLabel" type="Label" parent="Panel/VBox/SettingsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Starting Biome:"
+
+[node name="BiomeOption" type="OptionButton" parent="Panel/VBox/SettingsGrid"]
+custom_minimum_size = Vector2(450, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="SeedLabel" type="Label" parent="Panel/VBox/SettingsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "World Seed:"
+
+[node name="SeedInput" type="LineEdit" parent="Panel/VBox/SettingsGrid"]
+custom_minimum_size = Vector2(450, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+placeholder_text = "(leave empty for random)"
+max_length = 20
+
+[node name="Separator2" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="ModifiersLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 22
+text = "🎮 World Modifiers"
+
+[node name="ModifiersGrid" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CheatsCheck" type="CheckBox" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🔓 Allow Cheats (enables modifiers below)"
+
+[node name="CheatsHint" type="Label" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "    ⚠️ Enabling cheats will disable achievements"
+
+[node name="ModifiersSpacer" type="Control" parent="Panel/VBox/ModifiersGrid"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="FastXPCheck" type="CheckBox" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "    ⚡ Fast XP (2x experience gain)"
+
+[node name="MoreGoldCheck" type="CheckBox" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "    💰 More Gold (2x gold drops)"
+
+[node name="ExtraLivesCheck" type="CheckBox" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "    ❤️ Extra Lives (start with 3 revives)"
+
+[node name="NoDeathCheck" type="CheckBox" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "    🛡️ No Death (invincibility mode)"
+
+[node name="InfiniteManaCheck" type="CheckBox" parent="Panel/VBox/ModifiersGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "    ✨ Infinite Mana (unlimited abilities)"
+
+[node name="Separator3" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="Panel/VBox/Buttons"]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "CANCEL"
+
+[node name="CreateButton" type="Button" parent="Panel/VBox/Buttons"]
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 1, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+text = "CREATE WORLD"
