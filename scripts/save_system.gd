@@ -240,6 +240,22 @@ func save_to_slot(slot: int):
 		file.close()
 		print("Game saved to slot ", slot)
 
+## Delete a save slot
+func delete_slot(slot: int) -> bool:
+	var path = get_slot_path(slot)
+	if FileAccess.file_exists(path):
+		var dir = DirAccess.open("user://")
+		if dir:
+			var error = dir.remove(path)
+			if error == OK:
+				print("Deleted save slot ", slot)
+				return true
+			else:
+				push_error("Failed to delete slot ", slot, " - Error: ", error)
+				return false
+	print("No save file to delete in slot ", slot)
+	return false
+
 ## Create a new save in the current slot
 func create_new_save():
 	# Reset save_data to defaults
