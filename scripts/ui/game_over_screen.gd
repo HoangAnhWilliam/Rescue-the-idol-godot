@@ -89,8 +89,12 @@ func _on_retry_pressed():
 
 	# Stop all audio to prevent conflicts
 	if AudioManager:
-		AudioManager.stop_music(0.0)  # Immediate stop, no fade
-		AudioManager.stop_all()
+		# Check if stop_all exists, otherwise just stop music
+		if AudioManager.has_method("stop_all"):
+			AudioManager.stop_all()
+		else:
+			# Fallback: stop music manually
+			AudioManager.stop_music(0.0)  # Immediate stop, no fade
 		print("🔇 Stopped all audio")
 
 	# Small delay to ensure unpause propagates
@@ -117,7 +121,10 @@ func _on_main_menu_pressed():
 
 	# Stop all audio first
 	if AudioManager:
-		AudioManager.stop_music(0.0)
+		if AudioManager.has_method("stop_all"):
+			AudioManager.stop_all()
+		else:
+			AudioManager.stop_music(0.0)
 		print("🔇 Stopped all audio")
 
 	# Unpause game before changing scene
