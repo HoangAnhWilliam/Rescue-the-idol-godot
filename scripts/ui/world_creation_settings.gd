@@ -36,7 +36,6 @@ func _ready():
 	# BUG FIX: Set high priority for visibility
 	if self is CanvasLayer:
 		layer = 10
-	z_index = 200
 
 	# Populate dropdowns
 	setup_game_modes()
@@ -130,14 +129,12 @@ func edit_world(slot_id: int):
 	visible = true
 	show()
 
-	# Set high z-index to appear above other UI
+	# Set high layer to appear above other UI
 	if self is CanvasLayer:
 		layer = 10
-	z_index = 200
 
 	# Debug visibility
 	print("🔍 Dialog visible:", visible)
-	print("🔍 Dialog z_index:", z_index)
 	if self is CanvasLayer:
 		print("🔍 Dialog layer:", layer)
 
