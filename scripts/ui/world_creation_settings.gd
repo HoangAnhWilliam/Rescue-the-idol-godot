@@ -125,6 +125,16 @@ func edit_world(slot_id: int):
 	# Load settings into UI
 	load_world_settings(settings)
 
+	# Update UI for edit mode
+	if title_label:
+		title_label.text = "✏️ EDIT WORLD SETTINGS"
+	if subtitle_label:
+		subtitle_label.text = "Modify your world configuration"
+	if create_btn:
+		create_btn.text = "💾 SAVE CHANGES"
+	if cancel_btn:
+		cancel_btn.text = "❌ CLOSE"
+
 	# BUG FIX: Force dialog to be visible
 	visible = true
 	show()
@@ -157,9 +167,12 @@ func _on_cheats_toggled(enabled: bool):
 		infinite_mana_check.button_pressed = false
 
 func _on_create_pressed():
-	print("🌍 Creating world with settings...")
+	if edit_mode:
+		print("💾 Saving world settings for slot ", slot_number, "...")
+	else:
+		print("🌍 Creating world with settings...")
 
-	# Gather all settings
+	# Gather all settings from UI
 	var world_settings = {
 		"game_mode": get_game_mode_string(),
 		"difficulty": get_difficulty_string(),
@@ -178,18 +191,26 @@ func _on_create_pressed():
 
 	print("   Settings: ", world_settings)
 
-	# Emit signal with settings
+	# Emit signal with settings (handled differently by parent based on context)
 	world_created.emit(world_settings)
 
-	# Close dialog
+	if edit_mode:
+		print("✅ World settings saved!")
+	else:
+		print("✅ World created!")
+
+	# Hide and close dialog
+	hide()
 	queue_free()
 
 func _on_cancel_pressed():
-	print("❌ World creation cancelled")
+	if edit_mode:
+		print("❌ Edit cancelled - no changes saved")
+	else:
+		print("❌ World creation cancelled")
 
 	# Hide before removing
 	hide()
-
 	queue_free()
 
 func get_game_mode_string() -> String:
@@ -216,15 +237,8 @@ func get_biome_string() -> String:
 		3: return ["Starting Forest", "Blood Temple", "Darkland"][randi() % 3]
 	return "Starting Forest"
 
-## Load existing world settings for editing
+## Load existing world settings into UI (data only, no text updates)
 func load_world_settings(settings: Dictionary):
-	edit_mode = true
-
-	# Update UI for edit mode
-	title_label.text = "✏️ EDIT WORLD SETTINGS"
-	subtitle_label.text = "Modify your world configuration"
-	create_btn.text = "SAVE CHANGES"
-
 	# Set game mode
 	var mode = settings.get("game_mode", "survival")
 	match mode:
@@ -249,8 +263,11 @@ func load_world_settings(settings: Dictionary):
 		"Darkland": biome_option.selected = 2
 
 	# Set seed (read-only in edit mode)
-	seed_input.text = settings.get("world_seed", "")
-	seed_input.editable = false
+	if edit_mode:
+		seed_input.text = settings.get("world_seed", "")
+		seed_input.editable = false
+	else:
+		seed_input.text = settings.get("world_seed", "")
 
 	# Set cheats
 	cheats_check.button_pressed = settings.get("cheats_enabled", false)
@@ -263,7 +280,4 @@ func load_world_settings(settings: Dictionary):
 	no_death_check.button_pressed = mods.get("no_death", false)
 	infinite_mana_check.button_pressed = mods.get("infinite_mana", false)
 
-	# Update button text
-	create_btn.text = "SAVE CHANGES"
-
-	print("Loaded world settings for editing")
+	print("✅ Loaded world settings into UI")
