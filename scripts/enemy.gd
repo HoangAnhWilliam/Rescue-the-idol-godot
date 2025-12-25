@@ -89,8 +89,14 @@ func search_for_player():
 		print(name, " started chasing player")
 
 func chase_player(delta):
-	if not player:
+	if not player or not is_instance_valid(player):
 		current_state = State.IDLE
+		return
+
+	# BUG FIX #1: Stop chasing if player is dead
+	if "is_dying" in player and player.is_dying:
+		current_state = State.IDLE
+		velocity = Vector2.ZERO
 		return
 
 	# Stop chasing if player becomes invisible
@@ -118,18 +124,24 @@ func chase_player(delta):
 	update_sprite()
 
 func perform_attack(delta):  # ← THÊM delta parameter
-	if not player:
+	if not player or not is_instance_valid(player):
 		current_state = State.IDLE
 		return
-	
+
+	# BUG FIX #1: Stop attacking if player is dead
+	if "is_dying" in player and player.is_dying:
+		current_state = State.IDLE
+		velocity = Vector2.ZERO
+		return
+
 	var distance = global_position.distance_to(player.global_position)
 	if distance > attack_range * 1.5:
 		current_state = State.CHASE
 		return
-	
+
 	# Stop moving
 	velocity = Vector2.ZERO
-	
+
 	# Attack with cooldown
 	if attack_timer <= 0:
 		if player.has_method("take_damage"):

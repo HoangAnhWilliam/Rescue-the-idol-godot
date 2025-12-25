@@ -180,27 +180,21 @@ func edit_slot(slot_number: int):
 			print("❌ Cannot edit empty slot")
 			return
 
-		# Open World Creation Settings dialog in EDIT MODE
+		# BUG FIX #2: Open World Creation Settings dialog in EDIT MODE
 		print("📝 Opening Edit World Settings for slot ", slot_number)
 
 		var world_dialog = load("res://scenes/ui/world_creation_settings.tscn").instantiate()
-		world_dialog.edit_mode = true
-		world_dialog.slot_number = slot_number
-
-		# Load existing settings
-		var world_settings = save_data.get("world_settings", {})
-		if not world_settings.is_empty():
-			world_dialog.load_world_settings(world_settings)
-		else:
-			print("⚠️ No world settings found, using defaults")
 
 		# Connect to world_created signal (same handler, just updates existing save)
 		world_dialog.world_created.connect(func(updated_settings: Dictionary):
 			_on_world_edited(slot_number, updated_settings)
 		)
 
-		# Add to scene
+		# Add to scene first
 		add_child(world_dialog)
+
+		# BUG FIX #2: Use edit_world() which handles missing settings gracefully
+		world_dialog.edit_world(slot_number)
 
 func create_confirmation_dialog(title: String, message: String, on_confirm: Callable) -> CanvasLayer:
 	var dialog = CanvasLayer.new()

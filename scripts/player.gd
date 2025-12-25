@@ -78,7 +78,11 @@ signal level_up(new_level)
 signal player_died
 signal xp_gained(amount)
 signal stat_changed
-signal gold_changed(current_gold) 
+signal gold_changed(current_gold)
+
+# Death state guards (BUG FIX #1: Prevent game over loop)
+var is_dying: bool = false
+var game_over_shown: bool = false 
 
 func _ready():
 	current_hp = stats.max_hp
@@ -313,9 +317,31 @@ func take_damage(amount: float):
 		die()
 
 func die():
-	player_died.emit()
+	# BUG FIX #1: Prevent multiple death calls
+	if is_dying:
+		return
+
+	is_dying = true
+
+	print("💀 Player died!")
+
+	# STOP ALL PHYSICS IMMEDIATELY
 	set_physics_process(false)
-	sprite.modulate = Color(0.5, 0.5, 0.5)
+	set_process(false)
+
+	# Make invincible to prevent further damage
+	collision_layer = 0
+	collision_mask = 0
+
+	# Stop movement
+	velocity = Vector2.ZERO
+
+	# Visual feedback
+	if sprite:
+		sprite.modulate = Color(0.5, 0.5, 0.5)
+
+	# Emit signal ONCE
+	player_died.emit()
 
 	# ← AUDIO: Play game over music
 	AudioManager.play_music("game_over", 1.0)
@@ -323,6 +349,18 @@ func die():
 	# Camera shake on death
 	if camera and camera.has_method("large_shake"):
 		camera.large_shake()
+
+	# Show game over screen
+	show_game_over_screen()
+
+func show_game_over_screen():
+	# BUG FIX #1: Only show once
+	if game_over_shown:
+		return
+
+	game_over_shown = true
+
+	print("🎮 Showing Game Over screen")
 
 	# Collect game stats
 	var stats_data = {
@@ -339,9 +377,16 @@ func die():
 		"biome": current_biome
 	}
 
+	# Pause game BEFORE showing screen
+	get_tree().paused = true
+
 	# Show game over screen
 	var game_over = load("res://scenes/ui/game_over_screen.tscn").instantiate()
 	game_over.set_stats(stats_data)
+
+	# Set game over screen to process even when paused
+	game_over.process_mode = Node.PROCESS_MODE_ALWAYS
+
 	get_tree().root.add_child(game_over)
 
 func add_xp(amount: float):
