@@ -33,6 +33,11 @@ var edit_mode: bool = false
 var slot_number: int = -1
 
 func _ready():
+	# BUG FIX: Set high priority for visibility
+	if self is CanvasLayer:
+		layer = 10
+	z_index = 200
+
 	# Populate dropdowns
 	setup_game_modes()
 	setup_difficulties()
@@ -121,6 +126,21 @@ func edit_world(slot_id: int):
 	# Load settings into UI
 	load_world_settings(settings)
 
+	# BUG FIX: Force dialog to be visible
+	visible = true
+	show()
+
+	# Set high z-index to appear above other UI
+	if self is CanvasLayer:
+		layer = 10
+	z_index = 200
+
+	# Debug visibility
+	print("🔍 Dialog visible:", visible)
+	print("🔍 Dialog z_index:", z_index)
+	if self is CanvasLayer:
+		print("🔍 Dialog layer:", layer)
+
 	print("✅ World Creation Settings ready for editing")
 
 func _on_cheats_toggled(enabled: bool):
@@ -169,6 +189,10 @@ func _on_create_pressed():
 
 func _on_cancel_pressed():
 	print("❌ World creation cancelled")
+
+	# Hide before removing
+	hide()
+
 	queue_free()
 
 func get_game_mode_string() -> String:

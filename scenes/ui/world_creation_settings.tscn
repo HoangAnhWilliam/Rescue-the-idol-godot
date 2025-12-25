@@ -3,9 +3,11 @@
 [ext_resource type="Script" path="res://scripts/ui/world_creation_settings.gd" id="1_world_creation"]
 
 [node name="WorldCreationSettings" type="CanvasLayer"]
+layer = 10
 script = ExtResource("1_world_creation")
 
 [node name="Background" type="ColorRect" parent="."]
+mouse_filter = 2
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
