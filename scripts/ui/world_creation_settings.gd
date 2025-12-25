@@ -74,6 +74,55 @@ func setup_biomes():
 	biome_option.add_item("🎲 Random - Surprise me!", 3)
 	biome_option.selected = 0
 
+## BUG FIX #2: Edit existing world settings
+func edit_world(slot_id: int):
+	slot_number = slot_id
+	edit_mode = true
+
+	print("📝 Opening Edit World Settings for slot ", slot_id)
+
+	# Load world settings from SaveSystem
+	var slot_key = "slot_%d" % slot_id
+
+	# Try to get settings from SaveSystem
+	var settings = null
+
+	if SaveSystem.save_data.has(slot_key):
+		settings = SaveSystem.save_data[slot_key].get("world_settings", null)
+
+	# If no settings found, CREATE DEFAULT
+	if not settings:
+		print("⚠️ No world settings found for slot ", slot_id)
+		print("📝 Creating default settings...")
+
+		settings = {
+			"game_mode": "survival",
+			"difficulty": "normal",
+			"starting_biome": "Starting Forest",
+			"world_seed": str(randi()),
+			"cheats_enabled": false,
+			"modifiers": {
+				"fast_xp": false,
+				"more_gold": false,
+				"extra_lives": false,
+				"no_death": false,
+				"infinite_mana": false
+			},
+			"created_at": Time.get_unix_time_from_system()
+		}
+
+		# Save default settings
+		if not SaveSystem.save_data.has(slot_key):
+			SaveSystem.save_data[slot_key] = {}
+
+		SaveSystem.save_data[slot_key]["world_settings"] = settings
+		SaveSystem.save_game()
+
+	# Load settings into UI
+	load_world_settings(settings)
+
+	print("✅ World Creation Settings ready for editing")
+
 func _on_cheats_toggled(enabled: bool):
 	# Enable/disable all modifier checkboxes based on cheats
 	fast_xp_check.disabled = !enabled

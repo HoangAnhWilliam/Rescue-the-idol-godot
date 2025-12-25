@@ -28,6 +28,9 @@ extends CanvasLayer
 var stats: Dictionary = {}
 
 func _ready():
+	# BUG FIX #1: Make sure screen works when paused
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Play game over music
 	if AudioManager:
 		AudioManager.play_music("game_over")
@@ -74,32 +77,40 @@ func get_weapon_list(weapons: Array) -> String:
 	return ", ".join(weapons)
 
 func _on_retry_pressed():
-	print("🔄 Retrying game...")
+	print("🔄 RETRY button pressed")
 
-	# CRITICAL FIX: Stop ALL audio first to prevent conflicts
-	if AudioManager:
-		AudioManager.stop_music(0.0)  # Immediate stop, no fade
-		print("🔇 Stopped all audio")
-
-	# CRITICAL: Unpause game first to avoid freeze
-	get_tree().paused = false
-	print("▶️ Unpaused game")
-
-	# Disable buttons to prevent double-click
+	# BUG FIX #1: Prevent multiple clicks
 	retry_btn.disabled = true
 	main_menu_btn.disabled = true
 
-	# Remove this screen
-	queue_free()
+	# CRITICAL: Unpause FIRST to avoid freeze
+	get_tree().paused = false
+	print("▶️ Unpaused game")
 
-	# Wait for multiple frames to ensure cleanup
-	await get_tree().process_frame
-	await get_tree().process_frame
+	# Stop all audio to prevent conflicts
+	if AudioManager:
+		AudioManager.stop_music(0.0)  # Immediate stop, no fade
+		AudioManager.stop_all()
+		print("🔇 Stopped all audio")
+
+	# Small delay to ensure unpause propagates
 	await get_tree().create_timer(0.1).timeout
 
-	# Change to main scene (cleaner than reload for full reset)
-	print("🔄 Loading main scene...")
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	# Get current scene path for clean reload
+	var current_scene = get_tree().current_scene.scene_file_path
+
+	print("🔄 Reloading scene: ", current_scene)
+
+	# Remove game over screen
+	queue_free()
+
+	# Reload scene (this will reset everything cleanly)
+	var result = get_tree().change_scene_to_file(current_scene)
+
+	if result != OK:
+		print("❌ ERROR: Failed to reload scene!")
+		# Fallback: reload current scene
+		get_tree().reload_current_scene()
 
 func _on_main_menu_pressed():
 	print("🏠 Returning to main menu...")
