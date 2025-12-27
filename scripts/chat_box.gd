@@ -54,8 +54,9 @@ func _ready() -> void:
 	modulate.a = 0.0
 	is_chat_open = false
 
-	# Welcome message (will be added but not shown until opened)
-	add_message("System", "Press T to open chat", "System")
+	# BUG FIX #3: Don't auto-open chat with welcome message
+	# User must press T (or tap chat indicator) to open
+	# Welcome message removed - chat indicator already shows "Tap to chat"
 
 	print("=== Chat Box Initialized (Toggle Mode) ===")
 

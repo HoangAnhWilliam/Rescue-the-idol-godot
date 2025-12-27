@@ -37,7 +37,7 @@ var sfx_volume: float = 1.0
 
 var music_tracks := {
 	# Menu & General
-	"menu": "res://audio/music/menu_music.ogg",
+	"menu": "res://audio/music/main_menu.ogg",
 	"victory": "res://audio/music/victory_fanfare.ogg",
 	"game_over": "res://audio/music/game_over.ogg",
 
@@ -202,6 +202,12 @@ func play_music(track_name: String, fade_time: float = 2.0):
 
 	print("  ✅ Loaded music stream successfully")
 	print("  ♪ Playing music: ", track_name)
+
+	# Enable loop for all music
+	if music_stream is AudioStreamOggVorbis:
+		music_stream.loop = true
+	elif music_stream is AudioStreamMP3:
+		music_stream.loop = true
 
 	# If no music playing, just start
 	if not current_music_player.playing:
