@@ -60,21 +60,6 @@ script = ExtResource("12_drop_handler")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="PauseButton" type="Button" parent="UI"]
-z_index = 100
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -60.0
-offset_top = 10.0
-offset_right = 60.0
-offset_bottom = 60.0
-grow_horizontal = 2
-mouse_filter = 0
-theme_override_font_sizes/font_size = 20
-text = "⏸ PAUSE"
-script = ExtResource("17_pause_button")
-
 [node name="HUD" parent="UI" instance=ExtResource("3_jyhfs")]
 
 [node name="HotbarUI" type="Control" parent="UI"]
@@ -106,6 +91,23 @@ text = "Entered: Starting Forest"
 horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("6_biome_notif")
+
+[node name="PauseButtonLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="PauseButton" type="Button" parent="PauseButtonLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -60.0
+offset_top = 10.0
+offset_right = 60.0
+offset_bottom = 60.0
+grow_horizontal = 2
+mouse_filter = 0
+theme_override_font_sizes/font_size = 20
+text = "⏸ PAUSE"
+script = ExtResource("17_pause_button")
 
 [node name="UpgradeMenu" parent="." groups=["upgrade_menu"] instance=ExtResource("3_sugp2")]
 

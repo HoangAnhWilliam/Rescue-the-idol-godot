@@ -85,6 +85,23 @@ func _process(delta):
 func process_command(command_text: String) -> void:
 	"""Main command processor - called from ChatBox"""
 
+	# BUG FIX: Refresh references every time (CheatCommands loads before game scene)
+	if not player or not is_instance_valid(player):
+		player = get_tree().get_first_node_in_group("player")
+
+	if not chat_box or not is_instance_valid(chat_box):
+		chat_box = get_tree().get_first_node_in_group("chat_box")
+
+	# Verify references
+	if not player:
+		print("❌ CheatCommands: Player not found!")
+		if chat_box:
+			chat_box.add_message("System", "ERROR: Player not found - commands unavailable", "System")
+		return
+
+	if not chat_box:
+		print("❌ CheatCommands: ChatBox not found - commands will work but no feedback shown")
+
 	# Remove leading slash and trim
 	var text = command_text.strip_edges()
 	if text.begins_with("/"):
