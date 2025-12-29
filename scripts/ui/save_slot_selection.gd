@@ -199,10 +199,15 @@ func edit_slot(slot_number: int):
 func create_confirmation_dialog(title: String, message: String, on_confirm: Callable) -> CanvasLayer:
 	var dialog = CanvasLayer.new()
 
+	# BUG FIX: Enable input processing even if game is paused
+	dialog.process_mode = Node.PROCESS_MODE_ALWAYS
+	dialog.layer = 100  # Render on top
+
 	# Semi-transparent background
 	var bg = ColorRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.color = Color(0, 0, 0, 0.8)
+	bg.mouse_filter = Control.MOUSE_FILTER_STOP  # Block clicks to background
 	dialog.add_child(bg)
 
 	# Dialog panel
@@ -245,7 +250,11 @@ func create_confirmation_dialog(title: String, message: String, on_confirm: Call
 	cancel_btn.text = "CANCEL"
 	cancel_btn.custom_minimum_size = Vector2(180, 50)
 	cancel_btn.add_theme_font_size_override("font_size", 20)
-	cancel_btn.pressed.connect(func(): dialog.queue_free())
+	cancel_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	cancel_btn.pressed.connect(func():
+		print("❌ Delete cancelled by user")
+		dialog.queue_free()
+	)
 	button_box.add_child(cancel_btn)
 
 	var confirm_btn = Button.new()
@@ -253,7 +262,9 @@ func create_confirmation_dialog(title: String, message: String, on_confirm: Call
 	confirm_btn.custom_minimum_size = Vector2(180, 50)
 	confirm_btn.add_theme_font_size_override("font_size", 20)
 	confirm_btn.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+	confirm_btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	confirm_btn.pressed.connect(func():
+		print("✅ Delete confirmed by user")
 		on_confirm.call()
 		dialog.queue_free()
 	)
