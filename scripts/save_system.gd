@@ -246,14 +246,20 @@ func delete_slot(slot: int) -> bool:
 	if FileAccess.file_exists(path):
 		var dir = DirAccess.open("user://")
 		if dir:
-			var error = dir.remove(path)
+			# BUG FIX: Extract just the filename (not full path) for dir.remove()
+			# dir.remove() expects "save_slot_1.dat", not "user://save_slot_1.dat"
+			var filename = "save_slot_%d.dat" % slot
+			var error = dir.remove(filename)
 			if error == OK:
-				print("Deleted save slot ", slot)
+				print("✅ Deleted save slot ", slot)
 				return true
 			else:
-				push_error("Failed to delete slot ", slot, " - Error: ", error)
+				push_error("❌ Failed to delete slot ", slot, " - Error: ", error)
 				return false
-	print("No save file to delete in slot ", slot)
+		else:
+			push_error("❌ Failed to open user:// directory")
+			return false
+	print("ℹ️ No save file to delete in slot ", slot)
 	return false
 
 ## Create a new save in the current slot
